@@ -1,0 +1,128 @@
+.manual-container {
+    height : "10%";
+    background-color: rgb(255, 255, 255);
+    margin: 0.5% 2%;
+    
+}
+.navbar-search-icon {
+    left: 10px;
+    margin-top: 2%;
+    top: 50px;
+}
+.search-bar{
+    padding-top: 2%;
+}
+
+.other-container {
+    height : "100px";
+    background-color: rgb(131, 105, 105);
+}
+
+.logo-image {
+    height: 40px; 
+    width: 110px
+}
+#col-6{
+    background-color:#eaeef3
+}
+.navbar-search {
+    border:none;
+    background:#fff; 
+    display:block; 
+    box-sizing: border-box;
+    text-indent: 25px;;
+}
+
+
+
+
+
+/* Bootstrap 4 text input with search icon */
+.btn-outline-primary:hover{
+    background-color: #d9f3fc;
+
+}
+.has-search .form-control {
+    padding-left: 2.375rem;
+}
+
+#login-button:hover{
+    background-color:"white"
+}
+.has-search .form-control:hover {
+background-color: white
+}
+.modal-header {
+    border-bottom: 0 none;
+}
+
+.modal-footer {
+    border-top: 0 none;
+}
+
+.show-grid{
+    height : "500px"
+}
+.Sso__divider.m-small-margin {
+    margin: 12px 0;
+}
+
+.Sso__dividerLine {
+    border-top: 1px solid #edeff1;
+    width: 40%;
+}
+.Sso__dividerText {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 18px;
+    color: #878a8c;
+    text-transform: uppercase;
+}
+.Sso__divider {
+    align-items: center;
+    display: flex;
+    margin: 20px 0;
+    justify-content: space-between;
+}
+.has-search .form-control-feedback {
+    position: absolute;
+    z-index: 2;
+    display: block;
+    width: 2.375rem;
+    height: 2.375rem;
+    line-height: 2.375rem;
+    text-align: center;
+    pointer-events: none;
+    color: #aaa;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  ::placeholder {
+    color: #5e5c5d;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-left:4%;
+    opacity: 1;
+  }
+  input{
+    border : 1px solid rgba(0,0,0,.1);
+    color : #0c0b0b;
+    padding: 10px 12px 10px;
+    border-radius: 5px;
+    background-color: #FCFCFB;
+  }
