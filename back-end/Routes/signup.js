@@ -1,8 +1,13 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const { secret } = require('../Utils/config');
 const Users = require('../ModelsMongoDB/Users');
+const { auth } = require('../Utils/passport');
 
 const router = express.Router();
+
+auth();
 
 const encryptionMiddleware = (req, res, next) => {
   bcrypt.genSalt(10, (err1, salt) => {
@@ -14,6 +19,7 @@ const encryptionMiddleware = (req, res, next) => {
 };
 
 const registerUser = async (req, res) => {
+  let token = {};
   const newUser = new Users({
     name: req.body.name,
     email: req.body.email,
@@ -22,11 +28,16 @@ const registerUser = async (req, res) => {
   try {
     const doc = await newUser.save();
     req.session.user = doc;
+    const { _id, name } = doc;
+    const payload = { _id, name };
+    token = jwt.sign(payload, secret, {
+      expiresIn: 1008000,
+    });
     res.status(200);
   } catch (e) {
     res.status(400);
   } finally {
-    res.send();
+    res.send(`JWT ${token}`);
   }
 };
 

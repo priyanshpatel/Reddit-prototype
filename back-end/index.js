@@ -50,6 +50,7 @@ mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
 
 app.use('/signup', require('./Routes/signup'));
+app.use('/login', require('./Routes/login'));
 
 
 app.listen(3001, () => {
