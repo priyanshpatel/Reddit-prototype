@@ -1,11 +1,11 @@
 const express = require('express');
-
 const app = express();
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const { mongoDB } = require('./Utils/config');
+const { mongoDB } = require('./Utils/config').default;
+const { auth } = require('./Utils/passport');
 
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 
@@ -49,12 +49,13 @@ mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
 
-app.use('/signup', require('./Routes/signup'));
-app.use('/login', require('./Routes/login'));
+app.use('/user', require('./Routes/user'));
 
 
 app.listen(3001, () => {
   console.log('Server listening on port 3001');
 });
+
+auth();
 
 module.exports = app;

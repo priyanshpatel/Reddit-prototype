@@ -29,7 +29,7 @@ const usersSchema = new Schema({
     type: String,
   },
   location: {
-    type: Object,
+    type: String,
   },
   topics: {
     type: Array,
