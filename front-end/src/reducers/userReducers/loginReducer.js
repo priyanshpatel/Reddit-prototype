@@ -1,5 +1,7 @@
 let initialState = {
     userData: {},
+    loginError: "",
+    loginMessage: ""
 }
 var login = (state = initialState, action) => {
     console.log(action);
