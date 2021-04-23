@@ -98,7 +98,6 @@ class Navbar extends Component {
 
     handleLoginButtonClick = (e) => {
 
-
         let loginObject = {
             email: this.state.loginemail,
             password: this.state.loginpassword,
