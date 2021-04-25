@@ -5,6 +5,9 @@ import { Row, Col } from 'reactstrap';
 import home_page from '../../images/home-page.png'
 import reddit_logo from '../../images/reddit-logo-vector.svg'
 import Modal from 'react-bootstrap/Modal'
+import loginAction from '../../actions/loginAction'
+import signUpAction from '../../actions/signupAction'
+import { connect } from "react-redux";
 
 import login from '../../images/login.png'
 
@@ -18,9 +21,12 @@ class Navbar extends Component {
             loginpassword: "",
             loginButton: false,
             signupname: "",
+            error: false,
             signupemail: "",
             signuppassword: "",
-            signupButton: false
+            signupButton: false,
+            signUpBackendError: false,
+            loginBackendError: false
         }
     }
 
@@ -32,7 +38,6 @@ class Navbar extends Component {
     }
 
     handleEmailChange = inp => {
-        console.log(inp.target.name, inp.target.value);
         if (/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(inp.target.value)) {
             this.setState({
                 error: false,
@@ -86,22 +91,37 @@ class Navbar extends Component {
             email: this.state.signupemail,
             password: this.state.signuppassword
         }
-        alert(JSON.stringify(signUpObject))
-
-        alert("over herre");
+        e.preventDefault();
+        if (!this.state.error) {
+            this.props.signUpAction(signUpObject).then(response => {
+                if (this.props.signUpError) {
+                    this.setState({
+                        signUpBackendError: true
+                    })
+                }
+            })
+        };
     }
 
 
 
-    handleLoginButtonClick = (e) => {
-
+    handleLoginSubmit = (e) => {
 
         let loginObject = {
             email: this.state.loginemail,
             password: this.state.loginpassword,
         }
-        alert(JSON.stringify(loginObject))
-        alert("over herre");
+        if (!this.state.error) {
+            this.props.loginAction(loginObject).then(response => {
+                if (this.props.loginError) {
+                    this.setState({
+                        loginBackendError: true
+                    })
+                }
+            })
+        };
+
+
     }
 
 
@@ -112,6 +132,15 @@ class Navbar extends Component {
         })
     }
     render() {
+        let invalidLoginError = null
+        let invalidSignUpError = null
+
+        if (this.state.loginBackendError) {
+            invalidLoginError = <div style={{ 'color': 'red' }}>{this.props.loginMessage}</div>
+        }
+        if (this.state.signUpBackendError) {
+            invalidSignUpError = <div style={{ 'color': 'red' }}>{this.props.signUpMessage}</div>
+        }
         return (
             <div >
                 <div className="manual-container">
@@ -225,13 +254,14 @@ class Navbar extends Component {
                                         <input type="text" style={{ width: "100%" }} name="loginemail" onChange={this.handleEmailChange} placeholder="EMAIL" autoFocus required />
 
                                         <input type="text" style={{ width: "100%", marginTop: "10%" }} name="loginpassword" placeholder="PASSWORD" onChange={this.handleOtherChange} required />
-                                        <button type="button" id="login-button" style={{ backgroundColor: "#0079d3", color: "white", borderRadius: "60px", width: "100%", marginTop: "10%" }} class="btn btn-outline-primary" onClick={this.handleLoginButtonClick}><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Log In</strong></span></button>
+                                        <button type="button" id="login-button" style={{ backgroundColor: "#0079d3", color: "white", borderRadius: "60px", width: "100%", marginTop: "10%" }} class="btn btn-outline-primary" onClick={this.handleLoginSubmit}><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Log In</strong></span></button>
                                         <div style={{ marginTop: "3%", fontSize: "12px" }}>
                                             Forgot your <a target="_blank" href="/">username</a> or <a target="_blank" href="/">password</a>?
                                     </div>
                                         <div style={{ marginTop: "3%", fontSize: "12px" }}>
                                             New to Reddit? <strong><span ><button style={{ color: "#0079d3", fontWeight: "700", textTransform: "uppercase", border: "none", backgroundColor: "white" }} onClick={this.mutualButtonCLick}><bold>Sign Up</bold></button ></span></strong>
                                         </div>
+                                        {invalidLoginError}
                                     </Row>
                                 </div>
                             </Col>
@@ -322,6 +352,8 @@ class Navbar extends Component {
                                         <div style={{ marginTop: "3%", fontSize: "12px" }}>
                                             Already a redditor? <strong><span ><button style={{ color: "#0079d3", textTransform: "uppercase", border: "none", fontWeight: "700", backgroundColor: "white" }} onClick={this.mutualButtonCLick}><bold>Log In</bold></button ></span></strong>
                                         </div>
+                                        {invalidSignUpError}
+
                                     </Row>
                                 </div>
                             </Col>
@@ -335,4 +367,23 @@ class Navbar extends Component {
         )
     }
 }
-export default withRouter(Navbar);
+const matchStateToProps = (state) => {
+    console.log("inside matchStatetoProps", state)
+    return {
+        loginError: state.loginReducer.loginError,
+        loginMessage: state.loginReducer.loginMessage,
+        signUpError: state.signUpReducer.signUpError,
+        signUpMessage: state.signUpReducer.signUpMessage
+    }
+
+}
+
+const matchDispatchToProps = (dispatch) => {
+    return {
+        loginAction: (data) => dispatch(loginAction(data)),
+        signUpAction: (data) => dispatch(signUpAction(data)),
+
+    }
+}
+
+export default connect(matchStateToProps, matchDispatchToProps)(Navbar)

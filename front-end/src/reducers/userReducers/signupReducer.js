@@ -1,5 +1,7 @@
 let initialState = {
-    auth: false
+    auth: false,
+    signUpmessage : "",
+    signUpError : ""
 }
 var userSignUp = (state = initialState, action) => {
     let newState = { ...state }
