@@ -1,0 +1,43 @@
+{
+  "name": "back-end",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon --exec babel-node index.js",
+    "build": "rimraf dist/ && babel ./ --out-dir dist/ --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log --copy-files"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "client-sessions": "^0.8.0",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "express-sessions": "^1.0.6",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.12.5",
+    "passport": "^0.4.1",
+    "passport-jwt": "^4.0.0",
+    "nodemon": "^2.0.7",
+    "kafka-node": "^5.0.0",
+    "reddit_kafka_backend": "file:../kafka-backend",
+    "joi": "^17.4.0",
+    "joi-password-complexity": "^5.1.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.13.0",
+    "@babel/core": "^7.13.15",
+    "@babel/node": "^7.13.0",
+    "@babel/preset-env": "^7.13.15",
+    "babel-loader": "^8.2.2",
+    "babel-preset-env": "^1.7.0",
+    "dotenv": "^8.2.0",
+    "rimraf": "^3.0.2",
+    "webpack": "^5.34.0"
+  }
+}
