@@ -75,6 +75,8 @@ const postSchema = new Schema(
       required: true,
     },
 
+    //TODO
+
     // UNCOMMENT THE BELOW CODE WHEN COMMUNITY MODEL IS CREATED
 
     // community: {

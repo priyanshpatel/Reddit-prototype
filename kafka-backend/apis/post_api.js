@@ -2,8 +2,7 @@ const Posts = require("../models/PostsModel");
 const ObjectId = require("mongoose").Types.ObjectId;
 
 const createPost = async (req, callback) => {
-  // Check here whether the user is a member of the community or not
-  // LEFT.....................................
+  // TODO :- Check here whether the user is a member of the community or not
 
   let rawPost = null;
 
@@ -58,8 +57,7 @@ const createPost = async (req, callback) => {
 };
 
 const createComment = async (req, callback) => {
-  // Check whether user is a member of the community or not
-  // LEFT......................................
+  // TODO :- Check whether user is a member of the community or not
 
   // Find the post
   const rawPost = await Posts.findById(req.body.post_id);
@@ -81,7 +79,7 @@ const createComment = async (req, callback) => {
       // If we don't find parent comment successfully
       if (!parentComment) {
         callback(null, {
-          errorMessage: "Select a valid Parent Comment.",
+          errorMessage: ["Select a valid Parent Comment."],
           success: false,
         });
         return;
@@ -118,7 +116,7 @@ const createComment = async (req, callback) => {
     return;
   } else {
     callback(null, {
-      errorMessage: "Select a valid Post or Comment.",
+      errorMessage: ["Select a valid Post or Comment."],
       success: false,
     });
     return;
