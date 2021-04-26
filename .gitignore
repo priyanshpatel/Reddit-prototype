@@ -23,3 +23,8 @@ yarn-debug.log*
 yarn-error.log*
 
 node_modules
+.prettierrc
+.history
+*.png
+*.jpeg
+*.jpg

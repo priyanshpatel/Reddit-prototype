@@ -1,4 +1,4 @@
-import { registerUser } from '../../apis/user_api';
+import { registerUser } from "../../apis/user_api";
 
 export const handle_request = async (message, callback) => {
   console.log("Handle Request for user ", message);
@@ -8,4 +8,4 @@ export const handle_request = async (message, callback) => {
     default:
       return callback({ status: 500, data: "no path found" }, null);
   }
-}
+};
