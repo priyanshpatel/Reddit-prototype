@@ -32,6 +32,56 @@
     box-sizing: border-box;
     text-indent: 25px;;
 }
+.nav-icon-button {
+    padding-top: 10px;
+    padding-left: 12px;
+    font-size: 20px;
+    color: black;
+}
+
+.fas:hover {
+    color: #0079d3;
+}
+
+.nav-icon-div {
+    text-align: right;
+}
+.nav-avatar {
+    vertical-align: middle;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+  }
+.dd-item {
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 18px;
+      display: inline-block;
+      color: #1c1c1c;
+      margin: 4px 0px;
+      padding: 10px 16px 10px 10px;
+      font-family: 'IBM Plex Sans', sans-serif;
+  }
+.dd-icon {
+    height: 20px;
+    left: 16px;
+    top: 10px;
+    width: 20px;
+    font-size: 20px;
+}
+.nav-username {
+    font-size: 15px;
+    font-weight: 500;
+    white-space: nowrap;
+    font-family: 'IBM Plex Sans', sans-serif;
+}
+.dropdown-item:hover {
+    background-color: #0079d3;
+    color: white;
+}
+span.dd-item:hover {
+    color: white;
+}
 
 
 

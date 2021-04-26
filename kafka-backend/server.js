@@ -3,6 +3,7 @@ var connection = new require("./kafka/connection");
 //topics files
 const userService = require("./services/user");
 const authService = require("./services/auth");
+const postService = require("./services/post");
 
 const mongoose = require("mongoose");
 
@@ -38,8 +39,8 @@ function handleTopicRequest(topic_name, fname) {
     var data = JSON.parse(message.value);
     fname.handle_request(data.data, (err, res) => {
       console.log("in callback, producer:");
-      console.log('err', err);
-      console.log('res ', res);
+      console.log("err", err);
+      console.log("res ", res);
       //console.log(producer);
       //response(data, res, err, producer);
       var payloads = [
@@ -94,3 +95,4 @@ function response(data, res, producer) {
 //second argument is a function that will handle this topic request
 handleTopicRequest("reddit-user-topic", userService);
 handleTopicRequest("reddit-auth-topic", authService);
+handleTopicRequest("reddit-post-topic", postService);
