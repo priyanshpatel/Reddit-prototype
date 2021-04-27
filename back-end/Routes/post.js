@@ -1,5 +1,5 @@
 const express = require("express");
-const { checkAuth } = require("../Utils/passport");
+const { checkAuth } = require("../utils/passport");
 const postSchema = require("../dataSchema/postSchema");
 const commentSchema = require("../dataSchema/commentSchema");
 const postVoteSchema = require("../dataSchema/postVoteSchema");

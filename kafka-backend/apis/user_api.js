@@ -34,6 +34,36 @@ export async function registerUser(message, callback) {
     return callback(null, response);
 }
 
+export async function loginUser(message, callback) {
+    let response = {};
+    let err = {};
+    console.log("Inside login user post Request");
+    let user = message.body.user;
+    console.log("User Creation ", JSON.stringify(user));
+    const storedUser = await getUserById(user.email);
+    if(storedUser !== null) {
+        if(await matchPassword(user.password, storedUser.password)) {
+            response.status = 200;
+            response.data = user;
+            return callback(null, response);
+        }
+        else {
+            err.status = 401;
+            err.data = {
+                msg: "Password mismatch",
+            };
+            return callback(err, null);
+        }
+    }
+    else {
+        err.status = 400;
+        err.data = {
+            msg: "The account does not exist",
+        };
+        return callback(err, null);
+    }
+}
+
 export async function getUserById(userId) {
     console.log("Inside get user by Id", userId);
     const user = await UserModel.findOne({ email: userId });
@@ -80,9 +110,9 @@ async function hashPassword(password) {
 
 export async function matchPassword(newPassword, storedEncryptedPassword) { // updated
     console.log("Inside match password");
-    console.log("passw1" + newPassword + " password2 " + storedEncryptedPassword);
+    console.log("password1" + newPassword + " password2 " + storedEncryptedPassword);
     const isSame = await bcrypt.compare(newPassword, storedEncryptedPassword) // updated
-    console.log(isSame) // updated
+    console.log('In matchPassword' + isSame) // updated
     return isSame;
 
 }
