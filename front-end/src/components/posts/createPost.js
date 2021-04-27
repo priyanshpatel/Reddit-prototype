@@ -5,7 +5,7 @@
 import React, { Component } from 'react'
 import { TabContent, TabPane, Nav, NavItem, NavLink, Card, Button, CardTitle, CardText, Row, Col, FormGroup } from 'reactstrap';
 import { Form, Label, Input, FormText } from 'reactstrap';
-import Navbar from '../navbar/navbar';
+import Navbar from '../Navbar/Navbar';
 import classnames from 'classnames';
 import ImageUploader from 'react-images-upload';
 import './createPost.css';
@@ -42,7 +42,7 @@ class CreatePost extends Component {
 
     toggleTab = (tab) => {
         if (this.state.activeTab !== tab) this.setActiveTab(tab)
-        if (tab === '1'){
+        if (tab === '1') {
             //text
             this.setState({
                 type: "text",
@@ -50,7 +50,7 @@ class CreatePost extends Component {
                 link: ""
             })
         }
-        else if (tab === '2'){
+        else if (tab === '2') {
             //image
             this.setState({
                 type: "image",
@@ -104,7 +104,7 @@ class CreatePost extends Component {
         return (
             <div>
                 <div><Navbar /></div>
-                <div style={{ backgroundColor: "rgb(218,224,230)", height:"1000px"}}>
+                <div style={{ backgroundColor: "rgb(218,224,230)", height: "1000px" }}>
                     <div className="post-tabs-container">
                         <div class="create-post-header">
                             Create a post
@@ -184,10 +184,10 @@ class CreatePost extends Component {
                                             <div>
                                                 <Form method="post">
                                                     <FormGroup>
-                                                        <Input type="text" name="postTitle" id="postTitle" placeholder="Title" maxlength="180" required/>
+                                                        <Input type="text" name="postTitle" id="postTitle" placeholder="Title" maxlength="180" required />
                                                     </FormGroup>
                                                     <FormGroup>
-                                                        <Input type="url" name="postText" id="postText" placeholder="Url" required/>
+                                                        <Input type="url" name="postText" id="postText" placeholder="Url" required />
                                                     </FormGroup>
                                                     <button type="submit" class="btn btn-outline-primary post-button"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Post</strong></span></button>
                                                 </Form>

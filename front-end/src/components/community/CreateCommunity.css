@@ -1,0 +1,15 @@
+textarea {
+    border: 1px solid rgb(199, 196, 196); 
+  }
+
+  .required:after {
+    content:" *";
+    color: #0079d3;
+  }
+  body{
+    font-family: 'IBM Plex Sans, Arial', sans-serif;
+    font-weight: 340;
+  }
+.error{
+  color : "red"
+}
