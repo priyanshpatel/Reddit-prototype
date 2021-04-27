@@ -1,3 +1,5 @@
+// TO-DO: Change the hard coded values as we develop APIs - Priyansh Patel
+
 import React, { Component } from 'react'
 import { withRouter } from "react-router"
 import './navbar.css'
@@ -149,11 +151,20 @@ class Navbar extends Component {
                         <div class="row">
 
                         </div>
-                        <div className="row" >
+                        <div className="row">
                             <div className="col-2">
                                 <Link to="/"><img src={reddit_logo} className="logo-image" alt="reddit-logo" /></Link>
                             </div>
-                            <div className="col-2 nav-icon-div">
+                            <div className="col-1 dropdown" style={{paddingRight:"0px"}}>
+                                    <button className="btn dropdown-toggle navbar-dropdown-button" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-edit"></i> <span class="nav-username">Create</span>
+                                    </button>
+                                    <div className="dropdown-menu" aria-labelledby="dropdownMenu2">
+                                        <Link to="/create-post" className="dropdown-item" type="button" value="home"><i class="fas fa-edit dd-icon"></i><span className="dd-item">Create Post</span></Link>
+                                        <Link to="/create-community" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-edit dd-icon"></i><span className="dd-item">Create Community</span></Link>
+                                    </div>
+                            </div>
+                            <div className="col-1 nav-icon-div">
                                 <Link to="/"><i class="fas fa-chart-line nav-icon-button" style={{marginRight:"10px"}} ></i></Link>
                                 <Link to="/"><i class="fas fa-chart-bar nav-icon-button"></i></Link>
                             </div>
@@ -171,20 +182,21 @@ class Navbar extends Component {
                                 <Link to="/"><i class="fas fa-bell nav-icon-button" style={{marginRight:"10px"}} ></i></Link>
                             </div>
                                 {/* <Dropdown isOpen={dropdownOpen} toggle={toggle}> */}
-                                <div className="col-2" style={{textAlign:"right"}} style={{paddingLeft:"0px"}}>
+                            <div className="col-2" style={{textAlign:"right"}} style={{paddingLeft:"0px"}}>
                                 <div className="dropdown">
                                     <button className="btn dropdown-toggle navbar-dropdown-button" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         <img src="/logo192.png" alt="Avatar" class="nav-avatar"/>  <span class="nav-username">Username</span>
                                     </button>
                                     <div className="dropdown-menu" aria-labelledby="dropdownMenu2">
-                                        <button className="dropdown-item" type="button" onClick={ this.dropDownClick } value="home"><i class="fas fa-home dd-icon"></i><span className="dd-item">Home</span></button>
-                                        <button className="dropdown-item" type="button" onClick={ this.dropDownClick } value="mycommunities"><i class="fas fa-users dd-icon"></i><span className="dd-item">My Communities</span></button>
-                                        <button className="dropdown-item" type="button" onClick={ this.dropDownClick } value="profile"><i class="fas fa-id-badge dd-icon"/><span className="dd-item">Profile</span></button>
-                                        <button className="dropdown-item" type="button" onClick={ this.dropDownClick } value="logout"><i class="fas fa-sign-out-alt dd-icon"></i><span className="dd-item">Logout</span></button>
+                                        <Link to="/" className="dropdown-item" type="button" value="home"><i class="fas fa-home dd-icon"></i><span className="dd-item">Home</span></Link>
+                                        <Link to="/my-communities" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-users dd-icon"></i><span className="dd-item">My Communities</span></Link>
+                                        <Link to="/profile" className="dropdown-item" type="button" value="profile"><i class="fas fa-id-badge dd-icon"/><span className="dd-item">Profile</span></Link>
+                                        <Link className="dropdown-item" type="button" value="logout"><i class="fas fa-sign-out-alt dd-icon"></i><span className="dd-item">Logout</span></Link>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        <hr class="nav-hr"/>
                     </div>
             )
         } else {
@@ -215,6 +227,7 @@ class Navbar extends Component {
 
                             </div>
                         </div>
+                        <hr class="nav-hr"/>
                     </div>
 
                     {/* LOGIN MODAL */}
