@@ -123,4 +123,7 @@ const createComment = async (req, callback) => {
   }
 };
 
-module.exports = { createPost, createComment };
+module.exports = {
+  createPost,
+  createComment,
+};

@@ -25,7 +25,7 @@ const commentSchema = new Schema(
     },
     createdBy: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: "user",
       required: true,
     },
   },
@@ -97,5 +97,5 @@ const postSchema = new Schema(
   }
 );
 
-const Post = mongoose.model("Post", postSchema, "posts");
+const Post = mongoose.model("post", postSchema, "posts");
 module.exports = Post;
