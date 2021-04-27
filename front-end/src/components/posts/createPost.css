@@ -1,0 +1,21 @@
+.post-tabs-container{
+    max-width: 1248px;
+    padding: 20px 24px;
+    box-sizing: border-box;
+    flex-direction: row;
+    justify-content: center;
+    margin: auto;
+}
+
+.create-post-header{
+    padding: 4px;
+    margin: 16px 0;
+    border-bottom: 1px solid #edeff1;
+    font-family: 'IBM Plex Sans', sans-serif;
+}
+
+.post-button{
+    border-color: #0079d3;
+    color: #0079d3;
+    border-radius: 60px;
+}
