@@ -1,6 +1,5 @@
 import axios from 'axios';
-import BACKEND_URL from '../config/config'
-import BACKEND_PORT from '../config/config'
+import { BACKEND_URL, BACKEND_PORT } from '../config/config'
 
 import cookie from "react-cookies";
 import jwt_decode from "jwt-decode"
@@ -27,8 +26,8 @@ var errorUser = (err, data) => {
     }
 }
 var loginAction = (data) => (dispatch) => {
-    axios
-        .post(BACKEND_URL + ":" + BACKEND_PORT + '/users/login', data)
+    return axios
+        .post(BACKEND_URL + ":" + BACKEND_PORT + '/user/login', data)
         .then((response) => {
             let decoded = jwt_decode(response.data.split(' ')[1])
             console.log("decoded", decoded)
