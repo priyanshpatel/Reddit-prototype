@@ -81,6 +81,28 @@ const updateCommunity = async (req, res) => {
   );
 };
 
+export async function getCommunityDetails(req, res) {
+  console.log("inside get group details", req.query.communityId);
+  let communityId = req.query.communityId;
+  if (!communityId) {
+      res
+          .status(400)
+          .send(
+              {
+                  code: 'INVALID_PARAM',
+                  msg: 'Invalid communityId ID'
+              }
+          )
+          .end();
+  }
+
+  kafka.make_request(
+      "reddit-community-topic",
+      { path: "community-details", communityId },
+      (err, results) => kafka_default_response_handler(res, err, results)
+  );
+}
+
 router.post(
   '/create',
   uploadS3.fields([
@@ -96,5 +118,5 @@ router.post(
   createCommunity
 );
 router.post('/update', updateCommunity);
-
+router.get('/get',getCommunityDetails);
 module.exports = router;

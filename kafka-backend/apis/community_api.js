@@ -124,3 +124,35 @@ async function getCommunityByUserId(userId) {
   console.log('ResultsX ', JSON.stringify(result));
   return result;
 }
+
+export async function getCommunityDetails(message, callback) {
+  let response = {};
+  let error = {};
+  console.log("inside get community details", message.communityId);
+  let communityId = message.communityId;
+  console.log("Inside get communityId details Request");
+  try {
+    const communityDetail = await getCommunityById(communityId);
+    response.status = 200;
+    response.data = communityDetail;
+    return callback(response, null);
+  } catch (err) {
+    console.log(err);
+    error.status = 500;
+    error.data = {
+      code: err.code,
+      msg:
+        'Unable to successfully get the Community! Please check the application logs for more details.',
+    }
+    return callback(error, null);
+  }
+}
+
+async function getCommunityById(communityId) {
+  const community = await CommunityModel.findOne(
+    { _id: communityId }
+  ).populate('members._id')
+    .populate('creator')
+    .populate('posts');
+  return community;
+}
