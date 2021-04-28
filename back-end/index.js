@@ -70,6 +70,7 @@ mongoose.set("useFindAndModify", false);
 mongoose.set("useCreateIndex", true);
 
 app.use("/user", require("./Routes/user"));
+app.use("/community", require("./Routes/community"));
 app.use("/post", require("./Routes/post"));
 
 app.listen(3001, () => {
