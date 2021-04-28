@@ -4,7 +4,9 @@ var connection = new require("./kafka/connection");
 const userService = require("./services/user");
 const authService = require("./services/auth");
 const postService = require("./services/post");
-const communityService = require("./services/community")
+const communityService = require("./services/community");
+const postVoteService = require("./services/postVote");
+const commentVoteService = require("./services/commentVote");
 
 const mongoose = require("mongoose");
 
@@ -98,3 +100,5 @@ handleTopicRequest("reddit-user-topic", userService);
 handleTopicRequest("reddit-auth-topic", authService);
 handleTopicRequest("reddit-post-topic", postService);
 handleTopicRequest("reddit-community-topic", communityService);
+handleTopicRequest("reddit-post-vote-topic", postVoteService);
+handleTopicRequest("reddit-comment-vote-topic", commentVoteService);

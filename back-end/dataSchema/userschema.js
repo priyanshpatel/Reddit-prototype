@@ -23,7 +23,7 @@ export const CommunityJoinStatus = Object.freeze({
 
 const userfields = {
   name: Joi.string().min(3).max(50).required().label('Name'),
-  avatar: Joi.string().uri().required(),
+  avatar: Joi.string().uri().optional(),
   email: Joi.string().email().required().label('Email'),
   handle: Joi.string().optional(),
   gender: Joi.string().optional(),

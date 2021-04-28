@@ -1,20 +1,20 @@
 let initialState = {
     auth: false,
-    signUpmessage : "",
-    signUpError : ""
+    message: "",
+    error: ""
 }
 var userSignUp = (state = initialState, action) => {
     let newState = { ...state }
     switch (action.type) {
-        case "signup_success":
+        case "user_profile_update_success":
             newState.auth = true;
             newState.signUpError = false;
-            newState.signUpmessage = "User SignUp Success"
+            newState.message = "User Updated Successfully"
             return newState;
-        case "signup_failed":
+        case "user_profile_update_failed":
             newState.auth = false;
             newState.error = true;
-            newState.signUpmessage = "User already Exist!"
+            newState.message = "User Update fail"
             return newState;
         default:
             return newState;

@@ -1,9 +1,9 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { secret } = require("../Utils/config").default;
+const { secret } = require("../utils/config").default;
 const Users = require("../models/UsersModel");
-const { auth } = require("../Utils/passport");
+const { auth } = require("../utils/passport");
 var Joi = require("joi");
 var { userschema } = require("../dataSchema/userschema");
 const kafka = require("../kafka/client");
@@ -20,6 +20,7 @@ const registerUser = async (req, res) => {
     .validate(req.body);
 
   if (error) {
+    console.log(error)
     res.status(400).send(error.details);
     return;
   }
@@ -38,25 +39,22 @@ const registerUser = async (req, res) => {
   );
 };
 
-const login = async (req, res) => {
-  const doc = await Users.findOne({ email: req.body.email });
-  if (doc !== null) {
-    bcrypt.compare(req.body.password, doc.password, (err, isMatch) => {
-      if (isMatch === true) {
-        req.session.user = doc;
-        const { _id, name } = doc;
-        const payload = { _id, name };
+const loginUser = async (req, res) => {
+  console.log("Inside login user post Request");
+  console.log("Request ", req.body);
+  kafka.make_request(
+    "reddit-user-topic",
+    { path: "user_login", body: req.body },
+    (err, results) =>
+      kafka_response_handler(res, err, results, (result) => {
+        const user = result.data;
+        const payload = { _id: user._id, username: user.email };
         const token = jwt.sign(payload, process.env.JWT_SECRET, {
           expiresIn: 1008000,
         });
-        res.status(200).send(`JWT ${token}`);
-      } else {
-        res.sendStatus(401);
-      }
-    });
-  } else {
-    res.sendStatus(401);
-  }
+        return res.status(result.status).send({ user, token });
+      })
+  );
 };
 
 const getAllCommunitiesForUser = async (req, res) => {
@@ -76,12 +74,41 @@ const getAllCommunitiesForUser = async (req, res) => {
   kafka.make_request(
     'reddit-community-topic',
     { path: 'community-all-for-user', userId },
-    (err, results) => kafka_default_response_handler(res, err, results)
+    (err, results) => kafka_default_response_handler(res, err, results));
+}
+const editUser = async (req, res) => {
+  console.log("Inside edit user post Request");
+  console.log("Request ", req.body);
+  kafka.make_request(
+    "reddit-user-topic",
+    { path: "edit_user", body: req.body },
+    (err, results) =>
+      kafka_response_handler(res, err, results, (result) => {
+        const user = result.data;
+        return res.status(result.status).send({ user });
+      })
+  );
+};
+
+const getUser = async (req, res) => {
+  console.log("Inside get user get Request");
+  console.log("Request ", req.query);
+  kafka.make_request(
+    "reddit-user-topic",
+    { path: "get_user", body: req.query },
+    (err, results) =>
+      kafka_response_handler(res, err, results, (result) => {
+        const user = result.data;
+        return res.status(result.status).send({ user });
+      })
   );
 };
 
 router.post("/signup", registerUser);
 router.post("/login", login);
 router.get("/communities", getAllCommunitiesForUser);
+router.post("/login", loginUser);
+router.put("/edit", editUser);
+router.get("/get", getUser);
 
 module.exports = router;
