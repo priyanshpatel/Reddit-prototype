@@ -46,23 +46,29 @@ const updateCommunity = async (req, res) => {
 
 export const getAllCommunitiesForUser = async (req, res) => {
   console.log("Inside get All communities post Request");
-  console.log("Request ", req.body.community);
-  const { error, value } = Joi.object()
-    .keys({ community: updateCommunitySchema.required() })
-    .validate(req.body);
-
-  if (error) {
-    res.status(400).send(error.details);
-    return;
+  console.log("Request ", req.body);
+  let userId = req.query.userId;
+  console.log('user ID X', userId);
+  if (!userId) {
+    res
+      .status(400)
+      .send(
+        {
+          code: 'INVALID_PARAM',
+          msg: 'Invalid User ID'
+        }
+      )
+      .end();
   }
   kafka.make_request(
     "reddit-community-topic",
-    { path: "community-all-for-user", body: value },
+    { path: "community-all-for-user", userId },
     (err, results) => kafka_default_response_handler(res, err, results)
   );
 };
 
 router.post("/create", createCommunity);
 router.post("/update", updateCommunity);
+router.get("/getAllCommunity", getAllCommunitiesForUser);
 
 module.exports = router;

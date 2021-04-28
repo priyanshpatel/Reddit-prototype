@@ -59,7 +59,7 @@ function handleTopicRequest(topic_name, fname) {
         if (err) {
           console.log("Error when producer sending data", err);
         } else {
-          console.log("response");
+          console.log("responseX ", data);
           console.log(data);
         }
       });

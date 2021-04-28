@@ -62,6 +62,6 @@ const login = async (req, res) => {
 
 router.post("/signup", registerUser);
 router.post("/login", login);
-router.post("/communities", getAllCommunitiesForUser);
+router.get("/communities", getAllCommunitiesForUser);
 
 module.exports = router;

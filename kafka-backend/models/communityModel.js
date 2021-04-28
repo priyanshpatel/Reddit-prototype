@@ -8,9 +8,9 @@ var communitySchema = new Schema({
   coverPicture: { type: String, required: false },
   // primaryTopic:{type:String, required:true},
   rules: { type: Array },
-  creator: { type: String, required: true },
-  members: [{ _id: { type: Schema.Types.ObjectId, ref: 'users' }, communityJoinStatus: { type: String } }],
-  posts: [{ type: Schema.Types.ObjectId, ref: 'posts' }],
+  creator: { type: Schema.Types.ObjectId, ref: 'user' },
+  members: [{ _id: { type: Schema.Types.ObjectId, ref: 'user' }, communityJoinStatus: { type: String } }],
+  posts: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
 },
   {
     timestamps: true,
