@@ -1,6 +1,5 @@
 import axios from 'axios';
-import BACKEND_URL from '../config/config'
-import BACKEND_PORT from '../config/config'
+import { BACKEND_URL, BACKEND_PORT } from '../config/config'
 const SIGNUP_SUCCESS = "signup_success";
 const SIGNUP_FAILED = "signup_failed";
 
@@ -26,8 +25,10 @@ var errorUser = (err, data) => {
 
 
 var SignUpAction = (data) => (dispatch) => {
+    console.log("API URL >>>>>>>>>>>>")
+    console.log(BACKEND_URL + ":" + BACKEND_PORT + '/user/signup', data)
     return axios
-        .post(BACKEND_URL + ":" + BACKEND_PORT + '/users/signup', data)
+        .post(BACKEND_URL + ":" + BACKEND_PORT + '/user/signup', data)
         .then((response) => {
             dispatch(successUser(response, data))
         }).catch((err) => {

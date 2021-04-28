@@ -21,6 +21,7 @@ const registerUser = async (req, res) => {
     .validate(req.body);
 
   if (error) {
+    console.log(error)
     res.status(400).send(error.details);
     return;
   }
