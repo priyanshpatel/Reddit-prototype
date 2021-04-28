@@ -252,6 +252,7 @@ class CreateCommunity extends Component {
                 </div>
             )
         }
+        let error = null
         if (this.state.error) {
             error = <div style={{ 'color': 'red' }}>*Please fill all the required fields</div>
         }
@@ -295,37 +296,55 @@ class CreateCommunity extends Component {
                         <div className="row" style={{ marginLeft: "2%", marginTop: "5%" }}>
                             <div className="col-5">
                                 <span><strong><div>{this.state.rulesTitle}</div></strong></span>
+                                <div className="col-3">
+                                    <span><strong><div>Choose Multiple Images Files</div></strong></span>
+                                </div>
+                                <div className="col-3">
+                                    <span><strong><div>Choose Community Avatar</div></strong></span>
+                                </div>
                             </div>
-                        </div>
-                        <div className="row" style={{ marginLeft: "2%", width: "120%" }}>
-                            <div className="col-8">
-                                <form onSubmit={this.handleSubmit}>
 
-                                    {this.state.rules.map((inputField, index) => (
-                                        <div key={inputField.id}  >
-                                            <input name="title" placeholder="Title" value={this.state.rules[index].title} onChange={event => this.handleChangeInput(this.state.rules[index].id, event)} />
-                                            <input name="description" style={{ marginLeft: "2%" }} placeholder="Description" value={this.state.rules[index].description} onChange={event => this.handleChangeInput(this.state.rules[index].id, event)} />
-                                            <IconButton disabled={this.state.rules.length === 1} onClick={() => this.handleRemoveFields(inputField.id)}>
-                                                <RemoveIcon />
-                                            </IconButton>
-                                            <IconButton
-                                                onClick={this.handleAddFields}
-                                            >
-                                                <AddIcon />
-                                            </IconButton>
+                            <div className="row" style={{ marginLeft: "2%" }}>
+                                <input style={{ background: "none", border: "none" }} type="file" id="file" multiple name="file" data-show-upload="true" data-show-caption="true" onChange={this.fileSelectedHandler} />
+                                <input style={{ background: "none", border: "none" }} type="file" id="file" name="file" data-show-upload="true" data-show-caption="true" onChange={this.fileAvatarHandler} />
+
+                            </div>
+                            <div className="row" style={{ marginLeft: "2%", marginTop: "5%" }}>
+                                <div className="col-5">
+                                    <span><strong><div>Add Rules</div></strong></span>
+                                </div>
+                            </div>
+                            <div className="row" style={{ marginLeft: "2%", width: "120%" }}>
+                                <div className="col-8">
+                                    <form onSubmit={this.handleSubmit}>
+
+                                        {this.state.rules.map((inputField, index) => (
+                                            <div key={inputField.id}  >
+                                                <input name="title" placeholder="Title" value={this.state.rules[index].title} onChange={event => this.handleChangeInput(this.state.rules[index].id, event)} />
+                                                <input name="description" style={{ marginLeft: "2%" }} placeholder="Description" value={this.state.rules[index].description} onChange={event => this.handleChangeInput(this.state.rules[index].id, event)} />
+                                                <IconButton disabled={this.state.rules.length === 1} onClick={() => this.handleRemoveFields(inputField.id)}>
+                                                    <RemoveIcon />
+                                                </IconButton>
+                                                <IconButton
+                                                    onClick={this.handleAddFields}
+                                                >
+                                                    <AddIcon />
+                                                </IconButton>
+                                            </div>
+                                        ))}
+                                        <div className="error">
+                                            {error}
                                         </div>
-                                    ))}
-                                    <div className="error">
-                                        {error}
-                                    </div>
-                                    <button type="submit" className="btn btn-danger" style={{ backgroundColor: "#0079d3", border: "1px solid #0079d3", marginLeft: "40%", borderRadius: "60px", marginTop: "5%", cursor: "pointer" }} onSubmit={this.handleFormSubmit}>{this.state.buttonName}</button>
-                                </form>
+                                        <button type="submit" className="btn btn-danger" style={{ backgroundColor: "#0079d3", border: "1px solid #0079d3", marginLeft: "40%", borderRadius: "60px", marginTop: "5%", cursor: "pointer" }} onSubmit={this.handleFormSubmit}>{this.state.buttonName}</button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         )
+
     }
 }
 const matchStateToProps = (state) => {
