@@ -39,7 +39,7 @@ export async function loginUser(message, callback) {
     let err = {};
     console.log("Inside login user post Request");
     let user = message.body.user;
-    console.log("User Creation ", JSON.stringify(user));
+    console.log("User Login ", JSON.stringify(user));
     const storedUser = await getUserById(user.email);
     if(storedUser !== null) {
         if(await matchPassword(user.password, storedUser.password)) {
@@ -64,6 +64,52 @@ export async function loginUser(message, callback) {
     }
 }
 
+export async function editUser(message, callback) {
+    let response = {};
+    let err = {};
+    console.log("Inside edit user post Request");
+    let user = message.body.user;
+    console.log("Edit User ", JSON.stringify(user));
+    const storedUser = await UserModel.findOne({_id: user.userId });
+    try {
+        if(user.name !== undefined) {
+            storedUser.name = user.name;
+        }
+        if(user.password !== undefined) {
+            storedUser.password = await hashPassword(user.password);
+        }
+        if(user.gender !== undefined) {
+            storedUser.gender = user.gender;
+        }
+        if(user.description !== undefined) {
+            storedUser.description = user.description;
+        }
+        if(user.avatar !== undefined) {
+            storedUser.avatar = user.avatar;
+        }
+        if(user.location !== undefined) {
+            storedUser.location = user.location;
+        }
+        if(user.topics !== undefined) {
+            storedUser.topics = [...user.topics];
+        }
+        if(user.email !== undefined) {
+            storedUser.email = user.email;
+        } 
+        await storedUser.save();
+        response.status = 200;
+        response.data = user;
+        return callback(null, response);
+    } catch(error) {
+        err.status = 400;
+        err.data = {
+            code: error.code,
+            msg: "Email ID already exist",
+        };
+        return callback(err, null);
+    }
+}
+
 export async function getUserById(userId) {
     console.log("Inside get user by Id", userId);
     const user = await UserModel.findOne({ email: userId });
@@ -74,18 +120,23 @@ export async function getUserById(userId) {
 export async function getUserByObjId(message, callback) {
     let response = {};
     let error = {};
-    console.log("Inside get user by Email ID");
+    console.log("Inside get user by Object ID");
     try {
-        const user = await UserModel.findOne({ _id: message });
+        const user = await UserModel.findOne({ _id: message.body.userId });
         console.log("user response  ", JSON.stringify(user));
-        response.status = 200;
-        response.data = user;
-        return callback(null, response);
+        if(user !== null) {
+            response.status = 200;
+            response.data = user;
+            return callback(null, response);
+        } else {
+            error.status = 400;
+            error.data = { msg: 'Invalid Object Id.' };
+            return callback(error, null);
+        }  
     }
     catch (err) {
-        console.log(err);
-        error.code = 500;
-        error.data = { code: err.code, msg: 'Unable to get the user by Email Id.' };
+        error.status = 400;
+        error.data = { msg: 'Invalid Object Id.' };
         return callback(error, null);
     }
 }

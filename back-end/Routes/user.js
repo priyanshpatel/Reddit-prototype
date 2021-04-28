@@ -39,7 +39,7 @@ const registerUser = async (req, res) => {
   );
 };
 
-const login = async (req, res) => {
+const loginUser = async (req, res) => {
   console.log("Inside login user post Request");
   console.log("Request ", req.body);
   kafka.make_request(
@@ -74,12 +74,41 @@ const getAllCommunitiesForUser = async (req, res) => {
   kafka.make_request(
     'reddit-community-topic',
     { path: 'community-all-for-user', userId },
-    (err, results) => kafka_default_response_handler(res, err, results)
+    (err, results) => kafka_default_response_handler(res, err, results));
+}
+const editUser = async (req, res) => {
+  console.log("Inside edit user post Request");
+  console.log("Request ", req.body);
+  kafka.make_request(
+    "reddit-user-topic",
+    { path: "edit_user", body: req.body },
+    (err, results) =>
+      kafka_response_handler(res, err, results, (result) => {
+        const user = result.data;
+        return res.status(result.status).send({ user });
+      })
+  );
+};
+
+const getUser = async (req, res) => {
+  console.log("Inside get user get Request");
+  console.log("Request ", req.query);
+  kafka.make_request(
+    "reddit-user-topic",
+    { path: "get_user", body: req.query },
+    (err, results) =>
+      kafka_response_handler(res, err, results, (result) => {
+        const user = result.data;
+        return res.status(result.status).send({ user });
+      })
   );
 };
 
 router.post("/signup", registerUser);
 router.post("/login", login);
 router.get("/communities", getAllCommunitiesForUser);
+router.post("/login", loginUser);
+router.put("/edit", editUser);
+router.get("/get", getUser);
 
 module.exports = router;
