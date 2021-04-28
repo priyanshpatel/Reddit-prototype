@@ -4,8 +4,8 @@ var Joi = require('joi');
 
 const communityfields = {
   communityName: Joi.string().min(3).max(50).required().label('Community name'),
-  communityAvatar: Joi.string().uri().required(),
-  cover: Joi.string().uri().optional(),
+  //communityAvatar: Joi.string().uri().required(),
+  //cover: Joi.string().uri().optional(),
   description: Joi.string().required().label('Description'),
   creator: Joi.string().required(),
   //topics: Joi.array().optional(),

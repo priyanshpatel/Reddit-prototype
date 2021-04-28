@@ -28,6 +28,8 @@
     "multer": "^1.4.2",
     "nodemon": "^2.0.7",
     "passport": "^0.4.1",
+    "aws-sdk": "^2.863.0",
+    "multer-s3": "^2.9.0",
     "passport-jwt": "^4.0.0",
     "reddit_kafka_backend": "file:../kafka-backend"
   },

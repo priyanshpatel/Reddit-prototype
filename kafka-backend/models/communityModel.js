@@ -2,10 +2,10 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var communitySchema = new Schema({
   communityName: { type: String, required: true, unique: true },
-  topics: { type: Array },
+  // topics: { type: Array },
   description: { type: String, required: true },
-  communityAvatar: { type: String, required: true },
-  coverPicture: { type: String, required: false },
+  communityAvatar: [{ type: String, required: true }],
+  communityCover: { type: String, required: true },
   // primaryTopic:{type:String, required:true},
   rules: { type: Array },
   creator: { type: Schema.Types.ObjectId, ref: 'user' },
