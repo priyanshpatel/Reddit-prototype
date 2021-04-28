@@ -11,6 +11,16 @@ const complexityOptions = {
   requirementCount: 2,
 };
 
+export const SignupStatus = Object.freeze({
+  INVITED: "INVITED",
+  JOINED: "JOINED",
+});
+
+export const CommunityJoinStatus = Object.freeze({
+  INVITED: "INVITED",
+  JOINED: "JOINED",
+});
+
 const userfields = {
   name: Joi.string().min(3).max(50).required().label('Name'),
   avatar: Joi.string().uri().required(),
@@ -26,3 +36,11 @@ const userfields = {
 export const userschema = Joi.object().keys({
   ...userfields,
 });
+
+
+export const invitedUserSchema = Joi.object().keys(
+  {
+    _id: Joi.string().required(),
+    communityJoinStatus: Joi.string().default(CommunityJoinStatus.INVITED),
+  }
+);

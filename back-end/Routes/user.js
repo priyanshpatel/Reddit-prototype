@@ -8,6 +8,7 @@ var Joi = require("joi");
 var { userschema } = require("../dataSchema/userschema");
 const kafka = require("../kafka/client");
 var { kafka_response_handler } = require("../kafka/handler.js");
+import getAllCommunitiesForUser  from './community';
 require("dotenv").config();
 
 const router = express.Router();
@@ -61,5 +62,6 @@ const login = async (req, res) => {
 
 router.post("/signup", registerUser);
 router.post("/login", login);
+router.post("/communities", getAllCommunitiesForUser);
 
 module.exports = router;

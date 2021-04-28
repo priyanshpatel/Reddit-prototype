@@ -4,6 +4,7 @@ var connection = new require("./kafka/connection");
 const userService = require("./services/user");
 const authService = require("./services/auth");
 const postService = require("./services/post");
+const communityService = require("./services/community")
 
 const mongoose = require("mongoose");
 
@@ -21,7 +22,7 @@ const connectMongoDB = async () => {
 
   try {
     await mongoose.connect(mongoDBURI, options);
-    console.log("MongoDB connected 2");
+    console.log("MongoDB connected 3");
   } catch (err) {
     console.log("Could not connect to MongoDB", err);
   }
@@ -96,3 +97,4 @@ function response(data, res, producer) {
 handleTopicRequest("reddit-user-topic", userService);
 handleTopicRequest("reddit-auth-topic", authService);
 handleTopicRequest("reddit-post-topic", postService);
+handleTopicRequest("reddit-community-topic", communityService);

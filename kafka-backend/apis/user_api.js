@@ -19,6 +19,8 @@ export async function registerUser(message, callback) {
         }
 
     } catch (error) {
+
+        
         err.status = 500;
         err.data = {
             code: error.code,
