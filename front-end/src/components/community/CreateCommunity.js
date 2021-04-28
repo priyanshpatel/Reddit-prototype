@@ -10,13 +10,14 @@ import createCommunityAction from '../../actions/community/createCommunityAction
 import { connect } from "react-redux";
 import Navbar from "../Navbar/navbar";
 import { Link } from 'react-router-dom';
-
+import cookie from "react-cookies";
 class CreateCommunity extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            imageFiles: [],
-            name: "",
+            commmunityAvatar: [],
+            communityCover: "",
+            communityName: "",
             description: "",
             rules: [
                 {
@@ -66,21 +67,26 @@ class CreateCommunity extends Component {
     }
     handleSubmit = (e) => {
         e.preventDefault();
-        if (this.state.name == "" || this.state.description == "") {
+        if (this.state.communityName == "" || this.state.description == "") {
             this.setState({
                 error: true
             })
         }
         else {
             const formData = new FormData();
-            const files = this.state.imageFiles;
+            const files = this.state.commmunityAvatar;
             for (let i = 0; i < files.length; i++) {
-                formData.append(`images[${i}]`, files[i])
+                formData.append(`commmunityAvatar[${i}]`, files[i])
             }
             let obj = {
-                name: this.state.name,
+                communityName: this.state.communityName,
                 description: this.state.description,
-                rules: this.state.rules
+                rules: this.state.rules,
+                members: [
+                    {
+                        _id: cookie.load('id')
+                    }
+                ]
             }
             formData.append("community", JSON.stringify(obj));
             this.props.createCommunityAction(formData).then(response => {
@@ -90,12 +96,16 @@ class CreateCommunity extends Component {
 
     };
     fileSelectedHandler = (e) => {
-        this.setState({ imageFiles: [...this.state.imageFiles, ...e.target.files] })
+        this.setState({ commmunityAvatar: [...this.state.commmunityAvatar, ...e.target.files] })
+    }
+    fileAvatarHandler = (e) => {
+        this.setState({ communityCover: e.target.files })
     }
     handleAddFields = () => {
         this.setState({ rules: [...this.state.rules, { id: uuidv4(), title: '', description: '' }] })
     }
     render() {
+        console.log(this.state);
         let error = null
         if (this.state.error) {
             error = <div style={{ 'color': 'red' }}>*Please fill all the required fields</div>
@@ -124,7 +134,7 @@ class CreateCommunity extends Component {
                             </div>
                         </div>
                         <div className="row" style={{ marginLeft: "2%" }}>
-                            <textarea style={{ marginLeft: "1%" }} id="w3review" name="name" onChange={this.handleOtherChange} rows="2" cols="60">
+                            <textarea style={{ marginLeft: "1%" }} id="w3review" name="communityName" onChange={this.handleOtherChange} rows="2" cols="60">
                             </textarea>
                         </div>
                         <div className="row" style={{ marginLeft: "2%", marginTop: "5%" }}>
@@ -137,13 +147,18 @@ class CreateCommunity extends Component {
                             </textarea>
                         </div>
                         <div className="row" style={{ marginLeft: "2%", marginTop: "5%" }}>
-                            <div className="col-5">
+                            <div className="col-3">
                                 <span><strong><div>Choose Multiple Images Files</div></strong></span>
+                            </div>
+                            <div className="col-3">
+                                <span><strong><div>Choose Community Avatar</div></strong></span>
                             </div>
                         </div>
 
                         <div className="row" style={{ marginLeft: "2%" }}>
                             <input style={{ background: "none", border: "none" }} type="file" id="file" multiple name="file" data-show-upload="true" data-show-caption="true" onChange={this.fileSelectedHandler} />
+                            <input style={{ background: "none", border: "none" }} type="file" id="file" name="file" data-show-upload="true" data-show-caption="true" onChange={this.fileAvatarHandler} />
+
                         </div>
                         <div className="row" style={{ marginLeft: "2%", marginTop: "5%" }}>
                             <div className="col-5">

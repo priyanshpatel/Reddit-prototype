@@ -8,7 +8,6 @@ import post from '../../images/post-image.png';
 import houseicon from '../../images/house-icon.png';
 import cakeicon from '../../images/cake-icon.png';
 import { Accordion } from "react-bootstrap";
-
 import linkicon from '../../images/link.png';
 import {
     Card, CardText, CardBody,
@@ -18,13 +17,24 @@ class MyCommunity extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            communityList: [
+                {
+
+                },
+                {
+
+                },
+                {
+
+                }
+            ],
             postFlag: false,
             communityID: "",
             description: "This subreddit is for anyone who wants to learn JavaScript or help others do so. Questions and posts about frontend development in general are welcome, as are all posts pertaining to JavaScript on the backend",
             communityName: "Learn JavaScript",
             totalPosts: [],
             totalUsers: [],
-            communityNameWithoutSpaces: "learnjavascript",
+            communityNameWithoutSpaces: "",
             rules: [
                 {
                     title: 'Title1',
@@ -56,13 +66,11 @@ class MyCommunity extends Component {
         document.title = this.state.communityName
         var str = this.state.communityName;
         str = str.replace(/\s+/g, '').toLowerCase();
-
         this.setState(
             {
                 communityNameWithoutSpaces: str
             }
         )
-
     }
     render() {
         let renderPost = null;
