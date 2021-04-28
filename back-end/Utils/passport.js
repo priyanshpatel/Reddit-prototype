@@ -11,7 +11,7 @@ function auth() {
     secretOrKey: process.env.JWT_SECRET,
   };
 
-  // Kafka Implementation of passport
+  // TODO:- Kafka Implementation of passport
 
   // passport.use(
   //   new JwtStrategy(opts, (jwtPayload, callback) => {
