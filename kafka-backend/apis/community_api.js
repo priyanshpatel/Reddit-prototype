@@ -5,20 +5,26 @@ var ObjectId = require('mongodb').ObjectID;
 
 export async function createCommunity(message, callback) {
   let response = {};
-  console.log("Inside create user post Request");
+  console.log('Inside create user post Request');
   let community = message.body.community;
-  console.log("Community Creation ", JSON.stringify(community));
+  console.log('Community Creation ', JSON.stringify(community));
   try {
     community = await insertCommunity(community);
   } catch (error) {
-    console.log("error in creting community", JSON.stringify(error));
+    console.log('error in creting community', JSON.stringify(error));
 
-    let err = createError(500, "Unable to create community. Please check application logs for more detail.");
-    console.log("Error code ", error.code);
+    let err = createError(
+      500,
+      'Unable to create community. Please check application logs for more detail.'
+    );
+    console.log('Error code ', error.code);
 
     if (error.code == 11000) {
-      console.log("comming here");
-      err = createError(400, "Community name already exists. Please enter unique name.");
+      console.log('comming here');
+      err = createError(
+        400,
+        'Community name already exists. Please enter unique name.'
+      );
     }
     return callback(err, null);
   }
@@ -29,7 +35,7 @@ export async function createCommunity(message, callback) {
 }
 
 async function insertCommunity(community) {
-  console.log("Inside insert Community");
+  console.log('Inside insert Community');
   var community = new CommunityModel(community);
   return await community.save();
 }
@@ -37,34 +43,35 @@ async function insertCommunity(community) {
 export async function updateExistingCommunity(message, callback) {
   let response = {};
   let err = {};
-  console.log("Inside update community post Request api");
+  console.log('Inside update community post Request api');
   let community = message.body.community;
-  console.log("Community Updation ", JSON.stringify(community));
+  console.log('Community Updation ', JSON.stringify(community));
   try {
-
     const storedCommunity = await getCommunityByObjectID(community._id);
 
     if (!storedCommunity) {
-      err = createError(400, "Community ID invalid. Please provide correct community ID to update");
+      err = createError(
+        400,
+        'Community ID invalid. Please provide correct community ID to update'
+      );
       return callback(err, null);
     } else {
       community = await updateCommunity(community);
     }
-  }
-  catch (error) {
-    console.log("error in update", error);
+  } catch (error) {
+    console.log('error in update', error);
     err.status = 500;
     err.data = {
       code: err.code,
-      msg: 'Unable to successfully update the community! Please check the application logs for more details.',
+      msg:
+        'Unable to successfully update the community! Please check the application logs for more details.',
     };
     return callback(err, null);
   }
   response.status = 200;
   response.data = community;
-  console.log("response for update ", community);
+  console.log('response for update ', community);
   return callback(null, response);
-
 }
 
 async function getCommunityByObjectID(communityId) {
@@ -73,7 +80,7 @@ async function getCommunityByObjectID(communityId) {
 }
 
 async function updateCommunity(community) {
-  console.log("Inside update community")
+  console.log('Inside update community');
   const value = await CommunityModel.findOneAndUpdate(
     { _id: ObjectId(community._id) },
     { ...community },
@@ -84,48 +91,36 @@ async function updateCommunity(community) {
 }
 
 export async function getAllCommunityForUser(message, callback) {
-  let userId = message.userId;
   let response = {};
   let error = {};
-  if (!userId) {
-      error.status = 400;
-      error.data = {
-          code: 'INVALID_PARAM',
-          msg: 'Invalid User ID'
-      };
-      return callback(error, null);
-  }
+  const userId = message.userId;
 
-  console.log("Inside get all community list Request");
+  console.log('Inside get all community list Request');
   try {
-      const communities = await getCommunityByUserId(userId);
-     
-      response.status = 200;
-      response.data = communities;
-      return callback(response, null);
+    const communities = await getCommunityByUserId(userId);
+
+    console.log('communitiesX ', JSON.stringify(communities));
+    return callback(null, { status: 200, data: communities });
   } catch (err) {
-      console.log(err);
-      error.status = 500;
-      error.data = {
-          code: err.code,
-          msg: 'Unable to successfully get all the Communities! Please check the application logs for more details.'
-      };
-      return callback(error, null);
+    console.log(err);
+    error.status = 500;
+    error.data = {
+      code: err.code,
+      msg:
+        'Unable to successfully get all the Communities! Please check the application logs for more details.',
+    };
+    return callback(error, null);
   }
 }
 
 async function getCommunityByUserId(userId) {
-  console.log("Inside get Community By User ID");
-  const result = await CommunityModel.find({ "members": userId });
-  result.populate('members').exec((err,members)=>{
-    console.log("Populated members ",members);
+  console.log('Inside get Community By User ID XX ', userId);
+  const result = await CommunityModel.find({
+    members: { $elemMatch: { _id: userId } },
   })
-  console.log("Results ", JSON.stringify(result));
+    .populate('members._id')
+    .populate('creator')
+    .populate('posts');
+  console.log('ResultsX ', JSON.stringify(result));
   return result;
-}
-function getUserWithPosts(username){
-  return User.findOne({ username: username })
-    .populate('posts').exec((err, posts) => {
-      console.log("Populated User " + posts);
-    })
 }
