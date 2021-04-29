@@ -17,7 +17,7 @@ class Routes extends Component {
                 <Route path="/create-community" component={CreateCommunity} />
                 <Route path="/community-home-page" component={MyCommunity} />
                 <Route path="/profile" component={Profile} />
-                <Route path = "/myCommunities" component={MyCommunities} />
+                <Route path = "/my-communities" component={MyCommunities} />
 
 
 
