@@ -1,7 +1,7 @@
 //author-Het 
 import React, { Component } from 'react'
 import { connect } from "react-redux";
-import Navbar from "../Navbar/Navbar";
+import Navbar from "../Navbar/navbar";
 import { Row, Col, CardTitle } from 'reactstrap';
 import avatar from '../../images/avatar.png';
 import post from '../../images/post-image.png';
