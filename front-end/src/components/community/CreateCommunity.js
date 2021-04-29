@@ -8,7 +8,7 @@ import AddIcon from '@material-ui/icons/Add';
 import { v4 as uuidv4 } from 'uuid';
 import createCommunityAction from '../../actions/community/createCommunityAction';
 import { connect } from "react-redux";
-import Navbar from "../Navbar/Navbar";
+import Navbar from "../Navbar/navbar";
 import { Link } from 'react-router-dom';
 
 class CreateCommunity extends Component {
