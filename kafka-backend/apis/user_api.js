@@ -44,6 +44,7 @@ export async function loginUser(message, callback) {
     if(storedUser !== null) {
         if(await matchPassword(user.password, storedUser.password)) {
             response.status = 200;
+            user._id = storedUser._id;
             response.data = user;
             return callback(null, response);
         }

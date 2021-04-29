@@ -105,7 +105,7 @@ const getUser = async (req, res) => {
 };
 
 router.post("/signup", registerUser);
-router.post("/login", login);
+// router.post("/login", login);
 router.get("/communities", getAllCommunitiesForUser);
 router.post("/login", loginUser);
 router.put("/edit", editUser);

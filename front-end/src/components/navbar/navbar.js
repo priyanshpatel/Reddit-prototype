@@ -1,7 +1,7 @@
 // TO-DO: Change the hard coded values as we develop APIs - Priyansh Patel
 
 import React, { Component } from 'react'
-import { withRouter } from "react-router"
+import { Redirect, withRouter } from "react-router"
 import './navbar.css'
 import { Row, Col } from 'reactstrap';
 import home_page from '../../images/home-page.png'
@@ -100,9 +100,14 @@ class Navbar extends Component {
         e.preventDefault();
         if (!this.state.error) {
             this.props.signUpAction(signUpObject).then(response => {
+                console.log("signup response >>>>>>>>>>>>>", this.props)
                 if (this.props.signUpError) {
                     this.setState({
                         signUpBackendError: true
+                    })
+                } else {
+                    this.setState({
+                        signupButton: !this.state.signupButton
                     })
                 }
             })
@@ -114,8 +119,10 @@ class Navbar extends Component {
     handleLoginSubmit = (e) => {
 
         let loginObject = {
-            email: this.state.loginemail,
-            password: this.state.loginpassword,
+            user: {
+                email: this.state.loginemail,
+                password: this.state.loginpassword,
+            }
         }
         if (!this.state.error) {
             this.props.loginAction(loginObject).then(response => {
@@ -123,6 +130,10 @@ class Navbar extends Component {
                 if (this.props.loginError) {
                     this.setState({
                         loginBackendError: true
+                    })
+                } else {
+                    this.setState({
+                        loginButton: !this.state.loginButton
                     })
                 }
             })
@@ -136,7 +147,8 @@ class Navbar extends Component {
         cookie.remove('token', { path: '/' })
         cookie.remove('auth', { path: '/' })
         cookie.remove('handle', { path: '/' })
-        this.props.history.push("/")
+        cookie.remove('userId', { path: '/' })
+        // this.props.history.push("/")
     }
 
 
@@ -197,7 +209,7 @@ class Navbar extends Component {
                             <div className="col-2" style={{textAlign:"right"}} style={{paddingLeft:"0px"}}>
                                 <div className="dropdown">
                                     <button className="btn dropdown-toggle navbar-dropdown-button" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <img src="/logo192.png" alt="Avatar" class="nav-avatar"/>  <span class="nav-username">{cookie.load('handle')}</span>
+                                        <img src="/logo192.png" alt="Avatar" class="nav-avatar"/>  <span class="nav-username">{cookie.load('userName')}</span>
                                     </button>
                                     <div className="dropdown-menu" aria-labelledby="dropdownMenu2">
                                         <Link to="/" className="dropdown-item" type="button" value="home"><i class="fas fa-home dd-icon"></i><span className="dd-item">Home</span></Link>
