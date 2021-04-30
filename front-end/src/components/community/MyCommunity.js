@@ -1,7 +1,7 @@
 //author-Het 
 import React, { Component } from 'react'
 import { connect } from "react-redux";
-import Navbar from "../Navbar/navbar";
+import Navbar from "../Navbar/Navbar";
 import { Row, Col, CardTitle } from 'reactstrap';
 import avatar from '../../images/avatar.png';
 import post from '../../images/post-image.png';
@@ -13,6 +13,9 @@ import {
     Card, CardText, CardBody,
 } from 'reactstrap';
 import './MyCommunity.css'
+import { CarouselProvider, Slider, Slide, ButtonBack, ButtonNext } from 'pure-react-carousel';
+import 'pure-react-carousel/dist/react-carousel.es.css';
+
 class MyCommunity extends Component {
     constructor(props) {
         super(props)
@@ -127,17 +130,68 @@ class MyCommunity extends Component {
                     </Col>
                 </Row>
                 <Row style={{ backgroundColor: "#DAE0E6", marginTop: "2%" }}>
-                    <Col xs="3"></Col>
-                    <Col xs="5" style={{ paddingTop: "40px" }}>
+                    <Col xs="2"></Col>
+                    <Col xs="5" style={{ paddingTop: "40px", paddingLeft: "-2%" }}>
                         <div className="post" style={{ height: "50px", backgroundColor: "white" }}>
                             <img src={post} height="30px" width="30px" alt="reddit-logo" />
                             <input type="text" style={{ width: "100%", marginLeft: "2%" }} onClick={this.postClick} placeholder="Create Post" />
                             <img src={houseicon} height="30px" width="40px" alt="reddit-logo" />
                             <img src={linkicon} height="30px" width="40px" alt="reddit-logo" />
                         </div>
+                        <div style={{ marginLeft: "3%" }}>
+                            <Card >
+                                <Row>
+                                    <Col xs="1" style={{ backgroundColor: "#F5F5F5" }}>Hi</Col>
+
+                                    <Col>
+                                        <span style={{ color: "#787C7E", fontSize: "12px", marginLeft: "3%" }}>Created by u/ Darskfanatasy</span>
+                                        <CardBody>
+                                            <CardTitle tag="h5">Card title</CardTitle>
+                                            <CardText>Some quick example text to build on the card title and make up the bulk of the card's content.</CardText>
+                                        </CardBody>
+                                        <Row style={{ backgroundColor: "#F5F5F5", height: "30px", padding: "10px", width: "103%" }}>
+                                            <i class="fal fa-comment-alt"></i>                                        </Row>
+
+                                    </Col>
+                                </Row>
+                            </Card>
+                        </div>
+
+                        <div style={{ paddingTop: "3%", marginLeft: "3%" }}>
+                            <Card >
+                                <Row>
+                                    <Col xs="1" style={{ backgroundColor: "#F5F5F5" }}>Hi</Col>
+
+                                    <Col>
+                                        <span style={{ color: "#787C7E", fontSize: "12px", marginLeft: "3%" }}>Created by u/ Darskfanatasy</span>
+                                        <CardBody>
+                                            <CardTitle tag="h5">Card title</CardTitle>
+                                                <CarouselProvider
+                                                    naturalSlideWidth={200}
+                                                    naturalSlideHeight={200}
+                                                    totalSlides={3}
+                                                >
+                                                    <Slider>
+                                                        <Slide index={0}>I am the first Slide.</Slide>
+                                                        <Slide index={1}>                           
+                                                         <img src={avatar} height="100%" width="100%" alt="reddit-logo" />
+                                                        </Slide>
+                                                        <Slide index={2}>I am the third Slide.</Slide>
+                                                    </Slider>
+                                                    <ButtonBack style={{ border: "none", backgroundColor: "white", float: "left" }}>&#60;</ButtonBack>
+                                                    <ButtonNext style={{ border: "none", backgroundColor: "white", float: "right" }}>&#62;</ButtonNext>
+                                                </CarouselProvider>
+                                        </CardBody>
+                                        <Row style={{ backgroundColor: "#F5F5F5", height: "30px", padding: "10px", width: "103%" }}>
+                                            <i class="fal fa-comment-alt"></i>                                        </Row>
+
+                                    </Col>
+                                </Row>
+                            </Card>
+                        </div>
                     </Col>
                     <Col xs="1"></Col>
-                    <Col xs="" style={{ paddingTop: "40px" }}>
+                    <Col xs="3" style={{ paddingTop: "40px" }}>
                         <Row>
                             <Card >
                                 <CardBody>

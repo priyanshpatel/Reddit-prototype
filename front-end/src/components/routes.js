@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Route } from "react-router-dom"
-import Navbar from './Navbar/navbar'
+import Navbar from './Navbar/Navbar'
 import CreatePost from './posts/createPost';
 import CreateCommunity from './community/CreateCommunity'
 import MyCommunity from './community/MyCommunity'
@@ -14,7 +14,7 @@ class Routes extends Component {
         return (
             <div>
                 <Route exact path="/" component={Navbar} />
-                <Route  path="/submit/:id" component={CreatePost} />
+                <Route path="/submit/:id" component={CreatePost} />
                 <Route path="/create-community" component={CreateCommunity} />
                 <Route path="/community-home-page" component={MyCommunity} />
                 <Route path="/profile" component={Profile} />
