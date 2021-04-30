@@ -17,10 +17,22 @@
 
 .com-desc {
     font-family: Noto Sans,Arial,sans-serif;
-    font-size: 12px;
-    font-weight: 400;
+    /* font-size: 12px; */
+    font-size: 14px;
+    /* font-weight: 400; */
+    font-weight: 500;
     line-height: 16px;
-    color: rgb(218,224,230);
+    /* color: rgb(218,224,230); */
+    color: #adadad
+}
+
+.com-details {
+    font-family: Noto Sans,Arial,sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 16px;
+    color: #adadad;
+    margin-right: 2%;
 }
 
 .com-avatar {

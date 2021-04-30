@@ -15,8 +15,11 @@ class MyCommunities extends Component {
         super(props);
         this.state = {
             userId: cookie.load('userId'),
-            error: false
+            error: false,
+            myCommunitiesData: this.props.myCommunitiesData
         }
+        this.editButtonClicked = this.editButtonClicked.bind(this);
+        this.removeButtonClicked = this.removeButtonClicked(this);
     }
 
     componentDidMount() {
@@ -30,6 +33,32 @@ class MyCommunities extends Component {
         })
     }
 
+    editButtonClicked = (community) => {
+        console.log("Edit button clicked>>>>>>>>>>>>>>>>>", community)
+        // Open create community page
+        return (
+            <Redirect to={{
+                pathname: '/create-community/' + community._id,
+                data: community,
+            }}
+            />
+        )
+    }
+
+    removeButtonClicked = (community) => {
+        console.log("Remove button clicked>>>>>>>>>>>>>>>>>>>>>", community)
+        // Delete Community
+
+        const newMyCommunitiesData = this.state.myCommunitiesData.filter((filteredCommunity) => {
+            return community._id != filteredCommunity._id
+        });
+        const emptyCommunitiesFlag = newMyCommunitiesData.length == 0 ? true : false;
+        this.setState({
+            myCommunitiesData: newMyCommunitiesData,
+            emptyCommunitiesFlag
+        })
+    }
+
     render() {
         let redirectVar = null;
         if (!cookie.load('token')) {
@@ -38,12 +67,14 @@ class MyCommunities extends Component {
 
         let myCommunities = <div>No communities to show</div>
         console.log("PROPS>>>>>>>>>>>>", this.props)
-        if (this.props.myCommunitiesData.length !== 0) {
-            if (this.props.myCommunitiesData.data.length !== 0) {
+        if (this.state.myCommunitiesData.length !== 0) {
+            if (this.state.myCommunitiesData.data.length !== 0) {
                 myCommunities = this.props.myCommunityData.data.map((community) => {
-                    return <myCommunities
+                    return <communityList
                         key={community._id}
                         data={community}
+                        editButtonClicked = {this.editButtonClicked}
+                        removeButtonClicked = {this.removeButtonClicked}
                     />
                 })
             }
@@ -99,32 +130,67 @@ class MyCommunities extends Component {
                             </Card>
                         </div>
                         <div class="col-6" style={{ paddingLeft: "0", paddingRight: "24px", paddingTop: "20px" }}>
-                            {myCommunities}
-                            {/* <Card>
+                            {/* {myCommunities} */}
+                            <Card>
                                 <CardBody class="com-card">
                                     <img src="/logo192.png" alt="Avatar" class="com-avatar" /> <span class="com-name">r/CrytoCurrency</span>
+                                    <button type="button" style={{ borderColor: "#0079d3", color: "rgb(0, 121, 211)", borderRadius: "60px", marginLeft: "1%", float: "right"}} class="btn btn-outline-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Remove</strong></span></button>
+                                    <button type="button" style={{ borderColor: "#0079d3", color: "white", borderRadius: "60px", marginLeft: "10%", float: "right"}} class="btn btn-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Edit</strong></span></button>
+                                    <br/>
+                                    <span className="com-desc">Description. Trying to make it long. Even more long. Like really very long.</span>
+                                    <br/>
+                                    <span className="com-details"><i class="fas fa-users"></i> 100</span>
+                                    <span className="com-details"><i class="fas fa-copy"></i> 200</span>
                                 </CardBody>
                             </Card>
                             <Card>
                                 <CardBody class="com-card">
                                     <img src="/logo192.png" alt="Avatar" class="com-avatar" /> <span class="com-name">r/coolGuides</span>
+                                    <button type="button" style={{ borderColor: "#0079d3", color: "rgb(0, 121, 211)", borderRadius: "60px", marginLeft: "1%", float: "right"}} class="btn btn-outline-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Remove</strong></span></button>
+                                    <button type="button" style={{ borderColor: "#0079d3", color: "white", borderRadius: "60px", marginLeft: "10%", float: "right"}} class="btn btn-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Edit</strong></span></button>
+                                    <br/>
+                                    <span className="com-desc">Description. Trying to make it long. Even more long. Like really very long.</span>
+                                    <br/>
+                                    <span className="com-details"><i class="fas fa-users"></i> 100</span>
+                                    <span className="com-details"><i class="fas fa-copy"></i> 200</span>
                                 </CardBody>
                             </Card>
                             <Card>
                                 <CardBody class="com-card">
                                     <img src="/logo192.png" alt="Avatar" class="com-avatar" /> <span class="com-name">r/Cars</span>
+                                    <button type="button" style={{ borderColor: "#0079d3", color: "rgb(0, 121, 211)", borderRadius: "60px", marginLeft: "1%", float: "right"}} class="btn btn-outline-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Remove</strong></span></button>
+                                    <button type="button" style={{ borderColor: "#0079d3", color: "white", borderRadius: "60px", marginLeft: "10%", float: "right"}} class="btn btn-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Edit</strong></span></button>
+                                    <br/>
+                                    <span className="com-desc">Description. Trying to make it long. Even more long. Like really very long.</span>
+                                    <br/>
+                                    <span className="com-details"><i class="fas fa-users"></i> 100</span>
+                                    <span className="com-details"><i class="fas fa-copy"></i> 200</span>
                                 </CardBody>
                             </Card>
                             <Card>
                                 <CardBody class="com-card">
                                     <img src="/logo192.png" alt="Avatar" class="com-avatar" /> <span class="com-name">r/gadgets</span>
+                                    <button type="button" style={{ borderColor: "#0079d3", color: "rgb(0, 121, 211)", borderRadius: "60px", marginLeft: "1%", float: "right"}} class="btn btn-outline-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Remove</strong></span></button>
+                                    <button type="button" style={{ borderColor: "#0079d3", color: "white", borderRadius: "60px", marginLeft: "10%", float: "right"}} class="btn btn-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Edit</strong></span></button>
+                                    <br/>
+                                    <span className="com-desc">Description. Trying to make it long. Even more long. Like really very long.</span>
+                                    <br/>
+                                    <span className="com-details"><i class="fas fa-users"></i> 100</span>
+                                    <span className="com-details"><i class="fas fa-copy"></i> 200</span>
                                 </CardBody>
                             </Card>
                             <Card>
                                 <CardBody class="com-card">
                                     <img src="/logo192.png" alt="Avatar" class="com-avatar" /> <span class="com-name">r/formula1</span>
+                                    <button type="button" style={{ borderColor: "#0079d3", color: "rgb(0, 121, 211)", borderRadius: "60px", marginLeft: "1%", float: "right"}} class="btn btn-outline-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Remove</strong></span></button>
+                                    <button type="button" style={{ borderColor: "#0079d3", color: "white", borderRadius: "60px", marginLeft: "10%", float: "right"}} class="btn btn-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Edit</strong></span></button>
+                                    <br/>
+                                    <span className="com-desc">Description. Trying to make it long. Even more long. Like really very long.</span>
+                                    <br/>
+                                    <span className="com-details"><i class="fas fa-users"></i> 100</span>
+                                    <span className="com-details"><i class="fas fa-copy"></i> 200</span>
                                 </CardBody>
-                            </Card> */}
+                            </Card>
                         </div>
                         <div class="col-2" style={{ paddingLeft: "0", paddingTop: "20px", marginRight: "65px" }}>
 
