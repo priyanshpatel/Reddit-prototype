@@ -14,7 +14,7 @@ let createPost = (state = initialState, action) => {
             return newState;
         case "create_post_failed":
             newState.error = true;
-            newState.message = "Error while creating post"
+            newState.message = action.payload.response.response.data.errorMessage
             return newState;
         default:
             return newState;
