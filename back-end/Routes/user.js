@@ -80,8 +80,39 @@ const getAllCommunitiesForUser = async (req, res) => {
   );
 };
 
+export async function getCommunityListCreatedByUser(req, res) {
+  console.log("inside get community created by user", req.query.userId);
+  let userId = req.query.userId;
+  if (!userId) {
+    res
+      .status(400)
+      .send(
+        {
+          code: 'INVALID_PARAM',
+          msg: 'Invalid userId ID'
+        }
+      )
+      .end();
+  }
+
+  kafka.make_request(
+    "reddit-community-topic",
+    {
+      path: "communityList-createdByUser", userId,
+      options: {
+        pageIndex: req.query.pageIndex || 1,
+        pageSize: req.query.pageSize || 2,
+        sortBy: req.query.sortBy || 'createdAt',
+        sortOrder: req.query.sortOrder || 'desc',
+      },
+    },
+    (err, results) => kafka_default_response_handler(res, err, results)
+  );
+}
+
 router.post("/signup", registerUser);
 router.post("/login", login);
 router.get("/communities", getAllCommunitiesForUser);
+router.get('/getAllCommunityCreatedByUser', getCommunityListCreatedByUser)
 
 module.exports = router;

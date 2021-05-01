@@ -156,3 +156,57 @@ async function getCommunityById(communityId) {
     .populate('posts');
   return community;
 }
+
+export async function getCommunitiesByUserIdV2(
+  userId,
+  options
+) {
+  const newOptions = Object.assign({
+      pageIndex: 1,
+      pageSize: 2,
+      sortBy: 'createdAt',
+      sortOrder: 'desc'
+  }, options);
+  const communityInfos = await CommunityModel.find({ creator: userId });
+  console.log('communityInfos', communityInfos);
+  console.log('New options ', JSON.stringify(newOptions));
+  const sortBy = newOptions.sortBy;
+  const sortOrder = newOptions.sortOrder;
+  const sort = {};
+  sort[`${sortBy}`] = sortOrder == 'desc' ? -1 : 1;
+  const paginatedCommunity = await CommunityModel.aggregatePaginate(communityInfos, {
+      page: newOptions.pageIndex,
+      limit: newOptions.pageSize,
+      sort,
+  });
+  return paginatedCommunity;
+}
+
+export async function getCommunityListCreatedByUser(message, callback) {
+  let userId = message.userId;
+  let response = {};
+  let error = {};
+  if (!userId) {
+    error.status = 500;
+    error.data = {
+      code: 'INVALID_PARAM',
+      msg: 'Invalid User ID'
+    };
+    return callback(error, null);
+  }
+  try {
+    const activities = await getCommunitiesByUserIdV2(userId, message.options);
+    console.log("Activities By User ID " + JSON.stringify(activities));
+    response.status = 200;
+    response.data = activities;
+    return callback(null, response);
+  } catch (err) {
+    console.log(err);
+    error.status = 500;
+    error.data = {
+      code: err.code,
+      msg: 'Unable to successfully get the Activities! Please check the application logs for more details.'
+    }
+    return callback(error, null);
+  }
+}
