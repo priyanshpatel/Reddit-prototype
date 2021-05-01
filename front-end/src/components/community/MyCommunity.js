@@ -147,7 +147,7 @@ class MyCommunity extends Component {
                     </Col>
                     <Col style={{ backgroundColor: "white" }}>
                         {/* TODO: CHANGE THIS TO THIS.STATE.IMAGE */}
-                        <Col style={{ width: "700px", marginLeft: "9%" }}>
+                        <Col style={{ width: "700px"}}>
                             <img src={avatar} style={{ borderRadius: "50%", border: "4px solid white" }} height="80px" width="80px" alt="reddit-logo" />
                             &nbsp;&nbsp;&nbsp;&nbsp;
                             {/* TODO : CHANGE THIS TO THIS.STATE.NAME */}
