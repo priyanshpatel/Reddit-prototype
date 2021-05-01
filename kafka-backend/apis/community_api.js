@@ -200,6 +200,21 @@ export const getAllPosts = async (req, callback) => {
     postsAggregateQuery = PostsModel.aggregate([
       { $match: { community: ObjectId(req.query.community_id) } },
       {
+        $lookup: {
+          from: "users",
+          localField: "createdBy",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      {
+        $project: {
+          "user.topics": 0,
+          "user.password": 0,
+        },
+      },
+      {
         $sort: {
           votes: orderByPopularityIdentifier,
           createdAt: orderByDateIdentifier,
