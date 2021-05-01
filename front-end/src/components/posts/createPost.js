@@ -71,7 +71,15 @@ class CreatePost extends Component {
             title: e.target.value
         })
     }
+    handleOtherChange = inp => {
+        {
+            this.setState({
+                [inp.target.name]: inp.target.value,
+                error: false
+            })
+        }
 
+    }
     handleDescriptionChange = (e) => {
         this.setState({
             description: e.target.value
@@ -141,12 +149,12 @@ class CreatePost extends Component {
                                     <Col sm="6">
                                         <Card body>
                                             <div>
-                                                <Form method="post">
+                                                <Form method="post" onSubmit={this.handleCreatePost}>
                                                     <FormGroup>
-                                                        <Input type="text" name="postTitle" id="postTitle" placeholder="Title" maxlength="180" required />
+                                                        <Input type="text" name="title" id="title" placeholder="Title" onChange={this.handleOtherChange} maxlength="180" required />
                                                     </FormGroup>
                                                     <FormGroup>
-                                                        <Input type="textarea" name="postText" id="postText" placeholder="Text" maxlength="180" required />
+                                                        <Input type="textarea" name="text" id="text" placeholder="Text" onChange={this.handleOtherChange} maxlength="180" required />
                                                     </FormGroup>
                                                     <button type="submit" class="btn btn-outline-primary post-button"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Post</strong></span></button>
                                                 </Form>
@@ -161,7 +169,7 @@ class CreatePost extends Component {
                                         <Card body>
                                             <Form method="post">
                                                 <FormGroup>
-                                                    <Input type="text" name="postTitle" id="postTitle" placeholder="Title" maxlength="180" required />
+                                                    <Input type="text" name="title" id="title" onChange={this.handleOtherChange} placeholder="Title" maxlength="180" required />
                                                     <ImageUploader
                                                         withIcon={true}
                                                         buttonText='Choose images'
@@ -184,10 +192,10 @@ class CreatePost extends Component {
                                             <div>
                                                 <Form method="post">
                                                     <FormGroup>
-                                                        <Input type="text" name="postTitle" id="postTitle" placeholder="Title" maxlength="180" required />
+                                                        <Input type="text" name="title" id="title" onChange={this.handleOtherChange} placeholder="Title" maxlength="180" required />
                                                     </FormGroup>
                                                     <FormGroup>
-                                                        <Input type="url" name="postText" id="postText" placeholder="Url" required />
+                                                        <Input type="url" name="link" id="link" onChange={this.handleOtherChange} placeholder="Url" required />
                                                     </FormGroup>
                                                     <button type="submit" class="btn btn-outline-primary post-button"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Post</strong></span></button>
                                                 </Form>
@@ -200,13 +208,11 @@ class CreatePost extends Component {
                     </div>
                 </div>
             </div>
-
         )
     }
 }
 
 const matchStateToProps = (state) => {
-    console.log("inside matchStatetoProps", state)
     return {
         error: state.createPostReducer.error,
         message: state.createPostReducer.message,

@@ -1,0 +1,17 @@
+#upvote.active {
+    background: orangered;
+    color: white;
+  }
+  
+  #downvote.active {
+    background: rgb(119, 119, 236);
+    color: white;
+  }
+  .arrow-up {
+    width: 0; 
+    height: 0; 
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+
+    border-bottom: 15px solid blue;
+  }

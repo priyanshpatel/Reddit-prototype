@@ -34,7 +34,7 @@ class MyCommunity extends Component {
                 }
             ],
             postFlag: false,
-            communityID: "",
+            communityID: "608bcd1a6589fd7200e3e27f",
             description: "This subreddit is for anyone who wants to learn JavaScript or help others do so. Questions and posts about frontend development in general are welcome, as are all posts pertaining to JavaScript on the backend",
             communityName: "Learn JavaScript",
             totalUsers: [],
@@ -102,7 +102,7 @@ class MyCommunity extends Component {
     }
     render() {
         let renderPost = null;
-        let  postComponent  = this.state.posts.map((postData, index) => (
+        let postComponent = this.state.posts.map((postData, index) => (
             <div>
                 <Post data={postData} />
             </div>
@@ -138,7 +138,6 @@ class MyCommunity extends Component {
                 <div>
                     <Navbar />
                 </div>
-                {postComponent}
                 <Row style={{ height: "80px" }}>
                     <Col style={{ backgroundColor: "#0079d3" }}>
                         <h1></h1></Col>
@@ -169,57 +168,8 @@ class MyCommunity extends Component {
                             <img src={houseicon} height="30px" width="40px" alt="reddit-logo" />
                             <img src={linkicon} height="30px" width="40px" alt="reddit-logo" />
                         </div>
-                        <div style={{ marginLeft: "3%" }}>
-                            <Card >
-                                <Row>
-                                    <Col xs="1" style={{ backgroundColor: "#F5F5F5" }}>Hi</Col>
-
-                                    <Col>
-                                        <span style={{ color: "#787C7E", fontSize: "12px", marginLeft: "3%" }}>Created by u/ Darskfanatasy</span>
-                                        <CardBody>
-                                            <CardTitle tag="h5">Card title</CardTitle>
-                                            <CardText>Some quick example text to build on the card title and make up the bulk of the card's content.</CardText>
-                                        </CardBody>
-                                        <Row style={{ backgroundColor: "#F5F5F5", height: "30px", padding: "10px", width: "103%" }}>
-                                            <i class="fal fa-comment-alt"></i>                                        </Row>
-
-                                    </Col>
-                                </Row>
-                            </Card>
-                        </div>
-
                         <div style={{ paddingTop: "3%", marginLeft: "3%" }}>
-                            <Card >
-                                <Row>
-                                    <Col xs="1" style={{ backgroundColor: "#F5F5F5" }}>Hi</Col>
-
-                                    <Col>
-                                        <span style={{ color: "#787C7E", fontSize: "12px", marginLeft: "3%" }}>Created by u/ Darskfanatasy</span>
-                                        <CardBody>
-                                            <CardTitle tag="h5">Card title</CardTitle>
-                                            <CarouselProvider
-                                                naturalSlideWidth={200}
-                                                naturalSlideHeight={200}
-                                                totalSlides={3}
-                                            >
-                                                <ButtonBack style={{ border: "none", backgroundColor: "white", fontSize: "40px", float: "left", marginTop: "30%" }}>&#60;</ButtonBack>
-                                                <ButtonNext style={{ border: "none", backgroundColor: "white", float: "right", marginTop: "30%", fontSize: "40px", }}>&#62;</ButtonNext>
-
-                                                <Slider>
-                                                    <Slide index={0}>I am the first Slide.</Slide>
-                                                    <Slide index={1}>
-                                                        <img src={avatar} height="100%" width="100%" alt="reddit-logo" />
-                                                    </Slide>
-                                                    <Slide index={2}>I am the third Slide.</Slide>
-                                                </Slider>
-                                            </CarouselProvider>
-                                        </CardBody>
-                                        <Row style={{ backgroundColor: "#F5F5F5", height: "30px", padding: "10px", width: "103%" }}>
-                                            <i class="fal fa-comment-alt"></i>                                        </Row>
-
-                                    </Col>
-                                </Row>
-                            </Card>
+                            {postComponent}
                         </div>
                     </Col>
                     <Col xs="1"></Col>
@@ -287,8 +237,6 @@ class MyCommunity extends Component {
                                     </div>
                                     <br></br>
                                     <br></br>
-
-                                    {/* <CardSubtitle tag="h6" className="mb-2 text-muted">Card subtitle</CardSubtitle> */}
                                     <CardText style={{ fontSize: "14px", fontFamily: "sans-serif", color: "#1C1C1C" }}></CardText>
                                     {rulesAccordion}
                                 </CardBody>
