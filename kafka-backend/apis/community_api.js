@@ -195,7 +195,6 @@ export const getAllPosts = async (req, callback) => {
     postsAggregateQuery,
     options
   );
-
   const finalPosts = await populateVotesAndCommentsOfPosts(
     posts.posts,
     req.user._id,
@@ -229,7 +228,7 @@ const populateVotesAndCommentsOfPosts = async (
   orderByDateIdentifier
 ) => {
   const finalPosts = [];
-  for (let index = 0; index < posts.length; posts++) {
+  for (let index = 0; index < posts.length; index++) {
     let voteStatus = 0;
     const postVote = await PostsVotesModel.findOne({
       post_id: posts[index]._id,
