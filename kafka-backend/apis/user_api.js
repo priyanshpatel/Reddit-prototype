@@ -1,5 +1,12 @@
 const bcrypt = require('bcrypt');
 const UserModel = require('../models/UsersModel');
+const { uniqueNamesGenerator, names } = require('unique-names-generator');
+const aleaRNGFactory = require("number-generator/lib/aleaRNGFactory");
+const { uInt32 } = aleaRNGFactory(10);
+
+const config = {
+    dictionaries: [names]
+  }
 
 export async function registerUser(message, callback) {
     let response = {};
@@ -145,6 +152,7 @@ export async function getUserByObjId(message, callback) {
 async function insertUser(user) {
     console.log("Inside insert User");
     user.password = await hashPassword(user.password);
+    user.handle = uniqueNamesGenerator(config) + uInt32().toString().slice(0,3);
     var user = new UserModel(user);
     return await user.save();
 }
