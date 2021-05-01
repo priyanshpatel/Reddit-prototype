@@ -2,6 +2,7 @@ import { createError } from "../helper/error";
 import config from "../config/config";
 const CommunityModel = require("../models/communityModel");
 const PostsModel = require("../models/PostsModel");
+const UsersModel = require("../models/UsersModel");
 const PostsVotesModel = require("../models/PostsVotesModel");
 const CommentsVotesModel = require("../models/CommentsVotesModel");
 const ObjectId = require("mongodb").ObjectID;
@@ -151,6 +152,7 @@ export async function getCommunityDetails(message, callback) {
   }
 }
 
+// TODO :- MINIMIZE TIME TAKEN BY THIS METHOD EITHER BY CACHING OR BY FINDING A METHOD TO POPULATE USER_IDS
 export const getAllPosts = async (req, callback) => {
   const pageSize = req.query.pageSize || config.defaultPageSizePosts;
   const pageNumber = req.query.pageNumber;
@@ -175,6 +177,21 @@ export const getAllPosts = async (req, callback) => {
   if (!req.query.orderByPopularity || req.query.orderByPopularity == 0) {
     postsAggregateQuery = PostsModel.aggregate([
       { $match: { community: ObjectId(req.query.community_id) } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "createdBy",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      {
+        $project: {
+          "user.topics": 0,
+          "user.password": 0,
+        },
+      },
       { $sort: { createdAt: orderByDateIdentifier } },
     ]);
   } else {
@@ -195,6 +212,7 @@ export const getAllPosts = async (req, callback) => {
     postsAggregateQuery,
     options
   );
+
   const finalPosts = await populateVotesAndCommentsOfPosts(
     posts.posts,
     req.user._id,
@@ -281,19 +299,21 @@ const organizeComments = async (
         commentsArray[index]._id,
         user_id
       );
+      comment.user = await populateUser(comment.createdBy);
       threads[comment._id] = comment;
       continue;
     }
-    organizeChildComments(comment, threads);
+    await organizeChildComments(comment, threads);
   }
   threads = getSortedCommentsArray(threads, orderByDateIdentifier);
   return threads;
 };
 
-const organizeChildComments = (comment, threads) => {
+const organizeChildComments = async (comment, threads) => {
   for (let thread in threads) {
     const currentParent = threads[thread];
     if (ObjectId(thread).equals(ObjectId(comment.parent_id))) {
+      comment.user = await populateUser(comment.createdBy);
       currentParent.children[comment._id] = comment;
       return;
     }
@@ -327,4 +347,8 @@ const getSortedCommentsArray = (commentsObject, orderByDateIdentifier) => {
     sortCommentsByVotesAndDate
   );
   return sortedCommentsArray;
+};
+
+const populateUser = async (user_id) => {
+  return await UsersModel.findById(user_id, "name email handle avatar");
 };
