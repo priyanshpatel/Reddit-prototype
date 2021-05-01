@@ -1,7 +1,7 @@
 //author-Het 
 import React, { Component } from 'react'
 import { connect } from "react-redux";
-import Navbar from "../Navbar/Navbar";
+import Navbar from "../Navbar/navbar";
 import { Row, Col, CardTitle } from 'reactstrap';
 import avatar from '../../images/avatar.png';
 import post from '../../images/post-image.png';
@@ -166,21 +166,22 @@ class MyCommunity extends Component {
                                         <span style={{ color: "#787C7E", fontSize: "12px", marginLeft: "3%" }}>Created by u/ Darskfanatasy</span>
                                         <CardBody>
                                             <CardTitle tag="h5">Card title</CardTitle>
-                                                <CarouselProvider
-                                                    naturalSlideWidth={200}
-                                                    naturalSlideHeight={200}
-                                                    totalSlides={3}
-                                                >
-                                                    <Slider>
-                                                        <Slide index={0}>I am the first Slide.</Slide>
-                                                        <Slide index={1}>                           
-                                                         <img src={avatar} height="100%" width="100%" alt="reddit-logo" />
-                                                        </Slide>
-                                                        <Slide index={2}>I am the third Slide.</Slide>
-                                                    </Slider>
-                                                    <ButtonBack style={{ border: "none", backgroundColor: "white", float: "left" }}>&#60;</ButtonBack>
-                                                    <ButtonNext style={{ border: "none", backgroundColor: "white", float: "right" }}>&#62;</ButtonNext>
-                                                </CarouselProvider>
+                                            <CarouselProvider
+                                                naturalSlideWidth={200}
+                                                naturalSlideHeight={200}
+                                                totalSlides={3}
+                                            >
+                                                <ButtonBack style={{ border: "none", backgroundColor: "white", fontSize: "40px", float: "left", marginTop: "30%" }}>&#60;</ButtonBack>
+                                                <ButtonNext style={{ border: "none", backgroundColor: "white", float: "right", marginTop: "30%", fontSize: "40px", }}>&#62;</ButtonNext>
+
+                                                <Slider>
+                                                    <Slide index={0}>I am the first Slide.</Slide>
+                                                    <Slide index={1}>
+                                                        <img src={avatar} height="100%" width="100%" alt="reddit-logo" />
+                                                    </Slide>
+                                                    <Slide index={2}>I am the third Slide.</Slide>
+                                                </Slider>
+                                            </CarouselProvider>
                                         </CardBody>
                                         <Row style={{ backgroundColor: "#F5F5F5", height: "30px", padding: "10px", width: "103%" }}>
                                             <i class="fal fa-comment-alt"></i>                                        </Row>

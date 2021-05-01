@@ -340,10 +340,11 @@ async function insertCommunity(community) {
 
 // Get community details by community_id
 async function getCommunityById(communityId) {
-  const community = await CommunityModel.findOne({ _id: communityId })
-    .populate("members._id")
-    .populate("creator")
-    .populate("posts");
+  const community = await CommunityModel.findOne(
+    { _id: communityId }
+  ).populate('members._id')
+    .populate('creator')
+    .populate('Posts');
   return community;
 }
 

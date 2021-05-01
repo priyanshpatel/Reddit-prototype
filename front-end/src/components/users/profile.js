@@ -7,7 +7,7 @@ import updateUserProfileAction from '../../actions/userUpdateAction';
 import userGetByIDAction from '../../actions/getUserByIDReducer';
 import { connect } from "react-redux";
 import cookie from "react-cookies";
-import Navbar from "../Navbar/Navbar";
+import Navbar from "../Navbar/navbar";
 
 //author - Het 
 //TODO : Topic Creation Left
