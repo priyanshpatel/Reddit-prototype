@@ -1,4 +1,5 @@
 const express = require("express");
+import { uploadS3 } from "../Utils/imageupload";
 const { checkAuth } = require("../utils/passport");
 const postSchema = require("../dataSchema/postSchema");
 const commentSchema = require("../dataSchema/commentSchema");
@@ -6,39 +7,10 @@ const postVoteSchema = require("../dataSchema/postVoteSchema");
 const commentVoteSchema = require("../dataSchema/commentVoteSchema");
 const kafka = require("../kafka/client");
 const ObjectId = require("mongoose").Types.ObjectId;
-const multer = require("multer");
 const path = require("path");
 const { kafka_response_handler } = require("../kafka/handler.js");
 // Initializing router
 const router = express.Router();
-
-// Using multer to store images
-
-// Initializing storage
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "./public/posts/");
-  },
-  filename: function (req, file, cb) {
-    cb(
-      null,
-      file.fieldname +
-        "_" +
-        req.user._id +
-        "_" +
-        Date.now() +
-        path.extname(file.originalname)
-    );
-  },
-});
-
-// Middleware to upload images where the image size should be less than 5MB
-const uploadPostImages = multer({
-  storage,
-  limits: {
-    fileSize: 1024 * 1024 * 5,
-  },
-});
 
 // Create Post
 const createPost = async (req, res) => {
@@ -277,7 +249,12 @@ const downvoteComment = async (req, res) => {
 router.post(
   "/create",
   checkAuth,
-  uploadPostImages.array("postImage"),
+  uploadS3.fields([
+    {
+      name: "postImage",
+      maxCount: 10,
+    },
+  ]),
   createPost
 );
 

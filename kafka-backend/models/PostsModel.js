@@ -1,6 +1,7 @@
 // Created by Priyansh Patel on 04/24
 
 const mongoose = require("mongoose");
+const aggregatePaginate = require("mongoose-aggregate-paginate-v2");
 
 const { Schema } = mongoose;
 
@@ -96,6 +97,6 @@ const postSchema = new Schema(
     versionKey: false,
   }
 );
-
+postSchema.plugin(aggregatePaginate);
 const Post = mongoose.model("post", postSchema, "posts");
 module.exports = Post;
