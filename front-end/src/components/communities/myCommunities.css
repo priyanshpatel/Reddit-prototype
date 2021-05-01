@@ -1,0 +1,60 @@
+.com-header {
+    display: flex;
+    height: 96px;
+    padding-left: 200px;
+    padding-top: 15px;
+    padding-bottom: 6px;
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 26px;
+    font-family: 'IBM Plex Sans', sans-serif;
+}
+
+.com-content {
+    background-color: rgb(218,224,230);
+    height: 1000px
+}
+
+.com-desc {
+    font-family: Noto Sans,Arial,sans-serif;
+    /* font-size: 12px; */
+    font-size: 14px;
+    /* font-weight: 400; */
+    font-weight: 500;
+    line-height: 16px;
+    /* color: rgb(218,224,230); */
+    color: #adadad
+}
+
+.com-details {
+    font-family: Noto Sans,Arial,sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 16px;
+    color: #adadad;
+    margin-right: 2%;
+}
+
+.com-avatar {
+    vertical-align: middle;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+  }
+
+.com-name {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+}
+ .sort-header {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+    display: flex;
+    height: 40px;
+    padding-left: 16px;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+ }

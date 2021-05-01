@@ -8,13 +8,13 @@ var userSignUp = (state = initialState, action) => {
     switch (action.type) {
         case "signup_success":
             newState.auth = true;
-            newState.error = false;
-            newState.message = "User SignUp Success"
+            newState.signUpError = false;
+            newState.signUpmessage = "User SignUp Success"
             return newState;
         case "signup_failed":
             newState.auth = false;
             newState.error = true;
-            newState.message = "User already Exist!"
+            newState.signUpmessage = "User already Exist!"
             return newState;
         default:
             return newState;

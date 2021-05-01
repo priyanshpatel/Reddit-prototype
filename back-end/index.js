@@ -4,8 +4,8 @@ const session = require("express-session");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
-const { mongoDB } = require("./Utils/config").default;
-const { auth } = require("./Utils/passport");
+const { mongoDB } = require("./utils/config").default;
+const { auth } = require("./utils/passport");
 const passport = require("passport");
 
 const app = express();

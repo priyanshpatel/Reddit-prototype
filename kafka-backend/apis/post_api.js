@@ -14,8 +14,8 @@ const createPost = async (req, callback) => {
   } else if (req.body.type === "image") {
     // Getting all the paths of images in a single array
     const imagePathArray = [];
-    await req.files.forEach((image) => {
-      imagePathArray.push(image.path.substring(image.path.indexOf("/") + 1));
+    await req.files.postImage.forEach((image) => {
+      imagePathArray.push(image.location);
     });
 
     rawPost = {
@@ -123,4 +123,7 @@ const createComment = async (req, callback) => {
   }
 };
 
-module.exports = { createPost, createComment };
+module.exports = {
+  createPost,
+  createComment,
+};

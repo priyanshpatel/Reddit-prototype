@@ -1,6 +1,6 @@
 import axios from 'axios';
-import BACKEND_URL from '../config/config'
-import BACKEND_PORT from '../config/config'
+import { BACKEND_URL, BACKEND_PORT } from '../config/config'
+import cookie from "react-cookies";
 const SIGNUP_SUCCESS = "signup_success";
 const SIGNUP_FAILED = "signup_failed";
 
@@ -26,9 +26,32 @@ var errorUser = (err, data) => {
 
 
 var SignUpAction = (data) => (dispatch) => {
+    console.log("data >>>>>>>>>>>>", data)
+    console.log(BACKEND_URL + ":" + BACKEND_PORT + '/user/signup', data)
     return axios
-        .post(BACKEND_URL + ":" + BACKEND_PORT + '/users/signup', data)
+        .post(BACKEND_URL + ":" + BACKEND_PORT + '/user/signup', data)
         .then((response) => {
+            console.log("response >>>>>>>>>>>>", response)
+            cookie.save("token", response.data.token, {
+                path: '/',
+                httpOnly: false,
+                maxAge: 90000
+            })
+            cookie.save("userId", response.data.user._id, {
+                path: '/',
+                httpOnly: false,
+                maxAge: 90000
+            })
+            cookie.save("name", response.data.user.name, {
+                path: '/',
+                httpOnly: false,
+                maxAge: 90000
+            })
+            cookie.save("email", response.data.user.email, {
+                path: '/',
+                httpOnly: false,
+                maxAge: 90000
+            })
             dispatch(successUser(response, data))
         }).catch((err) => {
             dispatch(errorUser(err, data))

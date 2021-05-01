@@ -1,5 +1,7 @@
+// TO-DO: Change the hard coded values as we develop APIs - Priyansh Patel
+
 import React, { Component } from 'react'
-import { withRouter } from "react-router"
+import { Redirect, withRouter } from "react-router"
 import './navbar.css'
 import { Row, Col } from 'reactstrap';
 import home_page from '../../images/home-page.png'
@@ -88,16 +90,24 @@ class Navbar extends Component {
 
 
         let signUpObject = {
-            name: this.state.signupname,
-            email: this.state.signupemail,
-            password: this.state.signuppassword
+            user: {
+                name: this.state.signupname,
+                email: this.state.signupemail,
+                password: this.state.signuppassword,
+            } 
         }
+        console.log("sign up>>>>>>>>>>>>>>", signUpObject)
         e.preventDefault();
         if (!this.state.error) {
             this.props.signUpAction(signUpObject).then(response => {
+                console.log("signup response >>>>>>>>>>>>>", this.props)
                 if (this.props.signUpError) {
                     this.setState({
                         signUpBackendError: true
+                    })
+                } else {
+                    this.setState({
+                        signupButton: !this.state.signupButton
                     })
                 }
             })
@@ -109,20 +119,36 @@ class Navbar extends Component {
     handleLoginSubmit = (e) => {
 
         let loginObject = {
-            email: this.state.loginemail,
-            password: this.state.loginpassword,
+            user: {
+                email: this.state.loginemail,
+                password: this.state.loginpassword,
+            }
         }
         if (!this.state.error) {
             this.props.loginAction(loginObject).then(response => {
+                console.log("login response >>>>>>>>", this.props)
                 if (this.props.loginError) {
                     this.setState({
                         loginBackendError: true
+                    })
+                } else {
+                    this.setState({
+                        loginButton: !this.state.loginButton
                     })
                 }
             })
         };
 
 
+    }
+
+
+    handleLogout = (e) => {
+        cookie.remove('token', { path: '/' })
+        cookie.remove('auth', { path: '/' })
+        cookie.remove('handle', { path: '/' })
+        cookie.remove('userId', { path: '/' })
+        // this.props.history.push("/")
     }
 
 
@@ -142,18 +168,27 @@ class Navbar extends Component {
         if (this.state.signUpBackendError) {
             invalidSignUpError = <div style={{ 'color': 'red' }}>{this.props.signUpMessage}</div>
         }
-        if (!cookie.load('token')) {
+        if (cookie.load('token')) {
             console.log("token found")
             return(
                 <div className="manual-container">
                         <div class="row">
 
                         </div>
-                        <div className="row" >
+                        <div className="row">
                             <div className="col-2">
                                 <Link to="/"><img src={reddit_logo} className="logo-image" alt="reddit-logo" /></Link>
                             </div>
-                            <div className="col-2 nav-icon-div">
+                            <div className="col-1 dropdown" style={{paddingRight:"0px"}}>
+                                    <button className="btn dropdown-toggle navbar-dropdown-button" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-edit"></i> <span class="nav-username">Create</span>
+                                    </button>
+                                    <div className="dropdown-menu" aria-labelledby="dropdownMenu2">
+                                        <Link to="/create-post" className="dropdown-item" type="button" value="home"><i class="fas fa-edit dd-icon"></i><span className="dd-item">Create Post</span></Link>
+                                        <Link to="/create-community" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-edit dd-icon"></i><span className="dd-item">Create Community</span></Link>
+                                    </div>
+                            </div>
+                            <div className="col-1 nav-icon-div">
                                 <Link to="/"><i class="fas fa-chart-line nav-icon-button" style={{marginRight:"10px"}} ></i></Link>
                                 <Link to="/"><i class="fas fa-chart-bar nav-icon-button"></i></Link>
                             </div>
@@ -171,20 +206,21 @@ class Navbar extends Component {
                                 <Link to="/"><i class="fas fa-bell nav-icon-button" style={{marginRight:"10px"}} ></i></Link>
                             </div>
                                 {/* <Dropdown isOpen={dropdownOpen} toggle={toggle}> */}
-                                <div className="col-2" style={{textAlign:"right"}} style={{paddingLeft:"0px"}}>
+                            <div className="col-2" style={{textAlign:"right"}} style={{paddingLeft:"0px"}}>
                                 <div className="dropdown">
                                     <button className="btn dropdown-toggle navbar-dropdown-button" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <img src="/logo192.png" alt="Avatar" class="nav-avatar"/>  <span class="nav-username">Username</span>
+                                        <img src="/logo192.png" alt="Avatar" class="nav-avatar"/>  <span class="nav-username">{cookie.load('userName')}</span>
                                     </button>
                                     <div className="dropdown-menu" aria-labelledby="dropdownMenu2">
-                                        <button className="dropdown-item" type="button" onClick={ this.dropDownClick } value="home"><i class="fas fa-home dd-icon"></i><span className="dd-item">Home</span></button>
-                                        <button className="dropdown-item" type="button" onClick={ this.dropDownClick } value="mycommunities"><i class="fas fa-users dd-icon"></i><span className="dd-item">My Communities</span></button>
-                                        <button className="dropdown-item" type="button" onClick={ this.dropDownClick } value="profile"><i class="fas fa-id-badge dd-icon"/><span className="dd-item">Profile</span></button>
-                                        <button className="dropdown-item" type="button" onClick={ this.dropDownClick } value="logout"><i class="fas fa-sign-out-alt dd-icon"></i><span className="dd-item">Logout</span></button>
+                                        <Link to="/" className="dropdown-item" type="button" value="home"><i class="fas fa-home dd-icon"></i><span className="dd-item">Home</span></Link>
+                                        <Link to="/my-communities" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-users dd-icon"></i><span className="dd-item">My Communities</span></Link>
+                                        <Link to="/profile" className="dropdown-item" type="button" value="profile"><i class="fas fa-id-badge dd-icon"/><span className="dd-item">Profile</span></Link>
+                                        <Link className="dropdown-item" type="button" value="logout" onClick={this.handleLogout}><i class="fas fa-sign-out-alt dd-icon"></i><span className="dd-item">Logout</span></Link>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        <hr class="nav-hr"/>
                     </div>
             )
         } else {
@@ -215,6 +251,7 @@ class Navbar extends Component {
 
                             </div>
                         </div>
+                        <hr class="nav-hr"/>
                     </div>
 
                     {/* LOGIN MODAL */}
@@ -299,9 +336,9 @@ class Navbar extends Component {
                                             </div>
                                         </div>
                                         <Row>
-                                            <input type="text" style={{ width: "100%" }} name="loginemail" onChange={this.handleEmailChange} placeholder="EMAIL" autoFocus required />
+                                            <input type="email" style={{ width: "100%" }} name="loginemail" onChange={this.handleEmailChange} placeholder="EMAIL" autoFocus required />
 
-                                            <input type="text" style={{ width: "100%", marginTop: "10%" }} name="loginpassword" placeholder="PASSWORD" onChange={this.handleOtherChange} required />
+                                            <input type="password" style={{ width: "100%", marginTop: "10%" }} name="loginpassword" placeholder="PASSWORD" onChange={this.handleOtherChange} required />
                                             <button type="button" id="login-button" style={{ backgroundColor: "#0079d3", color: "white", borderRadius: "60px", width: "100%", marginTop: "10%" }} class="btn btn-outline-primary" onClick={this.handleLoginSubmit}><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Log In</strong></span></button>
                                             <div style={{ marginTop: "3%", fontSize: "12px" }}>
                                                 Forgot your <a target="_blank" href="/">username</a> or <a target="_blank" href="/">password</a>?
@@ -392,9 +429,9 @@ class Navbar extends Component {
                                         </div>
                                         <Row>
                                             <input type="text" style={{ width: "100%" }} name="signupname" onChange={this.handleInputChange} placeholder="USERNAME" autoFocus required />
-                                            <input type="text" style={{ width: "100%", marginTop: "10%" }} name="signupemail" onChange={this.handleEmailChange} placeholder="EMAIL" autoFocus required />
+                                            <input type="email" style={{ width: "100%", marginTop: "10%" }} name="signupemail" onChange={this.handleEmailChange} placeholder="EMAIL" autoFocus required />
 
-                                            <input type="text" style={{ width: "100%", marginTop: "10%" }} name="signuppassword" placeholder="PASSWORD" onChange={this.handleOtherChange} required />
+                                            <input type="password" style={{ width: "100%", marginTop: "10%" }} name="signuppassword" placeholder="PASSWORD" onChange={this.handleOtherChange} required />
                                             <button type="button" id="login-button" style={{ backgroundColor: "#0079d3", color: "white", borderRadius: "60px", width: "100%", marginTop: "10%" }} class="btn btn-outline-primary" onClick={this.handleSignUpSubmit}><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Continue</strong></span></button>
 
                                             <div style={{ marginTop: "3%", fontSize: "12px" }}>

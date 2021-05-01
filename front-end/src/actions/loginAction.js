@@ -1,6 +1,5 @@
 import axios from 'axios';
-import BACKEND_URL from '../config/config'
-import BACKEND_PORT from '../config/config'
+import { BACKEND_URL, BACKEND_PORT } from '../config/config'
 
 import cookie from "react-cookies";
 import jwt_decode from "jwt-decode"
@@ -27,13 +26,15 @@ var errorUser = (err, data) => {
     }
 }
 var loginAction = (data) => (dispatch) => {
-    axios
-        .post(BACKEND_URL + ":" + BACKEND_PORT + '/users/login', data)
+    return axios
+        .post(BACKEND_URL + ":" + BACKEND_PORT + '/user/login', data)
         .then((response) => {
-            let decoded = jwt_decode(response.data.split(' ')[1])
-            console.log("decoded", decoded)
+            console.log("response>>>>>>>>>>>", response)
+            // let decoded = jwt_decode(response.data.token.split(' ')[1])
+            let decoded = jwt_decode(response.data.token)
+            console.log("decoded>>>>>>>>>>>>>>>>>>>", decoded)
             if (response.status === 200) {
-                cookie.save("token", response.data, {
+                cookie.save("token", response.data.token, {
                     path: '/',
                     httpOnly: false,
                     maxAge: 90000
@@ -44,6 +45,16 @@ var loginAction = (data) => (dispatch) => {
                     maxAge: 90000
                 })
                 cookie.save("handle", decoded.handle, {
+                    path: '/',
+                    httpOnly: false,
+                    maxAge: 90000
+                })
+                cookie.save("email", response.data.user.email, {
+                    path: '/',
+                    httpOnly: false,
+                    maxAge: 90000
+                })
+                cookie.save("userId", response.data.user._id, {
                     path: '/',
                     httpOnly: false,
                     maxAge: 90000

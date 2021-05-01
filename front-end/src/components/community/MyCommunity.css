@@ -1,0 +1,35 @@
+.heading{
+    font-size:"28px";
+    color : "red"
+}
+
+.post{
+    background-color: "white";
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    display: flex;
+    margin-bottom: 16px;
+    padding: 8px;
+}
+
+.about-community-member{
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 20px;
+    color : "rgb(28,28,28)";
+}
+.about-community-text{
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 20px;
+    color : "rgb(28,28,28)";
+}
+
+.about-community{
+    font-size: "16px" !important; 
+    padding:"10px" !important;
+    font-family: "arial" !important;
+    color: "#1A1A1B" !important;
+    font-weight: "700" !important;
+    color :"white" !important
+}
