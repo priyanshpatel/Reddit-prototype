@@ -152,15 +152,17 @@ class CreateCommunity extends Component {
             const formData = new FormData();
             const files = this.state.commmunityAvatar;
             for (let i = 0; i < files.length; i++) {
-                formData.append(`commmunityAvatar[${i}]`, files[i])
+                formData.append(`communityAvatar`, files[i])
             }
+            formData.append(`communityCover`, this.state.communityCover)
+
             let obj = {
                 communityName: this.state.communityName,
                 description: this.state.description,
                 rules: this.state.rules,
                 members: [
                     {
-                        _id: cookie.load('id')
+                        _id: cookie.load('userID')
                     }
                 ]
             }
@@ -175,7 +177,7 @@ class CreateCommunity extends Component {
         this.setState({ commmunityAvatar: [...this.state.commmunityAvatar, ...e.target.files] })
     }
     fileAvatarHandler = (e) => {
-        this.setState({ communityCover: e.target.files })
+        this.setState({ communityCover: e.target.files[0] })
     }
     handleAddFields = () => {
         this.setState({ rules: [...this.state.rules, { id: uuidv4(), title: '', description: '' }] })

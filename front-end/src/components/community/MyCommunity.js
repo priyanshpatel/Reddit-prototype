@@ -15,6 +15,8 @@ import {
 import './MyCommunity.css'
 import { CarouselProvider, Slider, Slide, ButtonBack, ButtonNext } from 'pure-react-carousel';
 import 'pure-react-carousel/dist/react-carousel.es.css';
+import getPostsByIDAction from '../../actions/posts/getPostAction';
+import Post from './Post';
 
 class MyCommunity extends Component {
     constructor(props) {
@@ -35,7 +37,6 @@ class MyCommunity extends Component {
             communityID: "",
             description: "This subreddit is for anyone who wants to learn JavaScript or help others do so. Questions and posts about frontend development in general are welcome, as are all posts pertaining to JavaScript on the backend",
             communityName: "Learn JavaScript",
-            totalPosts: [],
             totalUsers: [],
             communityNameWithoutSpaces: "",
             rules: [
@@ -58,7 +59,15 @@ class MyCommunity extends Component {
             ],
             members: "161K",
             totalPosts: "227",
-            totalModerators: []
+            totalModerators: [],
+            posts: [],
+            hasNextPage: false,
+            hasPrevPage: true,
+            nextPage: "",
+            pageNumber: "",
+            pageSize: "",
+            prevPage: "",
+            totalPages: "",
         }
     }
     postClick = e => {
@@ -74,9 +83,30 @@ class MyCommunity extends Component {
                 communityNameWithoutSpaces: str
             }
         )
+        this.props.getPostsByIDAction(this.state).then(response => {
+            console.log(typeof this.props.postData.posts)
+
+            this.setState(
+                {
+                    posts: this.props.postData.posts,
+                    hasNextPage: this.props.postData.hasNextPage,
+                    hasPrevPage: this.props.postData.hasPrevPage,
+                    nextPage: this.props.postData.nextPage,
+                    pageNumber: this.props.postData.pageNumber,
+                    pageSize: this.props.postData.pageSize,
+                    prevPage: this.props.postData.prevPage,
+                    totalPages: this.props.postData.totalPages,
+                }
+            )
+        })
     }
     render() {
         let renderPost = null;
+        let  postComponent  = this.state.posts.map((postData, index) => (
+            <div>
+                <Post data={postData} />
+            </div>
+        ))
         let rulesAccordion = this.state.rules.map((rule, index) => {
             return (
                 <div>
@@ -108,6 +138,7 @@ class MyCommunity extends Component {
                 <div>
                     <Navbar />
                 </div>
+                {postComponent}
                 <Row style={{ height: "80px" }}>
                     <Col style={{ backgroundColor: "#0079d3" }}>
                         <h1></h1></Col>
@@ -269,4 +300,19 @@ class MyCommunity extends Component {
         )
     }
 }
-export default MyCommunity
+const matchStateToProps = (state) => {
+    console.log("inside matchStatetoProps", state)
+    return {
+        postData: state.getPostByIDReducer.postData,
+        message: state.getPostByIDReducer.message,
+    }
+
+}
+
+const matchDispatchToProps = (dispatch) => {
+    return {
+        getPostsByIDAction: (data) => dispatch(getPostsByIDAction(data)),
+    }
+}
+
+export default connect(matchStateToProps, matchDispatchToProps)(MyCommunity)

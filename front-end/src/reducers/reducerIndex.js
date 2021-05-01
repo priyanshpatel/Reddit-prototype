@@ -7,6 +7,7 @@ import createCommunityReducer from './communityReducers/createCommunityReducer';
 import createPostReducer from './postReducers/createPostReducer';
 import myCommunitiesReducer from './communityReducers/myCommunitiesReducer';
 import getByIDCommunityReducer from './communityReducers/getByIDCommunityReducer';
+import getPostByIDReducer from './postReducers/getPostByIDReducer';
 
 var rootReducer = combineReducers({
     SignUpReducer: SignUpReducer,
@@ -17,6 +18,7 @@ var rootReducer = combineReducers({
     createPostReducer: createPostReducer,
     myCommunitiesReducer: myCommunitiesReducer,
     getByIDCommunityReducer: getByIDCommunityReducer,
+    getPostByIDReducer: getPostByIDReducer,
 
 })
 
