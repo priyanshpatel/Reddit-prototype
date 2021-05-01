@@ -30,9 +30,9 @@ const commentsVotesSchema = new Schema(
 );
 
 const CommentsVotes = mongoose.model(
-  "commentsVotesSchema",
+  "commentsVotes",
   commentsVotesSchema,
-  "commentsVotesSchema"
+  "commentsVotes"
 );
 
 module.exports = CommentsVotes;

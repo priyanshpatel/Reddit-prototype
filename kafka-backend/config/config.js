@@ -1,5 +1,6 @@
 "use strict";
 module.exports = {
+  defaultPageSizePosts: 2,
   // mongoDBURI:
   //   "mongodb+srv://poonam2802:py2802@2580@cluster0.illbn.mongodb.net/RedditDb?retryWrites=true&w=majority",
   mongoDBURI:

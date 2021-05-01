@@ -1,4 +1,10 @@
-import { createCommunity, updateExistingCommunity, getAllCommunityForUser, getCommunityDetails } from "../../apis/community_api";
+import {
+  createCommunity,
+  updateExistingCommunity,
+  getAllCommunityForUser,
+  getCommunityDetails,
+  getAllPosts,
+} from "../../apis/community_api";
 
 export const handle_request = async (message, callback) => {
   console.log("Handle Request for Community ", message);
@@ -11,6 +17,8 @@ export const handle_request = async (message, callback) => {
       return getAllCommunityForUser(message, callback);
     case "community-details":
       return getCommunityDetails(message, callback);
+    case "get-posts":
+      return getAllPosts(message, callback);
     default:
       return callback({ status: 500, data: "no path found" }, null);
   }

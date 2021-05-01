@@ -25,10 +25,6 @@ const postsVotesSchema = new Schema(
   }
 );
 
-const PostsVotes = mongoose.model(
-  "postsVotesSchema",
-  postsVotesSchema,
-  "postsVotesSchema"
-);
+const PostsVotes = mongoose.model("postsVotes", postsVotesSchema, "postsVotes");
 
 module.exports = PostsVotes;
