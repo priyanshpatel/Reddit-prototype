@@ -2,6 +2,7 @@ import { createError } from "../helper/error";
 import config from "../config/config";
 const CommunityModel = require("../models/communityModel");
 const PostsModel = require("../models/PostsModel");
+const mongoose = require("mongoose");
 const UsersModel = require("../models/UsersModel");
 const PostsVotesModel = require("../models/PostsVotesModel");
 const CommentsVotesModel = require("../models/CommentsVotesModel");
@@ -14,6 +15,10 @@ export async function createCommunity(message, callback) {
   console.log("Community Creation ", JSON.stringify(community));
   try {
     community = await insertCommunity(community);
+    const user = await updateCreatorsCommunityList(
+      community.creator,
+      community._id
+    );
   } catch (error) {
     console.log("error in creting community", JSON.stringify(error));
 
@@ -24,7 +29,6 @@ export async function createCommunity(message, callback) {
     console.log("Error code ", error.code);
 
     if (error.code == 11000) {
-      console.log("comming here");
       err = createError(
         400,
         "Community name already exists. Please enter unique name."
@@ -36,12 +40,6 @@ export async function createCommunity(message, callback) {
   response.status = 200;
   response.data = community;
   return callback(null, response);
-}
-
-async function insertCommunity(community) {
-  console.log("Inside insert Community");
-  var community = new CommunityModel(community);
-  return await community.save();
 }
 
 export async function updateExistingCommunity(message, callback) {
@@ -94,6 +92,7 @@ async function updateCommunity(community) {
   return value;
 }
 
+// Function to fetch communities of whom the user is a part of by userId
 export async function getAllCommunityForUser(message, callback) {
   let response = {};
   let error = {};
@@ -117,6 +116,7 @@ export async function getAllCommunityForUser(message, callback) {
   }
 }
 
+// Function to fetch communities of whom the user is a part of by userId
 async function getCommunityByUserId(userId) {
   console.log("Inside get Community By User ID XX ", userId);
   const result = await CommunityModel.find({
@@ -129,6 +129,7 @@ async function getCommunityByUserId(userId) {
   return result;
 }
 
+// Function to get all the community details
 export async function getCommunityDetails(message, callback) {
   let response = {};
   let error = {};
@@ -153,6 +154,7 @@ export async function getCommunityDetails(message, callback) {
 }
 
 // TODO :- MINIMIZE TIME TAKEN BY THIS METHOD EITHER BY CACHING OR BY FINDING A METHOD TO POPULATE USER_IDS
+// Get all posts with nested comements
 export const getAllPosts = async (req, callback) => {
   const pageSize = req.query.pageSize || config.defaultPageSizePosts;
   const pageNumber = req.query.pageNumber;
@@ -247,6 +249,96 @@ export const getAllPosts = async (req, callback) => {
   });
 };
 
+// Return a paginated response of all the communities created by the user
+export const getAllCreatedCommunities = async (req, callback) => {
+  const pageSize =
+    req.query.pageSize || config.defaultPageSizeCommunityModeration;
+  const pageNumber = req.query.pageNumber;
+  const searchKeyword = req.query.searchKeyword;
+  let totalPages = 0;
+  let countPages = null;
+  let loggedInUser;
+
+  // Order by descending order
+  const orderByDateInDescending = -1;
+  if (searchKeyword) {
+    // Count the total number of pages
+    countPages = await CommunityModel.aggregate([
+      {
+        $match: {
+          $and: [
+            { creator: mongoose.Types.ObjectId(req.user._id) },
+            { communityName: { $regex: searchKeyword + ".*" } },
+          ],
+        },
+      },
+      {
+        $count: "totalDocuments",
+      },
+    ]);
+
+    // Populate the communnities created by user
+    loggedInUser = await UsersModel.findById(
+      req.user._id,
+      "createdCommunities"
+    ).populate({
+      path: "createdCommunities",
+      select: "communityName communityAvatar",
+      options: {
+        sort: {
+          createdAt: orderByDateInDescending,
+        },
+        skip: (pageNumber - 1) * pageSize,
+        limit: pageSize,
+      },
+      match: {
+        communityName: { $regex: searchKeyword + ".*" },
+      },
+    });
+  } else {
+    countPages = await CommunityModel.aggregate([
+      {
+        $match: { creator: mongoose.Types.ObjectId(req.user._id) },
+      },
+      {
+        $count: "totalDocuments",
+      },
+    ]);
+
+    loggedInUser = await UsersModel.findById(
+      req.user._id,
+      "createdCommunities"
+    ).populate({
+      path: "createdCommunities",
+      select: "communityName",
+      options: {
+        sort: {
+          createdAt: orderByDateInDescending,
+        },
+        skip: (pageNumber - 1) * pageSize,
+        limit: pageSize,
+      },
+    });
+  }
+  if (countPages && countPages.length != 0)
+    totalPages = Math.ceil(countPages[0].totalDocuments / pageSize);
+  callback(null, {
+    communities: loggedInUser.createdCommunities,
+    totalPages,
+    success: true,
+  });
+};
+
+// HELPER FUNCTIONS
+
+// Create a new community
+async function insertCommunity(community) {
+  console.log("Inside insert Community");
+  var community = new CommunityModel(community);
+  return await community.save();
+}
+
+// Get community details by community_id
 async function getCommunityById(communityId) {
   const community = await CommunityModel.findOne({ _id: communityId })
     .populate("members._id")
@@ -255,6 +347,20 @@ async function getCommunityById(communityId) {
   return community;
 }
 
+// Update users createdCommunities Array
+async function updateCreatorsCommunityList(userId, communityId) {
+  // Find the user
+  const user = await UsersModel.findById(userId);
+  if (user) {
+    // Update the user's createdCommuity array if you find it successfully
+    user.createdCommunities.push(communityId);
+    return await user.save();
+  } else {
+    return null;
+  }
+}
+
+// Populate the votes of posts and nested comments along with their votes
 const populateVotesAndCommentsOfPosts = async (
   posts,
   user_id,
@@ -284,6 +390,7 @@ const populateVotesAndCommentsOfPosts = async (
   return finalPosts;
 };
 
+// Populate only the votes of parent comment
 const populateVoteOfParentComment = async (post_id, comment_id, user_id) => {
   const commentVote = await CommentsVotesModel.findOne({
     comment_id,
@@ -297,6 +404,8 @@ const populateVoteOfParentComment = async (post_id, comment_id, user_id) => {
   return voteStatus;
 };
 
+// Function which organizes the comments in a nested fashion. This is the starting
+// point to the recursive solution of nested comments
 const organizeComments = async (
   commentsArray,
   user_id,
@@ -324,6 +433,7 @@ const organizeComments = async (
   return threads;
 };
 
+// Recursive function used to organize comments in the nested manner.
 const organizeChildComments = async (comment, threads) => {
   for (let thread in threads) {
     const currentParent = threads[thread];
@@ -338,6 +448,8 @@ const organizeChildComments = async (comment, threads) => {
   }
 };
 
+// Function which sorts the parent comment on the basis of popularity. If there is a tie
+// It is broken by createdAt value
 const getSortedCommentsArray = (commentsObject, orderByDateIdentifier) => {
   const sortCommentsByVotesAndDate = (a, b) => {
     // Sort by most popular
@@ -364,6 +476,7 @@ const getSortedCommentsArray = (commentsObject, orderByDateIdentifier) => {
   return sortedCommentsArray;
 };
 
+// Populates the user data for each and every comment
 const populateUser = async (user_id) => {
   return await UsersModel.findById(user_id, "name email handle avatar");
 };

@@ -4,6 +4,7 @@ import {
   getAllCommunityForUser,
   getCommunityDetails,
   getAllPosts,
+  getAllCreatedCommunities,
 } from "../../apis/community_api";
 
 export const handle_request = async (message, callback) => {
@@ -19,6 +20,8 @@ export const handle_request = async (message, callback) => {
       return getCommunityDetails(message, callback);
     case "get-posts":
       return getAllPosts(message, callback);
+    case "get-created-communities":
+      return getAllCreatedCommunities(message, callback);
     default:
       return callback({ status: 500, data: "no path found" }, null);
   }
