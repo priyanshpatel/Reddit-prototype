@@ -35,10 +35,3 @@ const schema = Joi.object({
 });
 
 module.exports = schema;
-
-// // Validating schema for the input fields
-// const result = await schema.validate(req.query);
-// if (result.error) {
-//   res.status(400).send({ errorMessage: result.error.details[0].message });
-//   return;
-// }

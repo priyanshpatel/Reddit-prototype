@@ -1,5 +1,4 @@
-import { response } from "express";
-import { checkAuth } from "../utils/passport";
+import { checkAuth } from "../Utils/passport";
 import { uploadS3 } from "../Utils/imageupload";
 
 const express = require("express");
@@ -7,15 +6,14 @@ const { auth } = require("../utils/passport");
 const Joi = require("joi");
 const kafka = require("../kafka/client");
 const ObjectId = require("mongoose").Types.ObjectId;
-const {
-  kafka_default_response_handler,
-  kafka_response_handler,
-} = require("../kafka/handler.js");
+
+const { kafka_default_response_handler } = require("../kafka/handler.js");
 const {
   communitySchema,
   updateCommunitySchema,
 } = require("../dataSchema/communitySchema");
 const getPostsSchema = require("../dataSchema/getPostsSchema");
+const getMyCommunitiesSchema = require("../dataSchema/getMyCommunitiesSchema");
 require("dotenv").config();
 
 const router = express.Router();
@@ -86,7 +84,7 @@ const updateCommunity = async (req, res) => {
   );
 };
 
-/////////////////////////////////////////////////////////
+// Route to get All posts in a paginated manner
 const getAllPosts = async (req, res) => {
   const result = await getPostsSchema.validate(req.query);
   if (result.error) {
@@ -120,6 +118,36 @@ const getAllPosts = async (req, res) => {
       }
     );
   }
+};
+
+// Route to get all the communities created by the user in a paginated manner
+const getMyCommunities = async (req, res) => {
+  const result = await getMyCommunitiesSchema.validate(req.query);
+  if (result.error) {
+    res.status(400).send({ errorMessage: [result.error.details[0].message] });
+    return;
+  }
+  kafka.make_request(
+    "reddit-community-topic",
+    {
+      path: "get-created-communities",
+      user: req.user,
+      query: req.query,
+    },
+    (error, results) => {
+      console.log(results);
+      if (!results) {
+        res.status(500).send({
+          errorMessage: ["Failed to receive response from Kafka backend"],
+        });
+      }
+      if (!results.res.success) {
+        res.status(500).send({ ...results.res });
+      } else {
+        res.status(200).send({ ...results.res });
+      }
+    }
+  );
 };
 
 export async function getCommunityDetails(req, res) {
@@ -158,5 +186,6 @@ router.post(
 );
 router.post("/update", updateCommunity);
 router.get("/get", getCommunityDetails);
+router.get("/mycommunities", checkAuth, getMyCommunities);
 router.get("/posts", checkAuth, getAllPosts);
 module.exports = router;
