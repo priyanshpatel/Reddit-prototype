@@ -7,6 +7,7 @@ const postService = require("./services/post");
 const communityService = require("./services/community");
 const postVoteService = require("./services/postVote");
 const commentVoteService = require("./services/commentVote");
+const chatService = require("./services/chat");
 
 const mongoose = require("mongoose");
 
@@ -102,3 +103,5 @@ handleTopicRequest("reddit-post-topic", postService);
 handleTopicRequest("reddit-community-topic", communityService);
 handleTopicRequest("reddit-post-vote-topic", postVoteService);
 handleTopicRequest("reddit-comment-vote-topic", commentVoteService);
+handleTopicRequest("reddit-chat-topic", chatService);
+
