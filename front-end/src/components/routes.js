@@ -7,6 +7,7 @@ import MyCommunity from './community/MyCommunity'
 import Profile from './users/profile'
 import { Profiler } from 'react';
 import MyCommunities from './communities/myCommunities';
+import CommunityModeration from './communities/communityModeration';
 
 class Routes extends Component {
     render() {
@@ -18,7 +19,7 @@ class Routes extends Component {
                 <Route path="/community-home-page" component={MyCommunity} />
                 <Route path="/profile" component={Profile} />
                 <Route path = "/my-communities" component={MyCommunities} />
-
+                <Route path = "/my-communities-mod" component={CommunityModeration} />
 
 
             </div>
