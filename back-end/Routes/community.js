@@ -1,9 +1,9 @@
 import { response } from "express";
-import { checkAuth } from "../Utils/passport";
+import { checkAuth } from "../utils/passport";
 import { uploadS3 } from "../Utils/imageupload";
 
 const express = require("express");
-const { auth } = require("../Utils/passport");
+const { auth } = require("../utils/passport");
 const Joi = require("joi");
 const kafka = require("../kafka/client");
 const ObjectId = require("mongoose").Types.ObjectId;
