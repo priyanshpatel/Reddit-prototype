@@ -1,14 +1,14 @@
 import axios from 'axios';
-import {BACKEND_URL} from '../config/config';
-import {BACKEND_PORT} from '../config/config';
+import { BACKEND_URL } from '../../config/config';
+import { BACKEND_PORT } from '../../config/config';
 import cookie from "react-cookies";
 
 
-const USER_GET_SUCCESS = "user_get_success";
-const USER_GET_FAIL = "user_get_fail";
+const COMMUNITY_GET_SUCCESS = "community_get_success";
+const COMMUNITY_GET_FAIL = "community_get_fail";
 var success = (response) => {
     return {
-        type: USER_GET_SUCCESS,
+        type: COMMUNITY_GET_SUCCESS,
         payload: {
             response: response,
         }
@@ -18,18 +18,18 @@ var success = (response) => {
 var error = (err) => {
     console.log("err", err)
     return {
-        type: USER_GET_FAIL,
+        type: COMMUNITY_GET_FAIL,
         payload: {
             response: err
         }
     }
 }
-var userGetByIDAction = (data) => (dispatch) => {
+var getCommunityByIDAction = (data) => (dispatch) => {
     axios.defaults.headers.common["authorization"] = cookie.load('token')
     axios.defaults.withCredentials = true;
     console.log(data);
     return axios
-        .get(BACKEND_URL + "/users/userbyid/" + cookie.load('id')).then(response => {
+        .get(BACKEND_URL + ":" + BACKEND_PORT + "/community/get?communityId=" + data).then(response => {
             if (response.status === 200) {
                 console.log(response.data)
                 dispatch(success(response, data));
@@ -40,4 +40,4 @@ var userGetByIDAction = (data) => (dispatch) => {
         });
 }
 
-export default userGetByIDAction
+export default getCommunityByIDAction

@@ -1,0 +1,31 @@
+
+.content {
+    width: 80%;
+    margin: 5% auto;
+  }
+  .post div {
+    height: 100px;
+    text-align: center
+  }
+  .comment-header {
+    height: 25px;
+  }
+  .comment-content {
+    border: 1px solid #9e9c9c59;
+  }
+  .comment-text{
+    padding: 1%;
+    font-size: 1.35em;
+    font-size: 12px;
+  }
+  .comment-actions button {
+    margin-left: 0.5%;
+    margin-bottom: 0.5%;
+    line-height: 1
+  }
+  .reply-input {
+    margin-left: 10%;
+  }
+  .single-comment {
+    margin: 0.5% 0;
+  }

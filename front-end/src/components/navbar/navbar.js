@@ -340,13 +340,14 @@ class Navbar extends Component {
 
                                             <input type="password" style={{ width: "100%", marginTop: "10%" }} name="loginpassword" placeholder="PASSWORD" onChange={this.handleOtherChange} required />
                                             <button type="button" id="login-button" style={{ backgroundColor: "#0079d3", color: "white", borderRadius: "60px", width: "100%", marginTop: "10%" }} class="btn btn-outline-primary" onClick={this.handleLoginSubmit}><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Log In</strong></span></button>
+                                            {invalidLoginError}
+
                                             <div style={{ marginTop: "3%", fontSize: "12px" }}>
                                                 Forgot your <a target="_blank" href="/">username</a> or <a target="_blank" href="/">password</a>?
                                         </div>
                                             <div style={{ marginTop: "3%", fontSize: "12px" }}>
                                                 New to Reddit? <strong><span ><button style={{ color: "#0079d3", fontWeight: "700", textTransform: "uppercase", border: "none", backgroundColor: "white" }} onClick={this.mutualButtonCLick}><bold>Sign Up</bold></button ></span></strong>
                                             </div>
-                                            {invalidLoginError}
                                         </Row>
                                     </div>
                                 </Col>

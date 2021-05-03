@@ -1,6 +1,6 @@
 import axios from 'axios';
-import BACKEND_URL from '../config/config'
-import BACKEND_PORT from '../config/config'
+import {BACKEND_URL} from '../config/config'
+import {BACKEND_PORT} from '../config/config'
 
 import cookie from "react-cookies";
 import jwt_decode from "jwt-decode"

@@ -8,7 +8,7 @@ var userSignUp = (state = initialState, action) => {
     switch (action.type) {
         case "user_profile_update_success":
             newState.auth = true;
-            newState.signUpError = false;
+            newState.error = false;
             newState.message = "User Updated Successfully"
             return newState;
         case "user_profile_update_failed":

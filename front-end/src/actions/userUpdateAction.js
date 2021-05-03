@@ -28,7 +28,7 @@ var updateUserProfileAction = (data) => (dispatch) => {
     axios.defaults.headers.common["authorization"] = cookie.load('token')
     axios.defaults.withCredentials = true;
     return axios
-        .put(BACKEND_URL + ":" + BACKEND_PORT + "/users/editprofile", data).then(response => {
+        .put(BACKEND_URL + ":" + BACKEND_PORT + "/user/edit", data).then(response => {
             if (response.status === 200) {
                 console.log(response);
                 if (cookie.load('name') !== response.data.name) {

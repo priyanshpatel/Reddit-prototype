@@ -156,6 +156,7 @@ export async function getCommunityDetails(message, callback) {
 // TODO :- MINIMIZE TIME TAKEN BY THIS METHOD EITHER BY CACHING OR BY FINDING A METHOD TO POPULATE USER_IDS
 // Get all posts with nested comements
 export const getAllPosts = async (req, callback) => {
+  console.log("over herer");
   const pageSize = req.query.pageSize || config.defaultPageSizePosts;
   const pageNumber = req.query.pageNumber;
 
@@ -340,10 +341,11 @@ async function insertCommunity(community) {
 
 // Get community details by community_id
 async function getCommunityById(communityId) {
-  const community = await CommunityModel.findOne({ _id: communityId })
-    .populate("members._id")
-    .populate("creator")
-    .populate("posts");
+  const community = await CommunityModel.findOne(
+    { _id: communityId }
+  ).populate('members._id')
+    .populate('creator')
+    .populate('Posts');
   return community;
 }
 
