@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+const mongoosePaginate = require("mongoose-paginate-v2");
 const { Schema } = mongoose;
 
 const usersSchema = new Schema(
@@ -41,10 +41,17 @@ const usersSchema = new Schema(
         type: Schema.Types.ObjectId,
       },
     ],
+    memberships: [
+      {
+        ref: "community",
+        type: Schema.Types.ObjectId,
+      },
+    ],
   },
   {
     versionKey: false,
   }
 );
 
+usersSchema.plugin(mongoosePaginate);
 module.exports = mongoose.model("user", usersSchema);

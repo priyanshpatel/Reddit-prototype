@@ -1,5 +1,3 @@
-// Delete this model from here when login and passport are migrated to kafka successfully!
-
 const mongoose = require("mongoose");
 
 const { Schema } = mongoose;
@@ -37,6 +35,18 @@ const usersSchema = new Schema(
     topics: {
       type: Array,
     },
+    createdCommunities: [
+      {
+        ref: "community",
+        type: Schema.Types.ObjectId,
+      },
+    ],
+    memberships: [
+      {
+        ref: "community",
+        type: Schema.Types.ObjectId,
+      },
+    ],
   },
   {
     versionKey: false,

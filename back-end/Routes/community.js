@@ -15,6 +15,7 @@ const {
 } = require("../dataSchema/communitySchema");
 const getPostsSchema = require("../dataSchema/getPostsSchema");
 const getMyCommunitiesSchema = require("../dataSchema/getMyCommunitiesSchema");
+const getUsersOfMyCommunitySchema = require("../dataSchema/getUsersOfMyCommunitySchema");
 require("dotenv").config();
 
 const router = express.Router();
@@ -137,7 +138,6 @@ const getMyCommunities = async (req, res) => {
       query: req.query,
     },
     (error, results) => {
-      console.log(results);
       if (!results) {
         res.status(500).send({
           errorMessage: ["Failed to receive response from Kafka backend"],
@@ -150,6 +150,69 @@ const getMyCommunities = async (req, res) => {
       }
     }
   );
+};
+
+// Route to fetch details of all the users who want to join the community
+const getUsersOfMyCommunity = async (req, res) => {
+  if (!ObjectId.isValid(req.params.community_id)) {
+    res.status(400).send({
+      errorMessage: ["Please select a valid community"],
+    });
+  } else {
+    const result = await getUsersOfMyCommunitySchema.validate(req.query);
+    if (result.error) {
+      res.status(400).send({ errorMessage: [result.error.details[0].message] });
+      return;
+    }
+
+    kafka.make_request(
+      "reddit-user-topic",
+      {
+        path: "get-mycommunity-users",
+        user: req.user,
+        query: req.query,
+        params: req.params,
+      },
+      (error, results) => {
+        if (!results) {
+          res.status(500).send({
+            errorMessage: ["Failed to receive response from Kafka backend"],
+          });
+        }
+        if (!results.res.success) {
+          res.status(500).send({ ...results.res });
+        } else {
+          res.status(200).send({ ...results.res });
+        }
+      }
+    );
+  }
+};
+
+// Route for the user to request join the community
+const requestToJoinCommunity = async (req, res) => {
+  if (!ObjectId.isValid(req.body.community_id)) {
+    res.status(400).send({
+      errorMessage: ["Please select a valid community"],
+    });
+  } else {
+    kafka.make_request(
+      "reddit-community-topic",
+      { path: "join-community", body: req.body, user: req.user },
+      (error, results) => {
+        if (!results) {
+          res.status(500).send({
+            errorMessage: ["Failed to receive response from Kafka backend"],
+          });
+        }
+        if (!results.res.success) {
+          res.status(500).send({ ...results.res });
+        } else {
+          res.status(200).send({ ...results.res });
+        }
+      }
+    );
+  }
 };
 
 export async function getCommunityDetails(req, res) {
@@ -187,7 +250,14 @@ router.post(
   createCommunity
 );
 router.post("/update", updateCommunity);
+router.post("/join", checkAuth, requestToJoinCommunity);
 router.get("/get", getCommunityDetails);
 router.get("/mycommunities", checkAuth, getMyCommunities);
+router.get(
+  "/mycommunities/users/:community_id",
+  checkAuth,
+  getUsersOfMyCommunity
+);
+//router.get("/mycommunities/:id", checkAuth, getMyCommunities);
 router.get("/posts", checkAuth, getAllPosts);
 module.exports = router;
