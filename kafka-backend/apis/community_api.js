@@ -2,6 +2,8 @@ import { createError } from "../helper/error";
 import config from "../config/config";
 const CommunityModel = require("../models/communityModel");
 const PostsModel = require("../models/PostsModel");
+const mongoose = require("mongoose");
+const UsersModel = require("../models/UsersModel");
 const PostsVotesModel = require("../models/PostsVotesModel");
 const CommentsVotesModel = require("../models/CommentsVotesModel");
 const ObjectId = require("mongodb").ObjectID;
@@ -13,6 +15,10 @@ export async function createCommunity(message, callback) {
   console.log("Community Creation ", JSON.stringify(community));
   try {
     community = await insertCommunity(community);
+    const user = await updateCreatorsCommunityList(
+      community.creator,
+      community._id
+    );
   } catch (error) {
     console.log("error in creting community", JSON.stringify(error));
 
@@ -23,7 +29,6 @@ export async function createCommunity(message, callback) {
     console.log("Error code ", error.code);
 
     if (error.code == 11000) {
-      console.log("comming here");
       err = createError(
         400,
         "Community name already exists. Please enter unique name."
@@ -35,12 +40,6 @@ export async function createCommunity(message, callback) {
   response.status = 200;
   response.data = community;
   return callback(null, response);
-}
-
-async function insertCommunity(community) {
-  console.log("Inside insert Community");
-  var community = new CommunityModel(community);
-  return await community.save();
 }
 
 export async function updateExistingCommunity(message, callback) {
@@ -93,6 +92,7 @@ async function updateCommunity(community) {
   return value;
 }
 
+// Function to fetch communities of whom the user is a part of by userId
 export async function getAllCommunityForUser(message, callback) {
   let response = {};
   let error = {};
@@ -116,6 +116,7 @@ export async function getAllCommunityForUser(message, callback) {
   }
 }
 
+// Function to fetch communities of whom the user is a part of by userId
 async function getCommunityByUserId(userId) {
   console.log("Inside get Community By User ID XX ", userId);
   const result = await CommunityModel.find({
@@ -128,6 +129,7 @@ async function getCommunityByUserId(userId) {
   return result;
 }
 
+// Function to get all the community details
 export async function getCommunityDetails(message, callback) {
   let response = {};
   let error = {};
@@ -151,6 +153,8 @@ export async function getCommunityDetails(message, callback) {
   }
 }
 
+// TODO :- MINIMIZE TIME TAKEN BY THIS METHOD EITHER BY CACHING OR BY FINDING A METHOD TO POPULATE USER_IDS
+// Get all posts with nested comements
 export const getAllPosts = async (req, callback) => {
   const pageSize = req.query.pageSize || config.defaultPageSizePosts;
   const pageNumber = req.query.pageNumber;
@@ -175,6 +179,21 @@ export const getAllPosts = async (req, callback) => {
   if (!req.query.orderByPopularity || req.query.orderByPopularity == 0) {
     postsAggregateQuery = PostsModel.aggregate([
       { $match: { community: ObjectId(req.query.community_id) } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "createdBy",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      {
+        $project: {
+          "user.topics": 0,
+          "user.password": 0,
+        },
+      },
       { $sort: { createdAt: orderByDateIdentifier } },
     ]);
   } else {
@@ -182,6 +201,21 @@ export const getAllPosts = async (req, callback) => {
       req.query.orderByPopularity == 1 ? -1 : 1;
     postsAggregateQuery = PostsModel.aggregate([
       { $match: { community: ObjectId(req.query.community_id) } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "createdBy",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      {
+        $project: {
+          "user.topics": 0,
+          "user.password": 0,
+        },
+      },
       {
         $sort: {
           votes: orderByPopularityIdentifier,
@@ -215,6 +249,96 @@ export const getAllPosts = async (req, callback) => {
   });
 };
 
+// Return a paginated response of all the communities created by the user
+export const getAllCreatedCommunitiesByUserId = async (req, callback) => {
+  const pageSize =
+    req.query.pageSize || config.defaultPageSizeCommunityModeration;
+  const pageNumber = req.query.pageNumber;
+  const searchKeyword = req.query.searchKeyword;
+  let totalPages = 0;
+  let countPages = null;
+  let loggedInUser;
+
+  // Order by descending order
+  const orderByDateInDescending = -1;
+  if (searchKeyword) {
+    // Count the total number of pages
+    countPages = await CommunityModel.aggregate([
+      {
+        $match: {
+          $and: [
+            { creator: mongoose.Types.ObjectId(req.user._id) },
+            { communityName: { $regex: searchKeyword + ".*" } },
+          ],
+        },
+      },
+      {
+        $count: "totalDocuments",
+      },
+    ]);
+
+    // Populate the communnities created by user
+    loggedInUser = await UsersModel.findById(
+      req.user._id,
+      "createdCommunities"
+    ).populate({
+      path: "createdCommunities",
+      select: "communityName communityAvatar",
+      options: {
+        sort: {
+          createdAt: orderByDateInDescending,
+        },
+        skip: (pageNumber - 1) * pageSize,
+        limit: pageSize,
+      },
+      match: {
+        communityName: { $regex: searchKeyword + ".*" },
+      },
+    });
+  } else {
+    countPages = await CommunityModel.aggregate([
+      {
+        $match: { creator: mongoose.Types.ObjectId(req.user._id) },
+      },
+      {
+        $count: "totalDocuments",
+      },
+    ]);
+
+    loggedInUser = await UsersModel.findById(
+      req.user._id,
+      "createdCommunities"
+    ).populate({
+      path: "createdCommunities",
+      select: "communityName",
+      options: {
+        sort: {
+          createdAt: orderByDateInDescending,
+        },
+        skip: (pageNumber - 1) * pageSize,
+        limit: pageSize,
+      },
+    });
+  }
+  if (countPages && countPages.length != 0)
+    totalPages = Math.ceil(countPages[0].totalDocuments / pageSize);
+  callback(null, {
+    communities: loggedInUser.createdCommunities,
+    totalPages,
+    success: true,
+  });
+};
+
+// HELPER FUNCTIONS
+
+// Create a new community
+async function insertCommunity(community) {
+  console.log("Inside insert Community");
+  var community = new CommunityModel(community);
+  return await community.save();
+}
+
+// Get community details by community_id
 async function getCommunityById(communityId) {
   const community = await CommunityModel.findOne({ _id: communityId })
     .populate("members._id")
@@ -223,30 +347,67 @@ async function getCommunityById(communityId) {
   return community;
 }
 
-<<<<<<< HEAD
-export async function getCommunitiesByUserIdV2(
+//For my communities page
+export async function getCommunitiesByUserId(
   userId,
   options
 ) {
+
+  console.log("userId ", userId);
   const newOptions = Object.assign({
-      pageIndex: 1,
-      pageSize: 2,
-      sortBy: 'createdAt',
-      sortOrder: 'desc'
+    pageIndex: 1,
+    pageSize: 2,
+    sortBy: 'createdAt',
+    sortOrder: 'desc'
   }, options);
-  const communityInfos = await CommunityModel.find({ creator: userId });
-  console.log('communityInfos', communityInfos);
   console.log('New options ', JSON.stringify(newOptions));
   const sortBy = newOptions.sortBy;
   const sortOrder = newOptions.sortOrder;
   const sort = {};
   sort[`${sortBy}`] = sortOrder == 'desc' ? -1 : 1;
+  const communityInfos = CommunityModel.aggregate([
+    {
+      $match:
+        { creator: ObjectId(userId) },
+    },
+    {
+      $addFields: {
+        numberOfPosts: { $cond: { if: { $isArray: "$posts" }, then: { $size: "$posts" }, else: 0 } },
+        numberOfUsers: { $size: "$members" }
+      },
+    }
+  ])
+
+  console.log("community Infos ", communityInfos);
   const paginatedCommunity = await CommunityModel.aggregatePaginate(communityInfos, {
-      page: newOptions.pageIndex,
-      limit: newOptions.pageSize,
-      sort,
+    page: newOptions.pageIndex,
+    limit: newOptions.pageSize,
+    sort,
   });
   return paginatedCommunity;
+}
+
+export async function deleteCommunity(message, callback) {
+  let response = {};
+  let error = {};
+
+  console.log("Inside delete Community ", message.communityId);
+  let communityId = message.communityId;
+  try {
+    await CommunityModel.remove({ _id: communityId });
+    response.status = 200;
+    response.data = "Deleted Successfully";
+    return callback(null,response);
+  }
+  catch (err) {
+    error.status = 500;
+    error.data = {
+      code: err.code,
+      msg: "Unable to delete the community ID successfully. Please check the logs for more details."
+    };
+    return callback(error, null);
+  }
+
 }
 
 export async function getCommunityListCreatedByUser(message, callback) {
@@ -262,10 +423,10 @@ export async function getCommunityListCreatedByUser(message, callback) {
     return callback(error, null);
   }
   try {
-    const activities = await getCommunitiesByUserIdV2(userId, message.options);
-    console.log("Activities By User ID " + JSON.stringify(activities));
+    const communities = await getCommunitiesByUserId(userId, message.options);
+    console.log("Communities By User ID " + JSON.stringify(communities));
     response.status = 200;
-    response.data = activities;
+    response.data = communities;
     return callback(null, response);
   } catch (err) {
     console.log(err);
@@ -277,14 +438,29 @@ export async function getCommunityListCreatedByUser(message, callback) {
     return callback(error, null);
   }
 }
-=======
+
+// Update users createdCommunities Array
+async function updateCreatorsCommunityList(userId, communityId) {
+  // Find the user
+  const user = await UsersModel.findById(userId);
+  if (user) {
+    // Update the user's createdCommuity array if you find it successfully
+    user.createdCommunities.push(communityId);
+    return await user.save();
+  } else {
+    return null;
+  }
+}
+
+// Populate the votes of posts and nested comments along with their votes
+
 const populateVotesAndCommentsOfPosts = async (
   posts,
   user_id,
   orderByDateIdentifier
 ) => {
   const finalPosts = [];
-  for (let index = 0; index < posts.length; posts++) {
+  for (let index = 0; index < posts.length; index++) {
     let voteStatus = 0;
     const postVote = await PostsVotesModel.findOne({
       post_id: posts[index]._id,
@@ -307,6 +483,7 @@ const populateVotesAndCommentsOfPosts = async (
   return finalPosts;
 };
 
+// Populate only the votes of parent comment
 const populateVoteOfParentComment = async (post_id, comment_id, user_id) => {
   const commentVote = await CommentsVotesModel.findOne({
     comment_id,
@@ -320,6 +497,8 @@ const populateVoteOfParentComment = async (post_id, comment_id, user_id) => {
   return voteStatus;
 };
 
+// Function which organizes the comments in a nested fashion. This is the starting
+// point to the recursive solution of nested comments
 const organizeComments = async (
   commentsArray,
   user_id,
@@ -337,19 +516,22 @@ const organizeComments = async (
         commentsArray[index]._id,
         user_id
       );
+      comment.user = await populateUser(comment.createdBy);
       threads[comment._id] = comment;
       continue;
     }
-    organizeChildComments(comment, threads);
+    await organizeChildComments(comment, threads);
   }
   threads = getSortedCommentsArray(threads, orderByDateIdentifier);
   return threads;
 };
 
-const organizeChildComments = (comment, threads) => {
+// Recursive function used to organize comments in the nested manner.
+const organizeChildComments = async (comment, threads) => {
   for (let thread in threads) {
     const currentParent = threads[thread];
     if (ObjectId(thread).equals(ObjectId(comment.parent_id))) {
+      comment.user = await populateUser(comment.createdBy);
       currentParent.children[comment._id] = comment;
       return;
     }
@@ -359,6 +541,8 @@ const organizeChildComments = (comment, threads) => {
   }
 };
 
+// Function which sorts the parent comment on the basis of popularity. If there is a tie
+// It is broken by createdAt value
 const getSortedCommentsArray = (commentsObject, orderByDateIdentifier) => {
   const sortCommentsByVotesAndDate = (a, b) => {
     // Sort by most popular
@@ -384,4 +568,9 @@ const getSortedCommentsArray = (commentsObject, orderByDateIdentifier) => {
   );
   return sortedCommentsArray;
 };
->>>>>>> e63afe0b3b4545b90bc39a2377b43ee74d514c5d
+
+
+// Populates the user data for each and every comment
+const populateUser = async (user_id) => {
+  return await UsersModel.findById(user_id, "name email handle avatar");
+};

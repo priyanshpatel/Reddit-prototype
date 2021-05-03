@@ -1,5 +1,6 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
+import { uploadS3 } from "../Utils/imageupload";
 const jwt = require("jsonwebtoken");
 const { secret } = require("../utils/config").default;
 const Users = require("../models/UsersModel");
@@ -79,9 +80,10 @@ const getAllCommunitiesForUser = async (req, res) => {
 const editUser = async (req, res) => {
   console.log("Inside edit user post Request");
   console.log("Request ", req.body);
+  console.log("Image", req.file);
   kafka.make_request(
     "reddit-user-topic",
-    { path: "edit_user", body: req.body },
+    { path: "edit_user", body: req.body, file: req.file },
     (err, results) =>
       kafka_response_handler(res, err, results, (result) => {
         const user = result.data;
@@ -135,11 +137,10 @@ export async function getCommunityListCreatedByUser(req, res) {
 }
 
 router.post("/signup", registerUser);
-// router.post("/login", login);
 router.get("/communities", getAllCommunitiesForUser);
 router.get('/getAllCommunityCreatedByUser', getCommunityListCreatedByUser)
 router.post("/login", loginUser);
-router.put("/edit", editUser);
+router.put("/edit", uploadS3.single("profileImage"), editUser);
 router.get("/get", getUser);
 
 module.exports = router;

@@ -75,20 +75,9 @@ const postSchema = new Schema(
       ref: "user",
       required: true,
     },
-
-    //TODO
-
-    // UNCOMMENT THE BELOW CODE WHEN COMMUNITY MODEL IS CREATED
-
-    // community: {
-    //   type: Schema.Types.ObjectId,
-    //   ref: "community",
-    //   required: true,
-    // }
-
-    // COMMENT THIS CODE WHEN COMMUNITY MODEL IS CREATED AND UNCOMMENT THE CODE ABOVE
     community: {
       type: Schema.Types.ObjectId,
+      ref: "community",
       required: true,
     },
   },

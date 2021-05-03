@@ -1,14 +1,12 @@
-<<<<<<< HEAD
-import { createCommunity, updateExistingCommunity, getAllCommunityForUser, getCommunityDetails, getCommunityListCreatedByUser } from "../../apis/community_api";
-=======
 import {
   createCommunity,
   updateExistingCommunity,
   getAllCommunityForUser,
   getCommunityDetails,
   getAllPosts,
+  getAllCreatedCommunitiesByUserId, getCommunityListCreatedByUser, deleteCommunity
 } from "../../apis/community_api";
->>>>>>> e63afe0b3b4545b90bc39a2377b43ee74d514c5d
+
 
 export const handle_request = async (message, callback) => {
   console.log("Handle Request for Community ", message);
@@ -21,13 +19,14 @@ export const handle_request = async (message, callback) => {
       return getAllCommunityForUser(message, callback);
     case "community-details":
       return getCommunityDetails(message, callback);
-<<<<<<< HEAD
     case "communityList-createdByUser":
       return getCommunityListCreatedByUser(message, callback);
-=======
     case "get-posts":
       return getAllPosts(message, callback);
->>>>>>> e63afe0b3b4545b90bc39a2377b43ee74d514c5d
+    case "get-created-communities":
+      return getAllCreatedCommunitiesByUserId(message, callback);
+    case "community-delete":
+      return deleteCommunity(message, callback);
     default:
       return callback({ status: 500, data: "no path found" }, null);
   }
