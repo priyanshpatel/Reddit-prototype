@@ -11,7 +11,6 @@ import Navbar from "../Navbar/navbar";
 import ReactDOM from 'react-dom';
 import { WithContext as ReactTags } from 'react-tag-input';
 import { displayName } from 'react-grid-gallery';
-import Navbar from '../Navbar/navbar';
 // import TagsInput from 'react-tagsinput'
 
 const KeyCodes = {
@@ -124,17 +123,6 @@ class Profile extends Component {
             profilePicture: URL.createObjectURL(e.target.files[0])
         })
     }
-    async componentDidMount() {
-        try {
-            this.props.userGetByIDAction(cookie.load('id')).then(response => {
-                console.log(this.props);
-            })
-        }
-        catch (err) {
-            console.log(err)
-        }
-
-    }
 
     handleOnSubmit = e => {
         e.preventDefault();
@@ -221,7 +209,6 @@ class Profile extends Component {
                 <div>
                     <Navbar />
                 </div>
-                <Navbar />
                 <div class="container">
                     <div className="row" >
                         <i class="fa fa-cog fa-fw" style={{ padding: "5px" }}></i>

@@ -8,7 +8,6 @@ import MyCommunities from './communities/myCommunities'
 
 import Profile from './users/profile'
 import { Profiler } from 'react';
-import MyCommunities from './communities/myCommunities';
 import CommunityModeration from './communities/communityModeration';
 
 class Routes extends Component {
