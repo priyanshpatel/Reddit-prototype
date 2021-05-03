@@ -25,11 +25,11 @@ var error = (err) => {
     }
 }
 var getPostsByIDAction = (data) => (dispatch) => {
+    console.log(data);
     axios.defaults.headers.common["authorization"] = cookie.load('token')
     axios.defaults.withCredentials = true;
-    console.log(data);
     return axios
-        .get(BACKEND_URL + ":" + BACKEND_PORT + "/community/posts?orderByDate=1&orderByPopularity=0&pageNumber=1&pageSize=3&community_id=608bcd1a6589fd7200e3e27f").then(response => {
+        .get(BACKEND_URL + ":" + BACKEND_PORT + "/community/posts?orderByDate=" + data.sorting + "&orderByPopularity=" + data.popularity + "&pageNumber=" + data.pageNumber + "&pageSize=" + data.pageSize + "&community_id=608bcd1a6589fd7200e3e27f").then(response => {
             if (response.status === 200) {
                 console.log(response.data)
                 dispatch(success(response, data));

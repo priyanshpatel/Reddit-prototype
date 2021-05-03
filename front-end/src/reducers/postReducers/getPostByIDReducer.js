@@ -1,5 +1,7 @@
 let initialState = {
-    postData: {},
+    getPostData: {
+        posts:[]
+    },
     error: "",
     message: ""
 }
@@ -8,7 +10,7 @@ let getPost = (state = initialState, action) => {
     let newState = { ...state }
     switch (action.type) {
         case "post_get_success":
-            newState.postData = action.payload.response.data;
+            newState.getPostData = action.payload.response.data;
             newState.error = false;
             newState.message = "Post Got successfully";
             return newState;

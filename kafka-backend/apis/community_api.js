@@ -156,6 +156,7 @@ export async function getCommunityDetails(message, callback) {
 // TODO :- MINIMIZE TIME TAKEN BY THIS METHOD EITHER BY CACHING OR BY FINDING A METHOD TO POPULATE USER_IDS
 // Get all posts with nested comements
 export const getAllPosts = async (req, callback) => {
+  console.log("over herer");
   const pageSize = req.query.pageSize || config.defaultPageSizePosts;
   const pageNumber = req.query.pageNumber;
 
