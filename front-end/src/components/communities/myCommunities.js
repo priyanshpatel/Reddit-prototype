@@ -18,8 +18,8 @@ class MyCommunities extends Component {
             error: false,
             myCommunitiesData: this.props.myCommunitiesData
         }
-        this.editButtonClicked = this.editButtonClicked.bind(this);
-        this.removeButtonClicked = this.removeButtonClicked(this);
+        // this.editButtonClicked = this.editButtonClicked.bind(this);
+        // this.removeButtonClicked = this.removeButtonClicked(this);
     }
 
     componentDidMount() {
