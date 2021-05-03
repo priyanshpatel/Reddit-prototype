@@ -4,7 +4,7 @@ const session = require("express-session");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
-const { mongoDB } = require("./utils/config").default;
+const { mongoDB } = require("./utils/config");
 const { auth } = require("./utils/passport");
 const passport = require("passport");
 
@@ -72,7 +72,7 @@ mongoose.set("useCreateIndex", true);
 app.use("/user", require("./Routes/user"));
 app.use("/community", require("./Routes/community"));
 app.use("/post", require("./Routes/post"));
-app.use("/chat", require('./Routes/chat'));
+app.use("/chat", require("./Routes/chat"));
 
 app.listen(3001, () => {
   console.log("Server listening on port 3001");

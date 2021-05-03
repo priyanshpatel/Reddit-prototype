@@ -1,14 +1,13 @@
 const express = require("express");
-const bcrypt = require("bcryptjs");
 import { uploadS3 } from "../Utils/imageupload";
 const jwt = require("jsonwebtoken");
-const { secret } = require("../utils/config").default;
-const Users = require("../models/UsersModel");
-const { auth } = require("../utils/passport");
 var Joi = require("joi");
 var { userschema } = require("../dataSchema/userschema");
 const kafka = require("../kafka/client");
-var { kafka_response_handler, kafka_default_response_handler } = require("../kafka/handler.js");
+var {
+  kafka_response_handler,
+  kafka_default_response_handler,
+} = require("../kafka/handler.js");
 require("dotenv").config();
 
 const router = express.Router();
@@ -21,7 +20,7 @@ const registerUser = async (req, res) => {
     .validate(req.body);
 
   if (error) {
-    console.log(error)
+    console.log(error);
     res.status(400).send(error.details);
     return;
   }
@@ -59,24 +58,25 @@ const loginUser = async (req, res) => {
 };
 
 const getAllCommunitiesForUser = async (req, res) => {
-  console.log('Inside get All communities post Request');
-  console.log('Request ', req.body);
+  console.log("Inside get All communities post Request");
+  console.log("Request ", req.body);
   let userId = req.query.userId;
-  console.log('user ID X', userId);
+  console.log("user ID X", userId);
   if (!userId) {
     res
       .status(400)
       .send({
-        code: 'INVALID_PARAM',
-        msg: 'Invalid User ID',
+        code: "INVALID_PARAM",
+        msg: "Invalid User ID",
       })
       .end();
   }
   kafka.make_request(
-    'reddit-community-topic',
-    { path: 'community-all-for-user', userId },
-    (err, results) => kafka_default_response_handler(res, err, results));
-}
+    "reddit-community-topic",
+    { path: "community-all-for-user", userId },
+    (err, results) => kafka_default_response_handler(res, err, results)
+  );
+};
 const editUser = async (req, res) => {
   console.log("Inside edit user post Request");
   console.log("Request ", req.body);

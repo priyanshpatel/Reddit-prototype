@@ -284,7 +284,7 @@ export const getAllCreatedCommunitiesByUserId = async (req, callback) => {
       "createdCommunities"
     ).populate({
       path: "createdCommunities",
-      select: "communityName communityAvatar",
+      select: "communityName communityAvatar members",
       options: {
         sort: {
           createdAt: orderByDateInDescending,
@@ -311,7 +311,7 @@ export const getAllCreatedCommunitiesByUserId = async (req, callback) => {
       "createdCommunities"
     ).populate({
       path: "createdCommunities",
-      select: "communityName",
+      select: "communityName communityAvatar members",
       options: {
         sort: {
           createdAt: orderByDateInDescending,
@@ -323,11 +323,102 @@ export const getAllCreatedCommunitiesByUserId = async (req, callback) => {
   }
   if (countPages && countPages.length != 0)
     totalPages = Math.ceil(countPages[0].totalDocuments / pageSize);
+
+  // Populate the complete list wit required data (totalRequests)
+  const finalCommunitiesList = [];
+
+  for (let index = 0; index < loggedInUser.createdCommunities.length; index++) {
+    finalCommunitiesList.push({
+      _id: loggedInUser.createdCommunities[index]._id,
+      communityName: loggedInUser.createdCommunities[index].communityName,
+      totalRequests: loggedInUser.createdCommunities[index].members.filter(
+        (membership) => {
+          return (
+            membership.communityJoinStatus ===
+            config.REQUESTED_TO_JOIN_COMMUNITY
+          );
+        }
+      ).length,
+    });
+  }
+
   callback(null, {
-    communities: loggedInUser.createdCommunities,
+    communities: finalCommunitiesList,
     totalPages,
     success: true,
   });
+};
+
+// A request is generated which when the community owner accepts the
+// user which requested  initially becomes the member of the community
+export const requestToJoinCommunity = async (req, callback) => {
+  // Find the community object
+  const community = await CommunityModel.findById(req.body.community_id);
+
+  // If commnity does not exist
+  if (!community) {
+    callback(null, {
+      errorMessage: ["Select a valid community."],
+      success: false,
+    });
+    return;
+  }
+  // Find user's Id who is requesting join in the members array
+  const index = community.members.findIndex((membership) => {
+    console.log(membership);
+    console.log(ObjectId(membership._id) === ObjectId(req.user._id));
+    return ObjectId(membership._id).equals(ObjectId(req.user._id));
+  });
+  // Check whether the user has joined the community
+  if (
+    index !== -1 &&
+    community.members[index].communityJoinStatus ===
+      config.ACCEPTED_REQUEST_TO_JOIN_COMMUNITY
+  ) {
+    callback(null, {
+      errorMessage: ["You are already a member of this community."],
+      success: false,
+    });
+    return;
+  }
+  // Check whether the user has alredy been invited to join the community or not
+  else if (
+    index !== -1 &&
+    community.members[index].communityJoinStatus ===
+      config.INVITED_TO_JOIN_COMMUNITY
+  ) {
+    callback(null, {
+      errorMessage: [
+        "You have been already invited to join the community. Please accept that invitation to join the community.",
+      ],
+      success: false,
+    });
+    return;
+  }
+  // Check whether the user has already requested to join the community
+  else if (
+    index !== -1 &&
+    community.members[index].communityJoinStatus ===
+      config.REQUESTED_TO_JOIN_COMMUNITY
+  ) {
+    callback(null, {
+      errorMessage: ["You have already requested to join this community."],
+      success: false,
+    });
+    return;
+  } else {
+    // Generate the request
+    community.members.push({
+      _id: ObjectId(req.user._id),
+      communityJoinStatus: config.REQUESTED_TO_JOIN_COMMUNITY,
+    });
+    await community.save();
+    callback(null, {
+      message:
+        "Requested successfully to join " + community.communityName + ".",
+      success: true,
+    });
+  }
 };
 
 // HELPER FUNCTIONS
@@ -448,6 +539,7 @@ async function updateCreatorsCommunityList(userId, communityId) {
   if (user) {
     // Update the user's createdCommuity array if you find it successfully
     user.createdCommunities.push(communityId);
+    user.memberships.push(communityId);
     return await user.save();
   } else {
     return null;
