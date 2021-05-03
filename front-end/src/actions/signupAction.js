@@ -32,7 +32,7 @@ var SignUpAction = (data) => (dispatch) => {
         .post(BACKEND_URL + ":" + BACKEND_PORT + '/user/signup', data)
         .then((response) => {
             console.log("response >>>>>>>>>>>>", response)
-            cookie.save("token", response.data.token, {
+            cookie.save("token", "Bearer " + response.data.token, {
                 path: '/',
                 httpOnly: false,
                 maxAge: 90000

@@ -1,5 +1,6 @@
 import { checkAuth } from "../Utils/passport";
 import { uploadS3 } from "../Utils/imageupload";
+import { ConnectionStates } from "mongoose";
 
 const express = require("express");
 const { auth } = require("../utils/passport");
@@ -34,12 +35,13 @@ const createCommunity = async (req, res) => {
       .send({ errorMessage: ["Community cover must be specified."] });
     return;
   }
-
   if (!req.body.community) {
+    console.log("ove here")
+
     res.status(400).send({ errorMessage: ["Community must be specified."] });
     return;
   }
-
+  
   const { error, value } = communitySchema.validate(
     JSON.parse(req.body.community)
   );

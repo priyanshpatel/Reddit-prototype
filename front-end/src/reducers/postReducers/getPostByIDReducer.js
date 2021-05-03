@@ -1,18 +1,20 @@
 let initialState = {
-    data: {},
+    getPostData: {
+        posts:[]
+    },
     error: "",
     message: ""
 }
-let createPost = (state = initialState, action) => {
+let getPost = (state = initialState, action) => {
     console.log(action);
     let newState = { ...state }
     switch (action.type) {
-        case "create_post_success":
-            newState.id = action.payload.response.data;
+        case "post_get_success":
+            newState.getPostData = action.payload.response.data;
             newState.error = false;
-            newState.message = "Post created successfully";
+            newState.message = "Post Got successfully";
             return newState;
-        case "create_post_failed":
+        case "post_get_fail":
             newState.error = true;
             newState.message = action.payload.response.response.data.errorMessage
             return newState;
@@ -21,4 +23,4 @@ let createPost = (state = initialState, action) => {
     }
 }
 
-export default createPost
+export default getPost

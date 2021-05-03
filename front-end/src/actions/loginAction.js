@@ -34,7 +34,7 @@ var loginAction = (data) => (dispatch) => {
             let decoded = jwt_decode(response.data.token)
             console.log("decoded>>>>>>>>>>>>>>>>>>>", decoded)
             if (response.status === 200) {
-                cookie.save("token", response.data.token, {
+                cookie.save("token", "Bearer " +response.data.token, {
                     path: '/',
                     httpOnly: false,
                     maxAge: 90000

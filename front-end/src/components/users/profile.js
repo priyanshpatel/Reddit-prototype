@@ -7,6 +7,7 @@ import updateUserProfileAction from '../../actions/userUpdateAction';
 import userGetByIDAction from '../../actions/getUserByIDReducer';
 import { connect } from "react-redux";
 import cookie from "react-cookies";
+import Navbar from "../Navbar/navbar";
 
 //author - Het 
 //TODO : Topic Creation Left
@@ -53,33 +54,6 @@ class Profile extends Component {
             this.props.userGetByIDAction(cookie.load('id')).then(response => {
                 console.log(this.props);
             })
-            // console.log(this.props);
-            // const userID = cookie.load("id")
-            // console.log(userID);
-            // axios.defaults.headers.common["authorization"] = cookie.load('token')
-            // axios.defaults.withCredentials = true;
-            // const response = await axios.get(BACKEND_URL + "/users/userbyid/" + userID);
-            // console.log(response);
-            // this.setState({
-            //     userID: response.data._id,
-            //     name: response.data.name,
-            //     email: response.data.email,
-            //     defaultcurrency: response.data.defaultCurrency,
-            //     phoneno: response.data.phoneno,
-            //     timezone: response.data.timezone,
-            //     language: response.data.language,
-
-            // })
-            // if (response.data.image == "") {
-            //     this.setState({
-            //         profileImagePath: BACKEND_URL + '/images/avatar.png'
-            //     })
-            // }
-            // else {
-            //     this.setState({
-            //         profileImagePath: BACKEND_URL + '/images/profilepics/' + cookie.load('id') + '/' + response.data.image
-            //     })
-            // }
         }
         catch (err) {
             console.log(err)
@@ -142,6 +116,9 @@ class Profile extends Component {
 
         return (
             <div>
+                <div>
+                    <Navbar />
+                </div>
                 <div class="container">
                     <div className="row" >
                         <i class="fa fa-cog fa-fw" style={{ padding: "5px" }}></i>
