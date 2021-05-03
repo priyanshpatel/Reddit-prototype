@@ -7,7 +7,7 @@ const router = express.Router();
 const getCommunityAnalytics = async (req, res) => {
     // Kafka make request call
     kafka.make_request(
-        "reddit-community-analytics-topic",
+        "reddit-community-topic",
         { path: "community_analytics", body: req.query },
         (err, results) =>
             kafka_response_handler(res, err, results, (result) => {

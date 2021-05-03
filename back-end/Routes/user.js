@@ -232,7 +232,19 @@ const updateInviteStatus = async (req, res) => {
       } else {
         res.status(200).send({ ...results.res });
       }
-    }
+    })
+  }
+const getUserProfile = async (req, res) => {
+  console.log("Inside get user profile get Request");
+  console.log("Request ", req.query);
+  kafka.make_request(
+    "reddit-user-topic",
+    { path: "get_user_profile", body: req.query },
+    (err, results) =>
+      kafka_response_handler(res, err, results, (result) => {
+        const user = result.data;
+        return res.status(result.status).send({ user });
+      })
   );
 };
 
@@ -246,5 +258,6 @@ router.get("/getCommunityAndPost", checkAuth, getCommunityAndPosts);
 router.get("/search", checkAuth, searchAllUsers);
 router.get("/notifications", checkAuth, getNotifications);
 router.post("/invite/update", checkAuth, updateInviteStatus);
+router.get("/getUserProfile", getUserProfile);
 
 module.exports = router;
