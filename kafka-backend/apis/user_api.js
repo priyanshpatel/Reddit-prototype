@@ -73,7 +73,9 @@ export async function loginUser(message, callback) {
 }
 
 export async function editUser(message, callback) {
+    console.log("MESSAGEBODY[][][][][][][][][][][][][][][][")
     console.log(message.body);
+    console.log("MESSAGEFile[][][][][][][][][][][][][][][][")
     console.log(message.file);
     let response = {};
     let err = {};
@@ -105,7 +107,9 @@ export async function editUser(message, callback) {
             storedUser.location = user.location;
         }
         if (user.topics !== undefined) {
-            storedUser.topics = [...user.topics];
+            const topics = user.topics.split(',');
+            storedUser.topics = topics
+            user.topics = topics;
         }
         if (user.email !== undefined) {
             storedUser.email = user.email;
