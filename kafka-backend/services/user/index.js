@@ -1,4 +1,10 @@
-import { registerUser, loginUser, editUser, getUserByObjId } from "../../apis/user_api";
+import {
+  registerUser,
+  loginUser,
+  editUser,
+  getUserByObjId,
+  getUsersOfMyCommunity,
+} from "../../apis/user_api";
 
 export const handle_request = async (message, callback) => {
   console.log("Handle Request for user ", message);
@@ -11,6 +17,8 @@ export const handle_request = async (message, callback) => {
       return editUser(message, callback);
     case "get_user":
       return getUserByObjId(message, callback);
+    case "get-mycommunity-users":
+      return getUsersOfMyCommunity(message, callback);
     default:
       return callback({ status: 500, data: "no path found" }, null);
   }
