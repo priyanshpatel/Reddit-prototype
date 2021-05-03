@@ -12,7 +12,7 @@ import getByIDCommunityAction from '../../actions/community/getCommunityByID';
 import { CarouselProvider, Slider, Slide, ButtonBack, ButtonNext } from 'pure-react-carousel';
 import 'pure-react-carousel/dist/react-carousel.es.css';
 
-import Navbar from "../Navbar/navbar";
+import Navbar from "../Navbar/Navbar";
 import { Link } from 'react-router-dom';
 import cookie from "react-cookies";
 class CreateCommunity extends Component {
@@ -293,27 +293,12 @@ class CreateCommunity extends Component {
                         </div>
                         {fileDivision}
                         <div className="row" style={{ marginLeft: "2%", marginTop: "5%" }}>
-                            <div className="col-5">
-                                <span><strong><div>{this.state.rulesTitle}</div></strong></span>
-                                <div className="col-3">
-                                    <span><strong><div>Choose Multiple Images Files</div></strong></span>
-                                </div>
-                                <div className="col-3">
-                                    <span><strong><div>Choose Community Avatar</div></strong></span>
+                            <div className="row" >
+                                <div className="col-8" style={{ marginLeft: "20%", marginTop: "5%" }}>
+                                    <span ><strong><div> Rules</div></strong></span>
                                 </div>
                             </div>
-
-                            <div className="row" style={{ marginLeft: "2%" }}>
-                                <input style={{ background: "none", border: "none" }} type="file" id="file" multiple name="file" data-show-upload="true" data-show-caption="true" onChange={this.fileSelectedHandler} />
-                                <input style={{ background: "none", border: "none" }} type="file" id="file" name="file" data-show-upload="true" data-show-caption="true" onChange={this.fileAvatarHandler} />
-
-                            </div>
-                            <div className="row" style={{ marginLeft: "2%", marginTop: "5%" }}>
-                                <div className="col-5">
-                                    <span><strong><div>Add Rules</div></strong></span>
-                                </div>
-                            </div>
-                            <div className="row" style={{ marginLeft: "2%", width: "120%" }}>
+                            <div className="row" style={{ marginLeft: "2px", width: "120%" }}>
                                 <div className="col-8">
                                     <form onSubmit={this.handleSubmit}>
 

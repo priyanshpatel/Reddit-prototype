@@ -7,7 +7,6 @@ import updateUserProfileAction from '../../actions/userUpdateAction';
 import userGetByIDAction from '../../actions/userGetByIDAction';
 import { connect } from "react-redux";
 import cookie from "react-cookies";
-import Navbar from "../Navbar/navbar";
 import ReactDOM from 'react-dom';
 import { WithContext as ReactTags } from 'react-tag-input';
 import { displayName } from 'react-grid-gallery';
@@ -20,6 +19,7 @@ const KeyCodes = {
 
 const delimiters = [KeyCodes.comma, KeyCodes.enter];
 
+import Navbar from "../Navbar/Navbar";
 
 //author - Het 
 class Profile extends Component {

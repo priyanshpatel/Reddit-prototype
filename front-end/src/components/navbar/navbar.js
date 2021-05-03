@@ -6,14 +6,16 @@ import './navbar.css'
 import { Row, Col } from 'reactstrap';
 import home_page from '../../images/home-page.png'
 import reddit_logo from '../../images/reddit-logo-vector.svg'
-import Modal from 'react-bootstrap/Modal'
+import chat_icon from '../../images/chat-icon.png'
+
+import Modal from 'react-modal';
 import loginAction from '../../actions/loginAction'
 import signUpAction from '../../actions/signupAction'
 import { connect } from "react-redux";
 import cookie from "react-cookies";
 import { Link } from 'react-router-dom';
-import login from '../../images/login.png'
-
+import login from '../../images/login.png';
+import no_chat_icon from '../../images/no_chat_icon.png';
 
 
 class Navbar extends Component {
@@ -29,7 +31,9 @@ class Navbar extends Component {
             signuppassword: "",
             signupButton: false,
             signUpBackendError: false,
-            loginBackendError: false
+            loginBackendError: false,
+            chatFlag: false,
+            newChatFlag: false
         }
     }
 
@@ -72,6 +76,17 @@ class Navbar extends Component {
             })
         }
     }
+    handleNewChatButtonClick = (e) => {
+        this.setState(
+            {
+                chatFlag: false,
+                newChatFlag: true
+            }
+        )
+        // this.setState({
+        //     loginButton: !this.state.loginButton
+        // })
+    }
     loginButtonClick = (e) => {
         this.setState({
             loginButton: !this.state.loginButton
@@ -94,7 +109,7 @@ class Navbar extends Component {
                 name: this.state.signupname,
                 email: this.state.signupemail,
                 password: this.state.signuppassword,
-            } 
+            }
         }
         console.log("sign up>>>>>>>>>>>>>>", signUpObject)
         e.preventDefault();
@@ -158,6 +173,12 @@ class Navbar extends Component {
 
         })
     }
+    handleChatApplicationClick = (e) => {
+        this.setState({
+            chatFlag: !this.state.chatFlag,
+            newChatFlag: false
+        })
+    }
     render() {
         let invalidLoginError = null
         let invalidSignUpError = null
@@ -169,59 +190,163 @@ class Navbar extends Component {
             invalidSignUpError = <div style={{ 'color': 'red' }}>{this.props.signUpMessage}</div>
         }
         if (cookie.load('token')) {
-            console.log("token found")
-            return(
+            return (
                 <div className="manual-container">
-                        <div class="row">
+                    <div class="row">
 
-                        </div>
-                        <div className="row">
-                            <div className="col-2">
-                                <Link to="/"><img src={reddit_logo} className="logo-image" alt="reddit-logo" /></Link>
-                            </div>
-                            <div className="col-1 dropdown" style={{paddingRight:"0px"}}>
-                                    <button className="btn dropdown-toggle navbar-dropdown-button" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i class="fas fa-edit"></i> <span class="nav-username">Create</span>
-                                    </button>
-                                    <div className="dropdown-menu" aria-labelledby="dropdownMenu2">
-                                        <Link to="/create-post" className="dropdown-item" type="button" value="home"><i class="fas fa-edit dd-icon"></i><span className="dd-item">Create Post</span></Link>
-                                        <Link to="/create-community" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-edit dd-icon"></i><span className="dd-item">Create Community</span></Link>
-                                    </div>
-                            </div>
-                            <div className="col-1 nav-icon-div">
-                                <Link to="/"><i class="fas fa-chart-line nav-icon-button" style={{marginRight:"10px"}} ></i></Link>
-                                <Link to="/"><i class="fas fa-chart-bar nav-icon-button"></i></Link>
-                            </div>
-                            <div className="col-4">
-                                <div className="form-group has-search">
-                                    <span class="form-control-feedback">
-                                        <svg viewBox="-1 0 15 15" fill="none" className="navbar-search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M14.5 14.5l-4-4m-4 2a6 6 0 110-12 6 6 0 010 12z" stroke="#6a6b6a"></path></svg>
-                                    </span>
-                                    <input type="text" style={{ backgroundColor: "#eaeef3", border: "none" }} class="form-control" placeholder="Search">
-                                    </input>
-                                </div>
-                            </div>
-                            < div className="col-2 nav-icon-div" style={{paddingRight:"0px"}}>
-                                <Link to="/"><i class="fas fa-comment-dots nav-icon-button" style={{marginRight:"10px"}} ></i></Link>
-                                <Link to="/"><i class="fas fa-bell nav-icon-button" style={{marginRight:"10px"}} ></i></Link>
-                            </div>
-                                {/* <Dropdown isOpen={dropdownOpen} toggle={toggle}> */}
-                            <div className="col-2" style={{textAlign:"right"}} style={{paddingLeft:"0px"}}>
-                                <div className="dropdown">
-                                    <button className="btn dropdown-toggle navbar-dropdown-button" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <img src="/logo192.png" alt="Avatar" class="nav-avatar"/>  <span class="nav-username">{cookie.load('userName')}</span>
-                                    </button>
-                                    <div className="dropdown-menu" aria-labelledby="dropdownMenu2">
-                                        <Link to="/" className="dropdown-item" type="button" value="home"><i class="fas fa-home dd-icon"></i><span className="dd-item">Home</span></Link>
-                                        <Link to="/my-communities" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-users dd-icon"></i><span className="dd-item">My Communities</span></Link>
-                                        <Link to="/profile" className="dropdown-item" type="button" value="profile"><i class="fas fa-id-badge dd-icon"/><span className="dd-item">Profile</span></Link>
-                                        <Link className="dropdown-item" type="button" value="logout" onClick={this.handleLogout}><i class="fas fa-sign-out-alt dd-icon"></i><span className="dd-item">Logout</span></Link>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <hr class="nav-hr"/>
                     </div>
+                    <div className="row">
+                        <div className="col-2">
+                            <Link to="/"><img src={reddit_logo} className="logo-image" alt="reddit-logo" /></Link>
+                        </div>
+                        <div className="col-1 dropdown" style={{ paddingRight: "0px" }}>
+                            <button className="btn dropdown-toggle navbar-dropdown-button" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-edit"></i> <span class="nav-username">Create</span>
+                            </button>
+                            <div className="dropdown-menu" aria-labelledby="dropdownMenu2">
+                                <Link to="/create-post" className="dropdown-item" type="button" value="home"><i class="fas fa-edit dd-icon"></i><span className="dd-item">Create Post</span></Link>
+                                <Link to="/create-community" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-edit dd-icon"></i><span className="dd-item">Create Community</span></Link>
+                            </div>
+                        </div>
+                        <div className="col-1 nav-icon-div">
+                            <Link to="/"><i class="fas fa-chart-line nav-icon-button" style={{ marginRight: "10px" }} ></i></Link>
+                            <Link to="/"><i class="fas fa-chart-bar nav-icon-button"></i></Link>
+                        </div>
+                        <div className="col-4">
+                            <div className="form-group has-search">
+                                <span class="form-control-feedback">
+                                    <svg viewBox="-1 0 15 15" fill="none" className="navbar-search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M14.5 14.5l-4-4m-4 2a6 6 0 110-12 6 6 0 010 12z" stroke="#6a6b6a"></path></svg>
+                                </span>
+                                <input type="text" style={{ backgroundColor: "#eaeef3", border: "none" }} class="form-control" placeholder="Search">
+                                </input>
+                            </div>
+                        </div>
+                        < div className="col-2 nav-icon-div" style={{ paddingRight: "0px" }}>
+                            <Link to="/"> <i class="fas fa-comment-dots nav-icon-button" onClick={this.handleChatApplicationClick} style={{ marginRight: "10px" }} ></i></Link>
+                            <Link to="/"><i class="fas fa-bell nav-icon-button" style={{ marginRight: "10px" }} ></i></Link>
+                        </div>
+                        {/* <Dropdown isOpen={dropdownOpen} toggle={toggle}> */}
+                        <div className="col-2" style={{ textAlign: "right" }} style={{ paddingLeft: "0px" }}>
+                            <div className="dropdown">
+                                <button className="btn dropdown-toggle navbar-dropdown-button" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <img src="/logo192.png" alt="Avatar" class="nav-avatar" />  <span class="nav-username">{cookie.load('userName')}</span>
+                                </button>
+                                <div className="dropdown-menu" aria-labelledby="dropdownMenu2">
+                                    <Link to="/" className="dropdown-item" type="button" value="home"><i class="fas fa-home dd-icon"></i><span className="dd-item">Home</span></Link>
+                                    <Link to="/my-communities" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-users dd-icon"></i><span className="dd-item">My Communities</span></Link>
+                                    <Link to="/profile" className="dropdown-item" type="button" value="profile"><i class="fas fa-id-badge dd-icon" /><span className="dd-item">Profile</span></Link>
+                                    <Link className="dropdown-item" type="button" value="logout" onClick={this.handleLogout}><i class="fas fa-sign-out-alt dd-icon"></i><span className="dd-item">Logout</span></Link>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="nav-hr" />
+                    {
+                        this.state.chatFlag ?
+
+                            <div className="chat-application">
+                                <Row>
+                                    <Col xs="4" style={{ height: "430px", padding: "10px", border: "1px solid #DADADA", borderTopLeftRadius: "10px", width: "550px" }}>
+                                        <span style={{ padding: "7%", marginTop: "1%", font: "14px Arial", color: "#1C1C1C" }}>
+                                            Chat
+                                        </span>
+                                        <span style={{ marginLeft: "60%", paddingTop: "5%" }} >
+
+                                            <img src={chat_icon} height="20px" alt="reddit-logo" />
+                                        </span>
+                                    </Col>
+                                    <Col xs="6" style={{ border: "1px solid #DADADA", }}>
+                                        <Row style={{ borderBottom: "1px solid #DADADA", font: "14px Arial #1C1C1C", height: "10%" }}>
+                                            <span style={{ font: "14px Arial", padding: "10px" }}>Start Chatting</span>
+                                            <br></br>
+                                        </Row>
+                                        <Row style={{ height: "80%" }}>
+                                            {/* <img src={no_chat_icon} style={{marginLeft:"15%"}} width = "300px"alt="reddit-logo" /> */}
+
+                                        </Row>
+                                        <Row style={{ borderTop: "1px solid #DADADA" }}>
+                                            <div style={{ paddingLeft: "40%", paddingTop: "10px" }}>
+                                                <button style={{ backgroundColor: "#0079d3", border: "none", cursor: "pointer", color: "white", borderRadius: "60px" }} onClick={this.handleNewChatButtonClick}><span style={{ fontSize: "14px", fontWeight: "300px" }}><strong>New Chat </strong></span></button>
+                                            </div>
+                                            {/* <button type="button"  style={{ backgroundColor: "#0079d3", color: "white", borderRadius: "60px" }} class="btn btn-outline-primary btn-xs" onClick={this.postClick}><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Create Post</strong></span></button> */}
+                                        </Row>
+
+                                    </Col>
+
+                                </Row>
+
+
+                            </div>
+                            : this.state.newChatFlag ?
+                                <div className="chat-new-application">
+                                    <Row>
+                                        <Col xs="10" style={{ height: "430px", border: "1px solid #DADADA", borderTopLeftRadius: "10px", width: "600px" }}>
+                                            <Row style={{ borderBottom: "1px solid #DADADA", height: "10%" }}>
+                                                <span style={{ padding: "2%" }}>
+                                                    <bold>TO:-
+
+                                                    </bold>
+
+                                                </span>
+                                            </Row>
+                                            <Row>
+
+                                            </Row>
+                                            {/* <span style={{ padding: "7%", marginTop: "1%", font: "14px Arial", color: "#1C1C1C" }}>
+                                        Chat
+                                    </span>
+                                    <span style={{ marginLeft: "60%", paddingTop: "5%" }} >
+
+                                        <img src={chat_icon} height="20px" alt="reddit-logo" />
+                                    </span> */}
+                                        </Col>
+                                        {/* <Col xs="6" style={{ border: "1px solid #DADADA", }}>
+                                    <Row style={{ borderBottom: "1px solid #DADADA", font: "14px Arial #1C1C1C", height: "10%" }}>
+                                        <span style={{ font: "14px Arial", padding: "10px" }}>Start Chatting</span>
+                                        <br></br>
+                                    </Row>
+                                    <Row style={{ height: "80%" }}>
+                                    {/* <img src={no_chat_icon} style={{marginLeft:"15%"}} width = "300px"alt="reddit-logo" /> */}
+
+                                        {/* </Row>
+                                    <Row style={{borderTop : "1px solid #DADADA"}}>
+                                        <div style={{ paddingLeft: "40%" , paddingTop:"10px"}}>
+                                            <button style={{ backgroundColor: "#0079d3",border: "none",cursor : "pointer" ,color: "white", borderRadius: "60px" }} onClick={this.handleNewChatButtonClick}><span style={{ fontSize: "14px", fontWeight: "300px" }}><strong>New Chat </strong></span></button>
+                                        </div>
+                                        {/* <button type="button"  style={{ backgroundColor: "#0079d3", color: "white", borderRadius: "60px" }} class="btn btn-outline-primary btn-xs" onClick={this.postClick}><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Create Post</strong></span></button> */}
+
+
+                                        {/* </Col>  */}
+
+                                    </Row>
+                                    {/* // <div className="chat-new-application">
+                                //     <Row>
+                                //         <Col xs="12" style={{ height: "430px", padding: "10px", border: "1px solid #DADADA", borderTopLeftRadius: "10px", borderTopRIGHTRadius: "10px",width: "550px" }}>
+                                //             <span style={{ padding: "7%", marginTop: "1%", font: "14px Arial", color: "#1C1C1C" }}>
+                                //                 TO:-
+                                //         </span>
+                                //         </Col>
+                                //     </Row> */}
+
+
+                                    {/* <Row>
+                                        <Col style={{ height: "430px",border: "1px solid #DADADA", borderTopLeftRadius: "10px", borderTopRightRadius: "10px", width: "500px" }}>
+                                            <span style={{marginTop: "1%", font: "14px Arial", color: "#1C1C1C" }}>
+                                                Chattting
+                                        </span>
+                                            <span style={{ marginLeft: "60%", paddingTop: "5%" }} >
+
+                                                <img src={chat_icon} height="20px" alt="reddit-logo" />
+                                            </span>
+                                        </Col>
+
+
+                                    </Row> */}
+                                </div> : ""
+                    }
+
+                </div>
+
             )
         } else {
             console.log("token not found")
@@ -251,7 +376,7 @@ class Navbar extends Component {
 
                             </div>
                         </div>
-                        <hr class="nav-hr"/>
+                        <hr class="nav-hr" />
                     </div>
 
                     {/* LOGIN MODAL */}
