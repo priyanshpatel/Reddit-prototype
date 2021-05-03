@@ -252,7 +252,6 @@ class CreateCommunity extends Component {
                 </div>
             )
         }
-        let error = null
         if (this.state.error) {
             error = <div style={{ 'color': 'red' }}>*Please fill all the required fields</div>
         }
