@@ -1,5 +1,6 @@
 const express = require("express");
 import { uploadS3 } from "../Utils/imageupload";
+import { checkAuth } from "../Utils/passport";
 const jwt = require("jsonwebtoken");
 var Joi = require("joi");
 var { userschema } = require("../dataSchema/userschema");
@@ -136,11 +137,42 @@ export async function getCommunityListCreatedByUser(req, res) {
   );
 }
 
+export async function getCommunityAndPosts(req, res) {
+  console.log("inside get community and Posts created by user", req.user._id);
+  let userId = req.user._id;
+  if (!userId) {
+    res
+      .status(400)
+      .send(
+        {
+          code: 'INVALID_PARAM',
+          msg: 'Invalid userId ID'
+        }
+      )
+      .end();
+  }
+  kafka.make_request(
+    "reddit-user-topic",
+    {
+      path: "get-community-post-createdByUser", userId,
+      options: {
+        pageIndex: req.query.pageIndex || 1,
+        pageSize: req.query.pageSize || 2,
+        sortBy: req.query.sortBy || 'createdAt',
+        sortOrder: req.query.sortOrder || 'desc',
+        searchKeyword: req.query.searchKeyword ? `${req.query.searchKeyword}.*` : '.*'
+      },
+    },
+    (err, results) => kafka_default_response_handler(res, err, results)
+  );
+}
+
 router.post("/signup", registerUser);
 router.get("/communities", getAllCommunitiesForUser);
 router.get('/getAllCommunityCreatedByUser', getCommunityListCreatedByUser)
 router.post("/login", loginUser);
 router.put("/edit", uploadS3.single("profileImage"), editUser);
 router.get("/get", getUser);
+router.get("/getCommunityAndPost", checkAuth, getCommunityAndPosts);
 
 module.exports = router;

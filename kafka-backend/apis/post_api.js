@@ -94,6 +94,7 @@ const createComment = async (req, callback) => {
 
     // Saving the comment and post
     rawComment.createdBy = req.user._id;
+    console.log("raw comments ", rawComment);
     rawPost.comments.push(rawComment);
     const post = await rawPost.save();
 

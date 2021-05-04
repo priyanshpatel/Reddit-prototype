@@ -547,8 +547,7 @@ async function updateCreatorsCommunityList(userId, communityId) {
 }
 
 // Populate the votes of posts and nested comments along with their votes
-
-const populateVotesAndCommentsOfPosts = async (
+ export const populateVotesAndCommentsOfPosts = async (
   posts,
   user_id,
   orderByDateIdentifier

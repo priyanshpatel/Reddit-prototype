@@ -4,6 +4,7 @@ import {
   editUser,
   getUserByObjId,
   getUsersOfMyCommunity,
+  getCommunityAndPosts
 } from "../../apis/user_api";
 
 export const handle_request = async (message, callback) => {
@@ -19,6 +20,8 @@ export const handle_request = async (message, callback) => {
       return getUserByObjId(message, callback);
     case "get-mycommunity-users":
       return getUsersOfMyCommunity(message, callback);
+    case "get-community-post-createdByUser":
+      return getCommunityAndPosts(message, callback);
     default:
       return callback({ status: 500, data: "no path found" }, null);
   }
