@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 const config = require("../config/config");
 const aggregatePaginate = require('mongoose-aggregate-paginate-v2');
 const Post = require("./PostsModel");
+
 const communitySchema = new Schema(
   {
     communityName: { type: String, required: true, unique: true },
@@ -26,6 +27,7 @@ const communitySchema = new Schema(
       },
     ],
     posts: [{ type: Schema.Types.ObjectId, ref: "post" }],
+
   },
   {
     timestamps: true,

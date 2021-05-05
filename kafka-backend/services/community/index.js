@@ -5,8 +5,11 @@ import {
   getCommunityDetails,
   getAllPosts,
   getAllCreatedCommunitiesByUserId, getCommunityListCreatedByUser, deleteCommunity,
-  getAllCreatedCommunities,
   requestToJoinCommunity,
+  communityUpVote,
+  communityDownVote,
+  communitySearch
+
 } from "../../apis/community_api";
 
 
@@ -31,6 +34,12 @@ export const handle_request = async (message, callback) => {
       return deleteCommunity(message, callback);
     case "join-community":
       return requestToJoinCommunity(message, callback);
+    case "community-upvote":
+      return communityUpVote(message, callback);
+    case "community-downvote":
+      return communityDownVote(message, callback);
+    case "community-search":
+      return communitySearch(message, callback);  
     default:
       return callback({ status: 500, data: "no path found" }, null);
   }

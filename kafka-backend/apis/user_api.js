@@ -3,7 +3,7 @@ import Post from '../models/PostsModel';
 const bcrypt = require('bcrypt');
 const configuration = require('../config/config');
 const UserModel = require('../models/UsersModel');
-const CommunityModel = require('../models/communityModel');
+const CommunityModel = require('../models/CommunityModel');
 const { uniqueNamesGenerator, names } = require('unique-names-generator');
 const aleaRNGFactory = require('number-generator/lib/aleaRNGFactory');
 const { uInt32 } = aleaRNGFactory(10);

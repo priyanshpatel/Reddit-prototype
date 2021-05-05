@@ -1,11 +1,13 @@
 import { createError } from "../helper/error";
 import config from "../config/config";
-const CommunityModel = require("../models/communityModel");
+import { createIndexes } from "../models/PostsModel";
+const CommunityModel = require("../models/CommunityModel");
 const PostsModel = require("../models/PostsModel");
 const mongoose = require("mongoose");
 const UsersModel = require("../models/UsersModel");
 const PostsVotesModel = require("../models/PostsVotesModel");
 const CommentsVotesModel = require("../models/CommentsVotesModel");
+const CommunityVotesModel = require("../models/CommunityVotesModel");
 const ObjectId = require("mongodb").ObjectID;
 
 export async function createCommunity(message, callback) {
@@ -373,7 +375,7 @@ export const requestToJoinCommunity = async (req, callback) => {
   if (
     index !== -1 &&
     community.members[index].communityJoinStatus ===
-      config.ACCEPTED_REQUEST_TO_JOIN_COMMUNITY
+    config.ACCEPTED_REQUEST_TO_JOIN_COMMUNITY
   ) {
     callback(null, {
       errorMessage: ["You are already a member of this community."],
@@ -385,7 +387,7 @@ export const requestToJoinCommunity = async (req, callback) => {
   else if (
     index !== -1 &&
     community.members[index].communityJoinStatus ===
-      config.INVITED_TO_JOIN_COMMUNITY
+    config.INVITED_TO_JOIN_COMMUNITY
   ) {
     callback(null, {
       errorMessage: [
@@ -399,7 +401,7 @@ export const requestToJoinCommunity = async (req, callback) => {
   else if (
     index !== -1 &&
     community.members[index].communityJoinStatus ===
-      config.REQUESTED_TO_JOIN_COMMUNITY
+    config.REQUESTED_TO_JOIN_COMMUNITY
   ) {
     callback(null, {
       errorMessage: ["You have already requested to join this community."],
@@ -437,7 +439,19 @@ async function getCommunityById(communityId) {
   ).populate('members._id')
     .populate('creator')
     .populate('Posts');
-  return community;
+
+  console.log("Community ID ", communityId);
+  console.log("Community ", community);
+  const communityVotes = await CommunityVotesModel.find({ communityId });
+  console.log("CommunityVotes ", communityVotes);
+  const votes = communityVotes.map((cv) => cv.vote).reduce((a, b) => a + b, 0);
+  console.log("votes ", votes);
+
+  let finalCommunity = JSON.parse(JSON.stringify(community));
+  finalCommunity.communityVotes = communityVotes;
+  finalCommunity.votes = votes;
+  console.log("finalCommunity ", finalCommunity);
+  return finalCommunity;
 }
 
 //For my communities page
@@ -466,7 +480,7 @@ export async function getCommunitiesByUserId(
     {
       $addFields: {
         numberOfPosts: { $cond: { if: { $isArray: "$posts" }, then: { $size: "$posts" }, else: 0 } },
-        numberOfUsers: { $size: "$members" }
+        numberOfUsers: { $size: "$members" },
       },
     }
   ])
@@ -490,7 +504,7 @@ export async function deleteCommunity(message, callback) {
     await CommunityModel.remove({ _id: communityId });
     response.status = 200;
     response.data = "Deleted Successfully";
-    return callback(null,response);
+    return callback(null, response);
   }
   catch (err) {
     error.status = 500;
@@ -547,7 +561,7 @@ async function updateCreatorsCommunityList(userId, communityId) {
 }
 
 // Populate the votes of posts and nested comments along with their votes
- export const populateVotesAndCommentsOfPosts = async (
+export const populateVotesAndCommentsOfPosts = async (
   posts,
   user_id,
   orderByDateIdentifier
@@ -667,3 +681,133 @@ const getSortedCommentsArray = (commentsObject, orderByDateIdentifier) => {
 const populateUser = async (user_id) => {
   return await UsersModel.findById(user_id, "name email handle avatar");
 };
+
+const UPVOTE = 1;
+const DOWNVOTE = -1;
+
+export async function communityUpVote(message, callback) {
+  console.log("messg X", message);
+  message.value.type = UPVOTE;
+  return communityVote(message.value, callback);
+}
+
+export async function communityDownVote(message, callback) {
+  message.value.type = DOWNVOTE;
+  return communityVote(message.value, callback);
+}
+
+async function communityVote(message, callback) {
+  const type = message.type;
+  const communityId = message.communityId;
+  console.log("communityId ", communityId);
+  const userId = message.userId;
+  const vote = await CommunityVotesModel.findOne({ communityId: communityId, createdBy: userId });
+  let newVote = 0;
+  let response = {};
+  if (!vote) {
+    console.log("Vote does not exist");
+    newVote = type;
+  } else {
+    const prevVote = vote.vote;
+    console.log("Prev Vote ", prevVote);
+    if (!(prevVote ^ type)) {
+      console.log("Delete Vote ", prevVote);
+      // Delete the vote 
+      await CommunityVotesModel.deleteOne(
+        { communityId: communityId, createdBy: userId }
+      );
+      const community = await getCommunityById(communityId);
+      response.status = 200;
+      response.data = community;
+      return callback(null, response);
+    } else {
+      newVote = prevVote + type * 2;
+      console.log("New Vote ", newVote);
+    }
+  }
+
+  await CommunityVotesModel.updateOne(
+    { communityId: communityId, createdBy: userId },
+    { $set: { vote: newVote } },
+    { upsert: true } // Make this update into an upsert
+  );
+
+  const community = await getCommunityById(communityId);
+  response.status = 200;
+  response.data = community;
+  console.log("CommunityX ", community);
+  return callback(null, response);
+}
+
+export async function communitySearch(message, callback) {
+  let options = message.options;
+  let response = {};
+  let error = {};
+  try {
+    const communityInfos = await getCommunityBySearchQuery(options);
+    response.status = 200;
+    response.data = communityInfos;
+    return callback(null, response);
+  }
+  catch (err) {
+    console.log("Error search X", err);
+    error.data = {
+      code: err.code,
+      msg: 'Unable to successfully get the Communities! Please check the application logs for more details.'
+    }
+    return callback(error, null);
+  }
+}
+
+async function getCommunityBySearchQuery(options) {
+  const newOptions = Object.assign({
+    pageIndex: 1,
+    pageSize: 50,
+    sortBy: 'createdAt',
+    sortOrder: 'desc',
+    searchKeyword: '.*',
+  }, options);
+  console.log('New options ', JSON.stringify(newOptions));
+  const sortBy = newOptions.sortBy;
+  const sortOrder = newOptions.sortOrder;
+  const sort = {};
+  sort[`${sortBy}`] = sortOrder == 'desc' ? -1 : 1;
+  const communityInfos = CommunityModel.aggregate([
+    {
+      $match: {
+        $or: [
+          {
+            communityName: { $regex: newOptions.searchKeyword }
+          },
+          {
+            description: { $regex: newOptions.searchKeyword }
+          }
+        ]
+      },
+
+    }, {
+      $lookup: {
+        from: "communityvotes",
+        localField: "_id",
+        foreignField: "communityId",
+        as: "communityvotes",
+      }
+    },
+    {
+      $addFields: {
+        numberOfVotes: { $cond: { if: { $isArray: "$communityvotes" }, then: { $sum: "$communityvotes.vote" }, else: 0 } },
+        numberOfPosts: { $cond: { if: { $isArray: "$posts" }, then: { $size: "$posts" }, else: 0 } },
+        numberOfUsers: { $size: "$members" },
+      },
+    }
+  ])
+
+  console.log("community Infos ", communityInfos);
+  const paginatedCommunity = await CommunityModel.aggregatePaginate(communityInfos, {
+    page: newOptions.pageIndex,
+    limit: newOptions.pageSize,
+    sort,
+  });
+  return paginatedCommunity;
+
+}

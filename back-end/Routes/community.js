@@ -16,6 +16,7 @@ const {
 const getPostsSchema = require("../dataSchema/getPostsSchema");
 const getMyCommunitiesSchema = require("../dataSchema/getMyCommunitiesSchema");
 const getUsersOfMyCommunitySchema = require("../dataSchema/getUsersOfMyCommunitySchema");
+const communityVoteSchema = require("../dataSchema/communityVoteSchema");
 require("dotenv").config();
 
 const router = express.Router();
@@ -42,7 +43,7 @@ const createCommunity = async (req, res) => {
     res.status(400).send({ errorMessage: ["Community must be specified."] });
     return;
   }
-  
+
   const { error, value } = communitySchema.validate(
     JSON.parse(req.body.community)
   );
@@ -237,7 +238,7 @@ export async function getCommunityDetails(req, res) {
   );
 }
 
-export async function deleteCommunity(req, res){
+export async function deleteCommunity(req, res) {
   console.log("inside get community details", req.query.communityId);
   let communityId = req.query.communityId;
   if (!communityId) {
@@ -259,6 +260,61 @@ export async function deleteCommunity(req, res){
   );
 }
 
+export async function upVoteCommunity(req, res) {
+  console.log("inside up vote community", req.body);
+  // const result = await communityVoteSchema.validate(req.body);
+  // if (result.error) {
+  //   res.status(400).send({ errorMessage: [result.error.details[0].message] });
+  //   return;
+  // }
+  const { error, value } = communityVoteSchema.validate(req.body);
+
+  if (error) {
+    res.status(400).send(error.details);
+    return;
+  }
+  value.userId = req.user._id;
+  kafka.make_request(
+    "reddit-community-topic",
+    { path: "community-upvote", value },
+    (err, results) => kafka_default_response_handler(res, err, results)
+  );
+}
+
+export async function downVoteCommunity(req, res) {
+  console.log("inside down vote community", req.body);
+  const { error, value } = communityVoteSchema.validate(req.body);
+
+  if (error) {
+    res.status(400).send(error.details);
+    return;
+  }
+  value.userId = req.user._id;
+  kafka.make_request(
+    "reddit-community-topic",
+    { path: "community-downvote", value },
+    (err, results) => kafka_default_response_handler(res, err, results)
+  );
+}
+
+export async function searchCommunity(req, res) {
+  console.log("inside community search", req.query);
+  const value = req.user._id;
+  kafka.make_request(
+    "reddit-community-topic",
+    {
+      path: "community-search", value, options: {
+        pageIndex: req.query.pageIndex || 1,
+        pageSize: req.query.pageSize || 50,
+        sortBy: req.query.sortBy || 'createdAt',
+        sortOrder: req.query.sortOrder || 'desc',
+        searchKeyword:req.query.searchKeyword ? `${req.query.searchKeyword}.*` : '.*'
+      },
+    },
+    (err, results) => kafka_default_response_handler(res, err, results)
+  );
+}
+
 router.post(
   "/create",
   uploadS3.fields([
@@ -276,6 +332,9 @@ router.post(
 
 router.post("/update", updateCommunity);
 router.post("/join", checkAuth, requestToJoinCommunity);
+router.post("/upvote", checkAuth, upVoteCommunity);
+router.post("/downvote", checkAuth, downVoteCommunity);
+router.get("/search", checkAuth, searchCommunity);
 router.get("/get", getCommunityDetails);
 router.get("/mycommunities", checkAuth, getMyCommunities);
 router.get(
