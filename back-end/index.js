@@ -7,6 +7,11 @@ const cookieParser = require("cookie-parser");
 const { mongoDB } = require("./utils/config");
 const { auth } = require("./utils/passport");
 const passport = require("passport");
+const redis = require("redis");
+const client = redis.createClient({ detect_buffers: true });
+client.on("error", function(error) {
+  console.error(error);
+});
 
 const app = express();
 

@@ -3,6 +3,8 @@ const { ExtractJwt } = require("passport-jwt");
 const passport = require("passport");
 const Users = require("../models/UsersModel");
 require("dotenv").config();
+const redis = require("redis");
+const client = redis.createClient({ detect_buffers: true });
 
 // Setup work and export for the JWT passport strategy
 function auth() {
@@ -38,15 +40,26 @@ function auth() {
   passport.use(
     new JwtStrategy(opts, (decodedPayload, callback) => {
       const user_id = decodedPayload._id;
-      Users.findById(user_id, "name email", (error, user) => {
-        console.log(user_id);
-        if (error) {
-          return callback(error, false);
-        } else if (user) {
+      client.get(user_id, function (err, user) {
+
+        if (user) {
+          console.log("Coming here ",user);
           callback(null, user);
-        } else {
-          callback(null, false);
+          return;
         }
+        Users.findById(user_id, "name email", (error, user) => {
+          console.log(user_id);
+          if (error) {
+            return callback(error, false);
+          } else if (user) {
+            //client.setex("user",6000,user);
+            console.log("Key not found ",user);
+            client.set(user_id, JSON.stringify(user));
+            callback(null, user);;
+          } else {
+            callback(null, false);
+          }
+        });
       });
     })
   );

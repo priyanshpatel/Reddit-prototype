@@ -9,6 +9,9 @@ const aleaRNGFactory = require('number-generator/lib/aleaRNGFactory');
 const { uInt32 } = aleaRNGFactory(10);
 const ObjectId = require('mongodb').ObjectID;
 import { populateVotesAndCommentsOfPosts } from './community_api';
+const redis = require("redis");
+const client = redis.createClient({ detect_buffers: true });
+
 
 const config = {
     dictionaries: [names],
@@ -119,6 +122,9 @@ export async function editUser(message, callback) {
         await storedUser.save();
         response.status = 200;
         response.data = user;
+        client.del(user.userId,function (err, reply) {
+            console.log("Redis Del", reply);
+          });
         return callback(null, response);
     } catch (error) {
         console.log(error);
