@@ -43,8 +43,7 @@ function auth() {
       client.get(user_id, function (err, user) {
 
         if (user) {
-          console.log("Coming here ",user);
-          callback(null, user);
+          callback(null, JSON.parse(user));
           return;
         }
         Users.findById(user_id, "name email", (error, user) => {
@@ -52,7 +51,6 @@ function auth() {
           if (error) {
             return callback(error, false);
           } else if (user) {
-            //client.setex("user",6000,user);
             console.log("Key not found ",user);
             client.set(user_id, JSON.stringify(user));
             callback(null, user);;

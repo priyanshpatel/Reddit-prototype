@@ -1,6 +1,5 @@
 import { checkAuth } from "../Utils/passport";
 import { uploadS3 } from "../Utils/imageupload";
-import { ConnectionStates } from "mongoose";
 
 const express = require("express");
 const { auth } = require("../utils/passport");
