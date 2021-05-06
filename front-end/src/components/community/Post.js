@@ -248,7 +248,6 @@ class Post extends Component {
 
         }
         else if (this.state.type == "link") {
-            alert(this.state.description)
             postDivision = <Card >
                 <Row>
                     <Col xs="1" style={{ backgroundColor: "#F5F5F5" }}>{this.state.title}</Col>

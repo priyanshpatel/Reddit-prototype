@@ -282,7 +282,7 @@ class MyCommunity extends Component {
                 <div>
                     <Navbar />
                 </div>
-                <Row style={{ height: "80px"}}>
+                <Row style={{ height: "80px" }}>
                     <Col style={{ backgroundColor: "#0079d3" }}>
                         <h1></h1>
 
@@ -294,7 +294,7 @@ class MyCommunity extends Component {
                     </Col>
                     <Col style={{ backgroundColor: "white" }}>
                         {/* TODO: CHANGE THIS TO THIS.STATE.IMAGE */}
-                        <Col style={{ width: "700px", marginLeft: "8%",position: "relative" , zIndex : "10" }}>
+                        <Col style={{ width: "700px", marginLeft: "8%", position: "relative", zIndex: "10" }}>
                             <img src={avatar} style={{ borderRadius: "50%", border: "4px solid white" }} height="80px" width="80px" alt="reddit-logo" />
                             &nbsp;&nbsp;&nbsp;&nbsp;
                             {/* TODO : CHANGE THIS TO THIS.STATE.NAME */}

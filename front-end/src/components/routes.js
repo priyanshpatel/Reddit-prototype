@@ -10,6 +10,7 @@ import Profile from './users/profile'
 import { Profiler } from 'react';
 import CommunityModeration from './communities/communityModeration';
 import UserProfilePage from './users/user-profile';
+import CommunitySearch from './community/CommunitySearch';
 
 class Routes extends Component {
     render() {
@@ -21,6 +22,7 @@ class Routes extends Component {
                 <Route path="/community-home-page" component={MyCommunity} />
                 <Route exact path="/create-community/:id" component={CreateCommunity} />
                 <Route path="/users/profile-page" component={UserProfilePage} />
+                <Route path="/search-community" component={CommunitySearch} />
 
                 <Route path="/profile" component={Profile} />
                 <Route path = "/my-communities" component={MyCommunities} />
