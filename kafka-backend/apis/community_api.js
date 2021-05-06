@@ -794,6 +794,14 @@ async function getCommunityBySearchQuery(options) {
       }
     },
     {
+      $lookup: {
+        from: "users",
+        localField: "creator",
+        foreignField: "_id",
+        as: "creator",
+      }
+    },
+    {
       $addFields: {
         numberOfVotes: { $cond: { if: { $isArray: "$communityvotes" }, then: { $sum: "$communityvotes.vote" }, else: 0 } },
         numberOfPosts: { $cond: { if: { $isArray: "$posts" }, then: { $size: "$posts" }, else: 0 } },
