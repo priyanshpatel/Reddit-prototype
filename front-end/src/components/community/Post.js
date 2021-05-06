@@ -1,9 +1,14 @@
 // author : Het Brahmbhatt
 import React, { Component } from 'react'
+import Navbar from '../Navbar/Navbar';
+import cookie from 'react-cookies';
+import { Redirect } from 'react-router';
 import {
     Card, CardText, CardBody,
 } from 'reactstrap';
 import { connect } from "react-redux";
+
+import avatar from '../../images/avatar.png';
 import './Post.css'
 import { Row, Col, CardTitle } from 'reactstrap';
 import { CarouselProvider, Slider, Slide, ButtonBack, ButtonNext } from 'pure-react-carousel';
@@ -13,7 +18,8 @@ import Comment from './Comment'
 import { Button } from '@material-ui/core';
 import createCommentAction from '../../actions/comment/createCommentAction';
 import getPostAction from '../../actions/posts/getPostAction';
-import { Accordion } from "react-bootstrap";
+import upvotePostAction from '../../actions/posts/upVoteAction';
+import downVotePostAction from '../../actions/posts/downVoteAction';
 import ModeCommentTwoToneIcon from '@material-ui/icons/ModeCommentTwoTone';
 class Post extends Component {
     constructor(props) {
@@ -24,7 +30,6 @@ class Post extends Component {
             post_id: this.props.data._id,
             community_id: this.props.data.community,
             createdAt: this.props.data.createdAt,
-            createdBy: this.props.data.user.name,
             images: this.props.data.images,
             numberOfComments: this.props.data.numberOfComments,
             updatedAt: this.props.data.updatedAt,
@@ -37,7 +42,8 @@ class Post extends Component {
             description: this.props.data.description,
             comments: this.props.data.comments,
             firstCommentDescription: "",
-            commentFlag: false
+            commentFlag: false,
+            createdBy: this.props.data.user.name
         }
     };
     handleDescriptionChange = (e) => {
@@ -47,14 +53,42 @@ class Post extends Component {
             }
         )
     }
+
+
     vote(type) {
         this.setState(state => ({
             vote: state.vote === type ? 0 : type
         }));
     }
 
-    refreshComments = () => {
+    upVote = (e) => {
+        let upVoteObj = {
+            post_id: this.state.post_id,
+            community_id: this.state.community_id
+        }
+        this.props.upvotePostAction(upVoteObj).then(response => {
+            console.log(this.props.getDataPost.post);
 
+            this.setState(
+                {
+                    votes: this.props.getDataPost.post.votes
+                }
+            )
+        })
+    }
+    downVote = (e) => {
+        let downVoteObj = {
+            post_id: this.state.post_id,
+            community_id: this.state.community_id
+        }
+        this.props.downVotePostAction(downVoteObj).then(response => {
+
+            this.setState(
+                {
+                    votes: this.props.getDownVoteDataPost.post.votes
+                }
+            )
+        })
     }
     handleFirstCommentSubmit = (e) => {
         e.preventDefault();
@@ -95,25 +129,34 @@ class Post extends Component {
         let comments = this.displayComments(this.state.comments)
         let replyActionsStyle = { backgroundColor: '#CCC', margin: "5px 0 0 5px", lineHeight: "1" };
 
+        console.log(this.state)
         const vote = this.state.vote;
         const score = this.state.score;
         let postDivision = null;
+        // let avatarImageDivision = this.state.images.map((data, index) => (
+        //     <div style={{ marginBottom: "5px" }}>
+        //         <CarouselProvider
+        //             naturalSlideWidth={200}
+        //             naturalSlideHeight={200}
+        //             totalSlides={this.state.images.length}
+        //         >
+        //             <ButtonBack style={{ border: "none", backgroundColor: "white", fontSize: "40px", float: "left", marginTop: "30%" }}>&#60;</ButtonBack>
+        //             <ButtonNext style={{ border: "none", backgroundColor: "white", float: "right", marginTop: "30%", fontSize: "40px", }}>&#62;</ButtonNext>
+        //             <Slider>
+        //                 <Slide index={index}>
+        //                     <img src={data} height="100%" width="100%" style={{ position: "absolute" }} alt="" />
+
+        //                 </Slide>
+        //             </Slider>
+        //         </CarouselProvider>
+        //     </div>
+        // ))
         let avatarImageDivision = this.state.images.map((data, index) => (
             <div style={{ marginBottom: "5px" }}>
-                <CarouselProvider
-                    naturalSlideWidth={200}
-                    naturalSlideHeight={200}
-                    totalSlides={this.state.images.length}
-                >
-                    <ButtonBack style={{ border: "none", backgroundColor: "white", fontSize: "40px", float: "left", marginTop: "30%" }}>&#60;</ButtonBack>
-                    <ButtonNext style={{ border: "none", backgroundColor: "white", float: "right", marginTop: "30%", fontSize: "40px", }}>&#62;</ButtonNext>
-                    <Slider>
-                        <Slide index={index}>
-                            <img src={data} height="100%" width="100%" style={{ position: "absolute" }} alt="" />
+                <Slide index={index}>
+                    <img src={data} height="100%" width="100%" style={{ position: "absolute" }} alt="" />
 
-                        </Slide>
-                    </Slider>
-                </CarouselProvider>
+                </Slide>
             </div>
         ))
         if (this.state.type == "image") {
@@ -121,14 +164,36 @@ class Post extends Component {
                 <div>
                     <Card >
                         <Row>
-                            <Col xs="1" style={{ backgroundColor: "#F5F5F5" }}>Hi</Col>
+                            <Col xs="1" style={{ backgroundColor: "#F5F5F5" }}>
+                                <button
+                                    onClick={this.upVote}>
+                                </button>
+                                {this.state.votes}
+                                <button
+                                    onClick={this.downVote}>
+                                </button>
+                            </Col>
                             <Col style={{ paddingLeft: "0px" }}>
-                                <span style={{ color: "#787C7E", fontSize: "12px", marginLeft: "7%" }}>Posted by u/ {this.state.createdBy} {moment.utc(this.state.createdAt).local().startOf('seconds').fromNow()}
+                                <span style={{ color: "#787C7E", fontSize: "12px", marginLeft: "7%" }}>Posted by u/{this.state.createdBy} {moment.utc(this.state.createdAt).local().startOf('seconds').fromNow()}
 
                                 </span>
 
                                 <CardTitle tag="h5" style={{ marginLeft: "7%", marginTop: "5px" }}>{this.state.title}</CardTitle>
-                                {avatarImageDivision}
+                                <div style={{ marginBottom: "5px" }}>
+                                    <CarouselProvider
+                                        naturalSlideWidth={200}
+                                        naturalSlideHeight={200}
+                                        totalSlides={this.state.images.length}
+                                    >
+                                        <ButtonBack style={{ border: "none", backgroundColor: "white", fontSize: "40px", float: "left", marginTop: "30%" }}>&#60;</ButtonBack>
+                                        <ButtonNext style={{ border: "none", backgroundColor: "white", float: "right", marginTop: "30%", fontSize: "40px", }}>&#62;</ButtonNext>
+                                        <Slider>
+
+                                            {avatarImageDivision}
+                                        </Slider>
+
+                                    </CarouselProvider>
+                                </div>
                             </Col>
                         </Row>
                         <Row style={{ backgroundColor: "#F5F5F5", height: "30px", width: "103%", paddingLeft: "10%" }}>
@@ -140,58 +205,60 @@ class Post extends Component {
                                 <span style={{ fontSize: "12px", fontWeight: "300px", textTransform: "capitalize" }}>
                                     {this.state.numberOfComments} Comments
                             </span>
-                            </Button>
-                        </Row>
+                            </Button></Row>
                     </Card>
                 </div>
         }
         else if (this.state.type == "text") {
-            postDivision = <Card >
-                <Row>
-                    <Col xs="1" style={{ paddingLeft: "1%", backgroundColor: "#F5F5F5" }}>
-                        <button
-                            style={{ border: "none" }}
-                            onClick={() => this.vote(1)}>
-                        </button>
-                        {/* <div class="arrow-up"></div> */}
+            postDivision =
+                <div>
+                    <Card >
+                        <Row>
+                            <Col xs="1" style={{ backgroundColor: "#F5F5F5" }}>
+                                <button
+                                    onClick={this.upVote}>
+                                </button>
+                                {this.state.votes}
+                                <button
+                                    onClick={this.downVote}>
+                                </button>
+                                {/* <div class="arrow-up"></div> */}
+                            </Col>
 
-                        <div id="upvote" className={vote === 1 ? "active" : undefined}>
-                            <i id="icon" class="fal fa-arrow-alt-up" ></i>
-                        </div>
+                            <Col>
 
-                        <span style={{ fontSize: "16px", maxWidth: "10px", fontWeight: "300px" }}>{score + vote}</span>
-                        <button
-                            id="downvote"
-                            className={vote === -1 ? "active" : undefined}
-                            onClick={() => this.vote(-1)}
-                        />
-                    </Col>
-
-                    <Col>
-                        <span style={{ color: "#787C7E", fontSize: "12px", marginLeft: "3%" }}>Posted by u/ {this.state.createdBy} {moment.utc(this.state.createdAt).local().startOf('seconds').fromNow()}</span>
-                        <CardBody>
-                            <CardTitle tag="h5">{this.state.title}</CardTitle>
-                            <CardText>{this.state.description}</CardText>
-                        </CardBody>     </Col>
-                </Row>
-                <Row style={{ backgroundColor: "#F5F5F5", height: "30px", width: "103%", paddingLeft: "10%" }}>
-                    <Button
-                        size="small"
-                        onClick={this.commentsClicked}
-                    >
-                        <ModeCommentTwoToneIcon style={{ fontSize: "18px" }} />
-                        <span style={{ fontSize: "12px", fontWeight: "300px", textTransform: "capitalize" }}>
-                            {this.state.numberOfComments} Comments
+                                <span style={{ color: "#787C7E", fontSize: "12px", marginLeft: "3%" }}>Posted by u/ {this.state.createdBy} {moment.utc(this.state.createdAt).local().startOf('seconds').fromNow()}</span>
+                                <CardBody>
+                                    <CardTitle tag="h5">{this.state.title}</CardTitle>
+                                    <CardText>{this.state.description}</CardText>
+                                </CardBody>     </Col>
+                        </Row>
+                        <Row style={{ backgroundColor: "#F5F5F5", height: "30px", width: "103%", paddingLeft: "10%" }}>
+                            <Button
+                                size="small"
+                                onClick={this.commentsClicked}
+                            >
+                                <ModeCommentTwoToneIcon style={{ fontSize: "18px" }} />
+                                <span style={{ fontSize: "12px", fontWeight: "300px", textTransform: "capitalize" }}>
+                                    {this.state.numberOfComments} Comments
                             </span>
-                    </Button>
-                </Row>
-            </Card>
+                            </Button></Row>
+                    </Card>
+                </div>
+
         }
         else if (this.state.type == "link") {
-            postDivision = <Card>
+            alert(this.state.description)
+            postDivision = <Card >
                 <Row>
                     <Col xs="1" style={{ backgroundColor: "#F5F5F5" }}>{this.state.title}</Col>
-
+                    <button
+                        onClick={this.upVote}>
+                    </button>
+                    {this.state.votes}
+                    <button
+                        onClick={this.downVote}>
+                    </button>
                     <Col>
                         <span style={{ color: "#787C7E", fontSize: "12px", marginLeft: "3%" }}>Posted by u/{this.state.createdBy} {moment.utc(this.state.createdAt).local().startOf('seconds').fromNow()}</span>
                         <CardBody>
@@ -208,25 +275,36 @@ class Post extends Component {
                         {this.state.numberOfComments} Comments
 
                             </span>
-                </Row>
-            </Card>
+                </Row >
+                <Row style={{ backgroundColor: "#F5F5F5", height: "30px", width: "103%", paddingLeft: "10%" }}>
+                    <Button
+                        size="small"
+                        onClick={this.commentsClicked}
+                    >
+                        <ModeCommentTwoToneIcon style={{ fontSize: "18px" }} />
+                        <span style={{ fontSize: "12px", fontWeight: "300px", textTransform: "capitalize" }}>
+                            {this.state.numberOfComments} Comments
+                            </span>
+                    </Button></Row>
+            </Card >
         }
         return (
             <div style={{ marginTop: "10%" }}>
                 {postDivision}
-                {this.state.commentFlag ?
-                    <div className="comment" style={{ backgroundColor: "white" }}>
-                        <textarea style={{ marginLeft: "12%", marginTop: "5%" }} id="w3review" placeholder="What are your thoughts?" name="description" onChange={this.handleDescriptionChange} rows="2" cols="30" />
-                        <div style={{ marginLeft: "12%" }} className="comment-action">
-                            <Button size="small" variant="contained" style={replyActionsStyle} onClick={this.handleFirstCommentSubmit}>Submit</Button>
-                            <Button size="small" variant="contained" style={replyActionsStyle} onClick={this.replyButtonClicked}>Cancel</Button>
-                        </div>
-                        {comments}
-                    </div> : ""
+                {
+                    this.state.commentFlag ?
+                        <div className="comment" style={{ backgroundColor: "white" }}>
+                            <textarea style={{ marginLeft: "12%", marginTop: "5%" }} id="w3review" placeholder="What are your thoughts?" name="description" onChange={this.handleDescriptionChange} rows="2" cols="30" />
+                            <div style={{ marginLeft: "12%" }} className="comment-action">
+                                <Button size="small" variant="contained" style={replyActionsStyle} onClick={this.handleFirstCommentSubmit}>Submit</Button>
+                                <Button size="small" variant="contained" style={replyActionsStyle} onClick={this.replyButtonClicked}>Cancel</Button>
+                            </div>
+                            {comments}
+                        </div> : ""
                 }
 
 
-            </div>
+            </div >
         )
     }
 }
@@ -236,6 +314,8 @@ const matchStateToProps = (state) => {
         postData: state.createCommunityReducer.postData,
         message: state.createCommunityReducer.message,
         getPostData: state.getPostByIDReducer.getPostData,
+        getDataPost: state.upvotePostReducer.getDataPost,
+        getDownVoteDataPost: state.downVotePostReducer.getDownvoteDataPost,
 
     }
 
@@ -245,6 +325,9 @@ const matchDispatchToProps = (dispatch) => {
     return {
         createCommentAction: (data) => dispatch(createCommentAction(data)),
         getPostAction: (data) => dispatch(getPostAction(data)),
+        upvotePostAction: (data) => dispatch(upvotePostAction(data)),
+        downVotePostAction: (data) => dispatch(downVotePostAction(data)),
+
 
     }
 }

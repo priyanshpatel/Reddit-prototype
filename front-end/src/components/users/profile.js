@@ -6,6 +6,8 @@ import { BACKEND_PORT } from '../../config/config';
 import updateUserProfileAction from '../../actions/userUpdateAction';
 import userGetByIDAction from '../../actions/userGetByIDAction';
 import { connect } from "react-redux";
+import Navbar from "../Navbar/Navbar";
+
 import cookie from "react-cookies";
 import ReactDOM from 'react-dom';
 import { WithContext as ReactTags } from 'react-tag-input';
@@ -19,7 +21,6 @@ const KeyCodes = {
 
 const delimiters = [KeyCodes.comma, KeyCodes.enter];
 
-import Navbar from "../Navbar/Navbar";
 
 //author - Het 
 class Profile extends Component {
@@ -338,7 +339,7 @@ class Profile extends Component {
                         <br></br>
                         <div className="row" >
                             <div className="col-7">
-                                <textarea id="w3review" name="description" onChange={this.handleOtherChange} rows="4" cols="76">
+                                <textarea id="w3review" name="description" value={this.state.description} onChange={this.handleOtherChange} rows="4" cols="76">
                                 </textarea>
                             </div>
                         </div>

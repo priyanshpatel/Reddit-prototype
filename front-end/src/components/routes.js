@@ -9,6 +9,7 @@ import MyCommunities from './communities/myCommunities'
 import Profile from './users/profile'
 import { Profiler } from 'react';
 import CommunityModeration from './communities/communityModeration';
+import UserProfilePage from './users/user-profile';
 
 class Routes extends Component {
     render() {
@@ -19,6 +20,7 @@ class Routes extends Component {
                 <Route exact path="/create-community" component={CreateCommunity} />
                 <Route path="/community-home-page" component={MyCommunity} />
                 <Route exact path="/create-community/:id" component={CreateCommunity} />
+                <Route path="/users/profile-page" component={UserProfilePage} />
 
                 <Route path="/profile" component={Profile} />
                 <Route path = "/my-communities" component={MyCommunities} />

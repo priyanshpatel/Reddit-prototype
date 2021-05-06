@@ -1,6 +1,6 @@
 import axios from 'axios';
-import {BACKEND_URL} from '../config/config'
-import {BACKEND_PORT} from '../config/config'
+import { BACKEND_URL } from '../config/config'
+import { BACKEND_PORT } from '../config/config'
 
 import cookie from "react-cookies";
 import jwt_decode from "jwt-decode"
@@ -28,24 +28,40 @@ let errorPost = (err, data) => {
 }
 let createPostAction = (data) => (dispatch) => {
     let formData = new FormData();
-    formData.append("type", data.type);
-    formData.append("description", data.description)
-    formData.append("postImage", data.postImage)
-    formData.append("link", data.link)
-    formData.append("community_id", data.communityId)
-    formData.append("title", data.title)
+    alert(data.type)
+    if (data.type == "text") {
+        formData.append("type", data.type);
+        formData.append("description", data.description)
+        formData.append("community_id", data.communityId)
+        formData.append("title", data.title)
+    }
 
+    else if (data.type == "link") {
+        alert(data.type)
+        alert(data.link)
+        formData.append("type", data.type);
+        formData.append("link", data.link)
+        formData.append("community_id", data.communityId)
+        formData.append("title", data.title)
+    }
+
+    else {
+        formData.append("type", data.type);
+        for (var x = 0; x < data.pictures.length; x++) {
+            formData.append("postImage", data.pictures[x]);
+        }
+        formData.append("community_id", data.communityId)
+        formData.append("title", data.title)
+    }
     axios.defaults.headers.common["authorization"] = cookie.load('token')
     axios.defaults.withCredentials = true;
-    axios
-        .post(BACKEND_URL + ":" + BACKEND_PORT + '/community/comment/create', formData, {
+    return axios
+        .post(BACKEND_URL + ":" + BACKEND_PORT + '/post/create', formData, {
             headers: Object.assign(
                 { "content-type": "multipart/form-data" }
             )
         })
         .then((response) => {
-            let decoded = jwt_decode(response.data.split(' ')[1])
-            console.log("decoded", decoded)
             if (response.status === 200) {
                 dispatch(successPost(response, data));
             }

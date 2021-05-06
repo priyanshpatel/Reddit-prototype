@@ -93,10 +93,9 @@ class CreatePost extends Component {
     }
 
     handleCreatePost = (e) => {
-        let data = {
-
-        }
-        this.props.createPostAction(data).then(response => {
+        e.preventDefault();
+        console.log(this.state)
+        this.props.createPostAction(this.state).then(response => {
             if (this.props.error) {
                 this.setState({
                     createPostBackendError: true
@@ -109,6 +108,7 @@ class CreatePost extends Component {
     }
 
     render() {
+        console.log(this.state);
         return (
             <div>
                 <div><Navbar /></div>
@@ -154,9 +154,9 @@ class CreatePost extends Component {
                                                         <Input type="text" name="title" id="title" placeholder="Title" onChange={this.handleOtherChange} maxlength="180" required />
                                                     </FormGroup>
                                                     <FormGroup>
-                                                        <Input type="textarea" name="text" id="text" placeholder="Text" onChange={this.handleOtherChange} maxlength="180" required />
+                                                        <Input type="textarea" name="description" id="description" placeholder="Text" onChange={this.handleOtherChange} maxlength="180" required />
                                                     </FormGroup>
-                                                    <button type="submit" class="btn btn-outline-primary post-button"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Post</strong></span></button>
+                                                    <button type="submit" class="btn btn-outline-primary post-button" onSubmit={this.handleCreatePost}><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Post</strong></span></button>
                                                 </Form>
                                             </div>
                                         </Card>
@@ -167,7 +167,7 @@ class CreatePost extends Component {
                                 <Row>
                                     <Col sm="6">
                                         <Card body>
-                                            <Form method="post">
+                                            <Form method="post" onSubmit={this.handleCreatePost}>
                                                 <FormGroup>
                                                     <Input type="text" name="title" id="title" onChange={this.handleOtherChange} placeholder="Title" maxlength="180" required />
                                                     <ImageUploader
@@ -179,7 +179,7 @@ class CreatePost extends Component {
                                                     />
                                                 </FormGroup>
 
-                                                <button type="submit" class="btn btn-outline-primary post-button"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Post</strong></span></button>
+                                                <button type="submit" class="btn btn-outline-primary post-button"><span style={{ fontSize: "16px", fontWeight: "300px" }} onSubmit={this.handleCreatePost}><strong>Post</strong></span></button>
                                             </Form>
                                         </Card>
                                     </Col>
@@ -190,14 +190,14 @@ class CreatePost extends Component {
                                     <Col sm="6">
                                         <Card body>
                                             <div>
-                                                <Form method="post">
+                                                <Form onSubmit={this.handleCreatePost}>
                                                     <FormGroup>
                                                         <Input type="text" name="title" id="title" onChange={this.handleOtherChange} placeholder="Title" maxlength="180" required />
                                                     </FormGroup>
                                                     <FormGroup>
                                                         <Input type="url" name="link" id="link" onChange={this.handleOtherChange} placeholder="Url" required />
                                                     </FormGroup>
-                                                    <button type="submit" class="btn btn-outline-primary post-button"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Post</strong></span></button>
+                                                    <button type="submit" class="btn btn-outline-primary post-button"><span style={{ fontSize: "16px", fontWeight: "300px" }} onSubmit={this.handleCreatePost}><strong>Post</strong></span></button>
                                                 </Form>
                                             </div>
                                         </Card>

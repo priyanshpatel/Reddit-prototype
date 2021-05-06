@@ -8,7 +8,7 @@ import home_page from '../../images/home-page.png'
 import reddit_logo from '../../images/reddit-logo-vector.svg'
 import chat_icon from '../../images/chat-icon.png'
 
-import Modal from 'react-modal';
+import Modal from 'react-bootstrap/modal';
 import loginAction from '../../actions/loginAction'
 import signUpAction from '../../actions/signupAction'
 import { connect } from "react-redux";
@@ -292,56 +292,9 @@ class Navbar extends Component {
                                             <Row>
 
                                             </Row>
-                                            {/* <span style={{ padding: "7%", marginTop: "1%", font: "14px Arial", color: "#1C1C1C" }}>
-                                        Chat
-                                    </span>
-                                    <span style={{ marginLeft: "60%", paddingTop: "5%" }} >
-
-                                        <img src={chat_icon} height="20px" alt="reddit-logo" />
-                                    </span> */}
                                         </Col>
-                                        {/* <Col xs="6" style={{ border: "1px solid #DADADA", }}>
-                                    <Row style={{ borderBottom: "1px solid #DADADA", font: "14px Arial #1C1C1C", height: "10%" }}>
-                                        <span style={{ font: "14px Arial", padding: "10px" }}>Start Chatting</span>
-                                        <br></br>
+    
                                     </Row>
-                                    <Row style={{ height: "80%" }}>
-                                    {/* <img src={no_chat_icon} style={{marginLeft:"15%"}} width = "300px"alt="reddit-logo" /> */}
-
-                                        {/* </Row>
-                                    <Row style={{borderTop : "1px solid #DADADA"}}>
-                                        <div style={{ paddingLeft: "40%" , paddingTop:"10px"}}>
-                                            <button style={{ backgroundColor: "#0079d3",border: "none",cursor : "pointer" ,color: "white", borderRadius: "60px" }} onClick={this.handleNewChatButtonClick}><span style={{ fontSize: "14px", fontWeight: "300px" }}><strong>New Chat </strong></span></button>
-                                        </div>
-                                        {/* <button type="button"  style={{ backgroundColor: "#0079d3", color: "white", borderRadius: "60px" }} class="btn btn-outline-primary btn-xs" onClick={this.postClick}><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Create Post</strong></span></button> */}
-
-
-                                        {/* </Col>  */}
-
-                                    </Row>
-                                    {/* // <div className="chat-new-application">
-                                //     <Row>
-                                //         <Col xs="12" style={{ height: "430px", padding: "10px", border: "1px solid #DADADA", borderTopLeftRadius: "10px", borderTopRIGHTRadius: "10px",width: "550px" }}>
-                                //             <span style={{ padding: "7%", marginTop: "1%", font: "14px Arial", color: "#1C1C1C" }}>
-                                //                 TO:-
-                                //         </span>
-                                //         </Col>
-                                //     </Row> */}
-
-
-                                    {/* <Row>
-                                        <Col style={{ height: "430px",border: "1px solid #DADADA", borderTopLeftRadius: "10px", borderTopRightRadius: "10px", width: "500px" }}>
-                                            <span style={{marginTop: "1%", font: "14px Arial", color: "#1C1C1C" }}>
-                                                Chattting
-                                        </span>
-                                            <span style={{ marginLeft: "60%", paddingTop: "5%" }} >
-
-                                                <img src={chat_icon} height="20px" alt="reddit-logo" />
-                                            </span>
-                                        </Col>
-
-
-                                    </Row> */}
                                 </div> : ""
                     }
 
@@ -479,9 +432,6 @@ class Navbar extends Component {
                             </Row>
                         </Modal.Body>
                     </Modal>
-
-
-
 
 
                     {/* SIGN UP MODAL */}
