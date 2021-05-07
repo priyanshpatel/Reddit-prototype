@@ -9,6 +9,7 @@ const { auth } = require("./utils/passport");
 const passport = require("passport");
 const redis = require("redis");
 const client = redis.createClient({ detect_buffers: true });
+const MessageModel = require('./models/MessageModel');
 client.on("error", function(error) {
   console.error(error);
 });
@@ -79,6 +80,42 @@ app.use("/community", require("./Routes/community"));
 app.use("/post", require("./Routes/post"));
 app.use("/chat", require("./Routes/chat"));
 
+
+//
+async function insertManyMessage(messages) {
+  console.log('Inside insert many messages');
+  
+  MessageModel.insertMany(messages).then(function(){
+    console.log("Data inserted")  // Success
+}).catch(function(error){
+    console.log(error)      // Failure
+});
+}
+
+const addMessage = async (req, res) => {
+  console.log("Inside addMesage post Request");
+  let message = req.body.message;
+  let messageArray = [];
+
+  for(var i=0; i<10000; i++){
+    messageArray.push({content: message + " " + i});
+  }
+  await insertManyMessage(messageArray);
+  //message = await insertMessage(message);
+
+  res.status(200).send("Success").end();
+}
+
+
+const getAllMessages = async (req, res) => {
+  console.log("Inside getAllMessages get Request");
+  const messages = await MessageModel.find()
+  res.status(200).send(messages).end();
+}
+
+app.get("/getMessages", getAllMessages);
+app.post("/addMessages", addMessage);
+//
 app.listen(3001, () => {
   console.log("Server listening on port 3001");
 });
