@@ -4,7 +4,7 @@ import {
   editUser,
   getUserByObjId,
   getUsersOfMyCommunity,
-  getCommunityAndPosts
+  getCommunityAndPosts,
   bulkApproveRequests,
   searchAllUsers,
 } from "../../apis/user_api";

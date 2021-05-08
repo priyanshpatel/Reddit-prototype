@@ -1,7 +1,7 @@
 import { createError } from "../helper/error";
 import config from "../config/config";
 import { createIndexes } from "../models/PostsModel";
-const CommunityModel = require("../models/CommunityModel");
+const CommunityModel = require("../models/communityModel");
 const PostsModel = require("../models/PostsModel");
 const mongoose = require("mongoose");
 const UsersModel = require("../models/UsersModel");
@@ -552,6 +552,7 @@ export async function getCommunityListCreatedByUser(message, callback) {
     };
     return callback(error, null);
   }
+}
 
   // Update users createdCommunities Array
   async function updateCreatorsCommunityList(userId, communityId) {
@@ -846,4 +847,4 @@ export async function getCommunityListCreatedByUser(message, callback) {
     );
     return paginatedCommunity;
   }
-}
+
