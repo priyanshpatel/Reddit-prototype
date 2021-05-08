@@ -16,6 +16,8 @@ const getPostsSchema = require("../dataSchema/getPostsSchema");
 const getMyCommunitiesSchema = require("../dataSchema/getMyCommunitiesSchema");
 const getUsersOfMyCommunitySchema = require("../dataSchema/getUsersOfMyCommunitySchema");
 const communityVoteSchema = require("../dataSchema/communityVoteSchema");
+const bulkApproveRequestsSchema = require("../dataSchema/bulkApproveRequestsSchema");
+const getInviteStatusSchema = require("../dataSchema/getInvitesStatusSchema");
 require("dotenv").config();
 
 const router = express.Router();
@@ -37,7 +39,7 @@ const createCommunity = async (req, res) => {
     return;
   }
   if (!req.body.community) {
-    console.log("ove here")
+    console.log("ove here");
 
     res.status(400).send({ errorMessage: ["Community must be specified."] });
     return;
@@ -215,18 +217,103 @@ const requestToJoinCommunity = async (req, res) => {
   }
 };
 
+// Route to approve multiple community join requests
+const bulkApproveCommunityJoinRequests = async (req, res) => {
+  const result = await bulkApproveRequestsSchema.validate(req.body);
+  if (result.error) {
+    res.status(400).send({ errorMessage: [result.error.details[0].message] });
+    return;
+  }
+  kafka.make_request(
+    "reddit-user-topic",
+    { path: "bulk-approve-request", body: req.body, user: req.user },
+    (error, results) => {
+      if (!results) {
+        res.status(500).send({
+          errorMessage: ["Failed to receive response from Kafka backend"],
+        });
+      }
+      if (!results.res.success) {
+        res.status(500).send({ ...results.res });
+      } else {
+        res.status(200).send({ ...results.res });
+      }
+    }
+  );
+};
+
+// Route to invite multiple users to join community
+const bulkInviteUsersToCommunity = async (req, res) => {
+  // Using the same JOI Schema as bulk approve request as both have the same format
+  const result = await bulkApproveRequestsSchema.validate(req.body);
+  if (result.error) {
+    res.status(400).send({ errorMessage: [result.error.details[0].message] });
+    return;
+  }
+  kafka.make_request(
+    "reddit-invitation-topic",
+    { path: "bulk-invite", body: req.body, user: req.user },
+    (error, results) => {
+      if (!results) {
+        res.status(500).send({
+          errorMessage: ["Failed to receive response from Kafka backend"],
+        });
+      }
+      if (!results.res.success) {
+        res.status(500).send({ ...results.res });
+      } else {
+        res.status(200).send({ ...results.res });
+      }
+    }
+  );
+};
+
+// Route to fetch the status of invites sent by the community owner for a specific community
+const getInviteStatusOfUsersOfMyCommunity = async (req, res) => {
+  if (!ObjectId.isValid(req.params.community_id)) {
+    res.status(400).send({
+      errorMessage: ["Please select a valid community"],
+    });
+  } else {
+    const result = await getInviteStatusSchema.validate(req.query);
+    if (result.error) {
+      res.status(400).send({ errorMessage: [result.error.details[0].message] });
+      return;
+    }
+    kafka.make_request(
+      "reddit-invitation-topic",
+      {
+        path: "get-invite-status",
+        user: req.user,
+        query: req.query,
+        params: req.params,
+      },
+      (error, results) => {
+        if (!results) {
+          res.status(500).send({
+            errorMessage: ["Failed to receive response from Kafka backend"],
+          });
+        }
+        if (!results.res.success) {
+          res.status(500).send({ ...results.res });
+        } else {
+          res.status(200).send({ ...results.res });
+        }
+      }
+    );
+  }
+};
+
 export async function getCommunityDetails(req, res) {
   console.log("inside get community details", req.query.communityId);
   let communityId = req.query.communityId;
   if (!communityId) {
     res
       .status(400)
-      .send(
-        {
-          code: 'INVALID_PARAM',
-          msg: 'Invalid communityId ID'
-        }
-      )
+      .send({
+        code: "INVALID_PARAM",
+        msg: "Invalid communityId ID",
+      })
       .end();
   }
 
@@ -243,12 +330,10 @@ export async function deleteCommunity(req, res) {
   if (!communityId) {
     res
       .status(400)
-      .send(
-        {
-          code: 'INVALID_PARAM',
-          msg: 'Invalid communityId ID'
-        }
-      )
+      .send({
+        code: "INVALID_PARAM",
+        msg: "Invalid communityId ID",
+      })
       .end();
   }
 
@@ -302,12 +387,16 @@ export async function searchCommunity(req, res) {
   kafka.make_request(
     "reddit-community-topic",
     {
-      path: "community-search", value, options: {
+      path: "community-search",
+      value,
+      options: {
         pageIndex: req.query.pageIndex || 1,
         pageSize: req.query.pageSize || 50,
-        sortBy: req.query.sortBy || 'createdAt',
-        sortOrder: req.query.sortOrder || 'desc',
-        searchKeyword:req.query.searchKeyword ? `${req.query.searchKeyword}.*` : '.*'
+        sortBy: req.query.sortBy || "createdAt",
+        sortOrder: req.query.sortOrder || "desc",
+        searchKeyword: req.query.searchKeyword
+          ? `${req.query.searchKeyword}.*`
+          : ".*",
       },
     },
     (err, results) => kafka_default_response_handler(res, err, results)
@@ -341,7 +430,22 @@ router.get(
   checkAuth,
   getUsersOfMyCommunity
 );
+router.post(
+  "/mycommunities/users/approve",
+  checkAuth,
+  bulkApproveCommunityJoinRequests
+);
+router.get(
+  "/mycommunities/users/invites/:community_id",
+  checkAuth,
+  getInviteStatusOfUsersOfMyCommunity
+);
 //router.get("/mycommunities/:id", checkAuth, getMyCommunities);
 router.get("/posts", checkAuth, getAllPosts);
 router.delete("/delete", deleteCommunity);
+router.post(
+  "/mycommunities/users/invite",
+  checkAuth,
+  bulkInviteUsersToCommunity
+);
 module.exports = router;

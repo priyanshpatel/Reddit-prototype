@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
+const mongoosePaginate = require("mongoose-paginate-v2");
 const config = require("../config/config");
 
-const notificationSchema = new Schema(
+const invitationSchema = new Schema(
   {
     user: {
       type: mongoose.SchemaTypes.ObjectId,
@@ -23,7 +24,7 @@ const notificationSchema = new Schema(
       ],
       trim: true,
       required: true,
-      default: "pending",
+      default: "PENDING_INVITE",
     },
   },
   {
@@ -31,10 +32,10 @@ const notificationSchema = new Schema(
     versionKey: false,
   }
 );
-
-const Notification = mongoose.model(
-  "notification",
-  notificationSchema,
-  "notifications"
+invitationSchema.plugin(mongoosePaginate);
+const Invitation = mongoose.model(
+  "invitation",
+  invitationSchema,
+  "invitations"
 );
-module.exports = Notification;
+module.exports = Invitation;
