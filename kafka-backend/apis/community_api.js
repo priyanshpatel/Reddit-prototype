@@ -354,6 +354,10 @@ export const getAllCreatedCommunitiesByUserId = async (req, callback) => {
       },
     ]);
 
+    console.log("==========================================================================");
+    console.log(req.user._id);
+    console.log("==========================================================================");
+    console.log(req.user);
     loggedInUser = await UsersModel.findById(
       req.user._id,
       "createdCommunities"

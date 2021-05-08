@@ -246,7 +246,6 @@ class MyCommunity extends Component {
         })
     }
     componentDidMount() {
-        console.log(this.props.location.state)
         this.setState(
             {
                 communityID: this.props.location.state.communityData._id,

@@ -495,8 +495,10 @@ class Navbar extends Component {
                                 <div className="dropdown-menu" aria-labelledby="dropdownMenu2">
                                     <Link to="/" className="dropdown-item" type="button" value="home"><i class="fas fa-home dd-icon"></i><span className="dd-item">Home</span></Link>
                                     <Link to="/profile" className="dropdown-item" type="button" value="profile"><i class="fas fa-id-badge dd-icon" /><span className="dd-item">Profile</span></Link>
+
                                     <Link to="/my-communities" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-users dd-icon"></i><span className="dd-item">My Communities</span></Link>
                                     <Link to="/search-community" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-search"></i><span className="dd-item">Search Communities</span></Link>
+
                                     <Link className="dropdown-item" type="button" value="logout" onClick={this.handleLogout}><i class="fas fa-sign-out-alt dd-icon"></i><span className="dd-item">Logout</span></Link>
                                 </div>
                             </div>
