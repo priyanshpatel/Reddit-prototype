@@ -22,6 +22,8 @@ import getPostsByIDAction from '../../actions/posts/getPostAction';
 import Post from './Post';
 import WhatshotTwoToneIcon from '@material-ui/icons/WhatshotTwoTone';
 import { relativeTimeThreshold } from 'moment';
+import moment from 'moment'
+
 class MyCommunity extends Component {
     constructor(props) {
         super(props)
@@ -38,9 +40,11 @@ class MyCommunity extends Component {
                 }
             ],
             postFlag: false,
-            communityID: "608bcd1a6589fd7200e3e27f",
-            description: "This subreddit is for anyone who wants to learn JavaScript or help others do so. Questions and posts about frontend development in general are welcome, as are all posts pertaining to JavaScript on the backend",
-            communityName: "Learn JavaScript",
+            communityCover: "",
+            communityAvatar: "",
+            communityID: this.props.location.state.communityData._id,
+            description: "",
+            communityName: "",
             totalUsers: [],
             communityNameWithoutSpaces: "",
             rules: [
@@ -61,7 +65,7 @@ class MyCommunity extends Component {
                     description: "Description4"
                 }
             ],
-            members: "161K",
+            members: "",
             totalPosts: "",
             totalModerators: [],
             posts: [],
@@ -78,6 +82,7 @@ class MyCommunity extends Component {
     }
     handlePageClick = (e) => {
         let obj = {
+            communityID : this.state.communityID,
             sorting: this.state.sorting,
             popularity: this.state.popularity,
             pageNumber: Number(e.selected) + 1,
@@ -122,15 +127,14 @@ class MyCommunity extends Component {
     }
     handlePaginationDropdown = (e) => {
         e.preventDefault()
-        alert(e.target.value)
         this.setState(
             {
                 pageSize: e.target.value
             }
         )
 
-        //TODO : ADD community_id
         let obj = {
+            communityID: this.state.communityID,
             popularity: this.state.popularity,
             sorting: this.state.sorting,
             pageNumber: this.state.pageNumber,
@@ -159,8 +163,8 @@ class MyCommunity extends Component {
             }
         )
 
-        //TODO : ADD community_id
         let obj = {
+            communityID: this.state.communityID,
             popularity: e.target.value,
             sorting: this.state.sorting,
             pageNumber: this.state.pageNumber,
@@ -191,6 +195,7 @@ class MyCommunity extends Component {
         )
         //TODO : ADD COMMUNITYid 
         let obj = {
+            communityID: this.state.communityID,
             popularity: this.state.popularity,
             sorting: e.target.value,
             pageNumber: this.state.pageNumber,
@@ -213,8 +218,22 @@ class MyCommunity extends Component {
         })
     }
     componentDidMount() {
-        document.title = this.state.communityName
-        var str = this.state.communityName;
+        this.setState(
+            {
+                communityID: this.props.location.state.communityData._id,
+                communityCover: this.props.location.state.communityData.communityCover,
+                communityAvatar: this.props.location.state.communityData.communityAvatar,
+                communityName: this.props.location.state.communityData.communityName,
+                createdAt: this.props.location.state.communityData.createdAt,
+                members: this.props.location.state.communityData.members.length,
+                description: this.props.location.state.communityData.description,
+                totalPosts: this.props.location.state.communityData.numberOfPosts,
+
+            }
+        )
+
+        document.title = this.props.location.state.communityData.communityName
+        var str = this.props.location.state.communityData.communityName;
         str = str.replace(/\s+/g, '').toLowerCase();
         this.setState(
             {
@@ -257,7 +276,6 @@ class MyCommunity extends Component {
                     <Accordion style={{ width: "323px" }}>
                         <Card style={{ marginTop: "15px", border: "1px" }}>
                             < Accordion.Toggle as={Card.Header} style={{ backgroundColor: "white", border: "none" }} eventKey={index + 1}>
-
                                 <div style={{ textAlign: "left" }}>
                                     {index + 1}.&nbsp;{rule.title}
                                 </div>
@@ -285,7 +303,6 @@ class MyCommunity extends Component {
                 <Row style={{ height: "80px" }}>
                     <Col style={{ backgroundColor: "#0079d3" }}>
                         <h1></h1>
-
                     </Col>
                 </Row>
                 <Row style={{ height: "70px" }}>
@@ -295,7 +312,7 @@ class MyCommunity extends Component {
                     <Col style={{ backgroundColor: "white" }}>
                         {/* TODO: CHANGE THIS TO THIS.STATE.IMAGE */}
                         <Col style={{ width: "700px", marginLeft: "8%", position: "relative", zIndex: "10" }}>
-                            <img src={avatar} style={{ borderRadius: "50%", border: "4px solid white" }} height="80px" width="80px" alt="reddit-logo" />
+                            <img src={this.state.communityAvatar[0]} style={{ borderRadius: "50%", border: "4px solid white" }} height="80px" width="80px" alt="reddit-logo" />
                             &nbsp;&nbsp;&nbsp;&nbsp;
                             {/* TODO : CHANGE THIS TO THIS.STATE.NAME */}
                             <span className="heading" style={{ fontSize: "25px", fontSize: "1.5vw", color: "#1C1C1C", fontWeight: "700", lineHeight: "32px", overflow: "scroll" }}>{this.state.communityName}   </span>
@@ -337,14 +354,11 @@ class MyCommunity extends Component {
                                     <select class="form-select" style={{ fontWeight: "bold", width: "350px" }} aria-label="user select" onChange={this.handlePaginationDropdown}>
                                         <option selected value="2">2</option>
                                         <option value="5">5</option>
-                                        <option value="5">10</option>
+                                        <option value="10">10</option>
                                     </select>
                                 </div>
                                 <hr />
                             </CardBody>
-                            {/* <CardBody class="com-card">
-                                    <img src="/logo192.png" alt="Avatar" class="com-avatar"/> <span class="com-name">r/CrytoCurrency</span>
-                                </CardBody> */}
                         </Card>
                     </Col>
                     <Col xs="5" style={{ paddingTop: "40px", marginLeft: "5%" }}>
@@ -389,7 +403,7 @@ class MyCommunity extends Component {
                                     <Row >
                                         <Col>
                                             <div className="about-community-text">
-                                                Members</div>
+                                                {this.state.members == 1 ? "Member" : "Members"}</div>
                                         </Col>
                                         <Col>
                                             <div className="about-community-text">
@@ -402,9 +416,9 @@ class MyCommunity extends Component {
                                     <Row >
                                         <Col>
                                             <img src={cakeicon} height="30px" width="40px" style={{ marginBottom: "1%" }} alt="reddit-logo" />
-                                            <span style={{ fontSize: "14px", marginTop: "2%", fontFamily: "sans-serif", color: "#1C1C1C" }}>Created at
-                                            4 April 2012
-                                        {/* {moment(group.createdat).tz(cookie.load("timezone")).format("MMM")} */}
+                                            <span style={{ fontSize: "14px", marginTop: "2%", fontFamily: "sans-serif", color: "#1C1C1C" }}>
+                                                Created at {moment(this.state.createdAt).format("LL")}
+                                                {/* {moment(group.createdat).tz(cookie.load("timezone")).format("MMM")} */}
                                             </span>
                                             <button type="button" id="login-button" style={{ backgroundColor: "#0079d3", color: "white", borderRadius: "60px", width: "100%", marginTop: "10%" }} class="btn btn-outline-primary" onClick={this.postClick}><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Create Post</strong></span></button>
                                         </Col>

@@ -133,24 +133,6 @@ class Post extends Component {
         const vote = this.state.vote;
         const score = this.state.score;
         let postDivision = null;
-        // let avatarImageDivision = this.state.images.map((data, index) => (
-        //     <div style={{ marginBottom: "5px" }}>
-        //         <CarouselProvider
-        //             naturalSlideWidth={200}
-        //             naturalSlideHeight={200}
-        //             totalSlides={this.state.images.length}
-        //         >
-        //             <ButtonBack style={{ border: "none", backgroundColor: "white", fontSize: "40px", float: "left", marginTop: "30%" }}>&#60;</ButtonBack>
-        //             <ButtonNext style={{ border: "none", backgroundColor: "white", float: "right", marginTop: "30%", fontSize: "40px", }}>&#62;</ButtonNext>
-        //             <Slider>
-        //                 <Slide index={index}>
-        //                     <img src={data} height="100%" width="100%" style={{ position: "absolute" }} alt="" />
-
-        //                 </Slide>
-        //             </Slider>
-        //         </CarouselProvider>
-        //     </div>
-        // ))
         let avatarImageDivision = this.state.images.map((data, index) => (
             <div style={{ marginBottom: "5px" }}>
                 <Slide index={index}>

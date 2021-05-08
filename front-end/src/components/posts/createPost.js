@@ -101,8 +101,7 @@ class CreatePost extends Component {
                     createPostBackendError: true
                 })
             } else {
-                // Redirect to community page
-                // this.props.history.push("/")
+                // TODO :Redirect to community page
             }
         })
     }

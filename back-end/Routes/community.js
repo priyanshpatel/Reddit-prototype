@@ -384,6 +384,7 @@ export async function downVoteCommunity(req, res) {
 export async function searchCommunity(req, res) {
   console.log("inside community search", req.query);
   const value = req.user._id;
+  console.log("SEARCH COMMUNITY",req.user);
   kafka.make_request(
     "reddit-community-topic",
     {

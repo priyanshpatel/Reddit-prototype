@@ -28,7 +28,6 @@ let errorPost = (err, data) => {
 }
 let createPostAction = (data) => (dispatch) => {
     let formData = new FormData();
-    alert(data.type)
     if (data.type == "text") {
         formData.append("type", data.type);
         formData.append("description", data.description)
@@ -37,8 +36,6 @@ let createPostAction = (data) => (dispatch) => {
     }
 
     else if (data.type == "link") {
-        alert(data.type)
-        alert(data.link)
         formData.append("type", data.type);
         formData.append("link", data.link)
         formData.append("community_id", data.communityId)
