@@ -1,172 +1,211 @@
 //Created by Priyansh Patel
 
-import React, { Component } from 'react'
-import Navbar from '../Navbar/navbar';
-import cookie from 'react-cookies';
-import { Redirect } from 'react-router';
-import './myCommunities.css';
+import React, { Component } from "react";
+import Navbar from "../Navbar/navbar";
+import cookie from "react-cookies";
+import { Redirect } from "react-router";
+import "./myCommunities.css";
 import { connect } from "react-redux";
-import { Card, Button, CardTitle, CardText, CardBody } from 'reactstrap';
-import myCommunitiesAction from '../../actions/community/myCommunitiesAction';
-// import communityList from './communityList';
-import Modal from 'react-modal';
-import communityModList from './communityModList';
-import { InputGroup, InputGroupAddon, InputGroupText, Input } from 'reactstrap';
-import CommunityModUsersList from './communityModUsersList';
+import { Card, Button, CardTitle, CardText, CardBody } from "reactstrap";
+import myCommunitiesAction from "../../actions/community/myCommunitiesAction";
+import Modal from "react-modal";
+import CommunityModList from "./communityModList";
+import { InputGroup, InputGroupAddon, InputGroupText, Input } from "reactstrap";
+import CommunityModUsersList from "./communityModUsersList";
+import getMyCommunityModAction from "../../actions/community/getMyCommunityModAction";
+import ReactPaginate from "react-paginate";
 
 const customStyles = {
-    content: {
-        top: "40%",
-        left: "50%",
-        right: "auto",
-        // bottom: "auto",
-        marginRight: "-50%",
-        height: "500px",
-        width: "1280px",
-        transform: "translate(-50%, -50%)",
-    },
-}
+  content: {
+    top: "40%",
+    left: "50%",
+    right: "auto",
+    // bottom: "auto",
+    marginRight: "-50%",
+    height: "500px",
+    width: "1280px",
+    transform: "translate(-50%, -50%)",
+  },
+};
 
 class CommunityModeration extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            userId: cookie.load('userId'),
-            error: false,
-            myCommunitiesData: this.props.myCommunitiesData,
-            usersPopUp: false,
-        }
-        // this.editButtonClicked = this.editButtonClicked.bind(this);
-        // this.removeButtonClicked = this.removeButtonClicked(this);
-    }
+  constructor(props) {
+    super(props);
+    this.state = {
+      userId: cookie.load("userId"),
+      error: false,
+      myCommunitiesData: this.props.myCommunitiesData,
+      usersPopUp: false,
+      totalPages: this.props.myCommunitiesData.totalPages,
+      pageNumber: "1",
+      pageSize: "2",
+    };
+  }
 
-    componentDidMount() {
-        this.props.myCommunitiesAction(this.state).then(response => {
-            console.log("My communities response >>>>>>>>>>>>>", this.props)
-            if (this.props.myCommunitiesError) {
-                this.setState({
-                    error: true
-                })
-            }
-        })
-    }
-
-    toggleUsersList= () => {
+  componentDidMount() {
+    this.props.getMyCommunityModAction(this.state).then((response) => {
+      console.log("My communities response >>>>>>>>>>>>>", this.props);
+      if (this.props.errorGetMyCommunityMod) {
         this.setState({
-            usersPopUp: !this.state.usersPopUp
-        })
+          error: true,
+        });
+      } else {
+        this.setState({
+          myCommunitiesData: this.props.myCommunitiesData,
+        });
+      }
+    });
+  }
+
+  handlePageSizeChange = (e) => {
+    e.preventDefault();
+    this.setState({
+      pageSize: e.target.value,
+    });
+
+    let reqObj = {
+      userId: cookie.load("userId"),
+      error: false,
+      myCommunitiesData: this.state.myCommunitiesData,
+      usersPopUp: false,
+      totalPages: this.state.totalPages,
+      pageNumber: this.state.pageNumber,
+      pageSize: e.target.value,
+    };
+
+    this.props.getMyCommunityModAction(reqObj).then((response) => {
+      if (this.props.errorGetMyCommunityMod) {
+        this.setState({
+          error: true,
+        });
+      } else {
+        this.setState({
+          myCommunitiesData: this.props.myCommunitiesData,
+        });
+      }
+    });
+  };
+
+  toggleUsersList = () => {
+    this.setState({
+      usersPopUp: !this.state.usersPopUp,
+    });
+  };
+
+  handlePageClick = (e) => {
+    this.setState({
+      pageNumber: Number(e.selected) + 1,
+    });
+    this.props.getMyCommunityModAction(this.state).then((response) => {
+      if (this.props.errorGetMyCommunityMod) {
+        this.setState({
+          error: true,
+        });
+      } else {
+        this.setState({
+          myCommunitiesData: this.props.myCommunitiesData,
+        });
+      }
+    });
+  };
+
+  render() {
+    let redirectVar = null;
+    if (!cookie.load("token")) {
+      // redirectVar = <Redirect to="/" />
     }
 
-    // editButtonClicked = (community) => {
-    //     console.log("Edit button clicked>>>>>>>>>>>>>>>>>", community)
-    //     // Open create community page
-    //     return (
-    //         <Redirect to={{
-    //             pathname: '/create-community/' + community._id,
-    //             data: community,
-    //         }}
-    //         />
-    //     )
-    // }
+    let myCommunities = <div>No communities to show</div>;
+    console.log("Community Dataaaaa>>>>>>>>>>>>", this.state.myCommunitiesData);
+    console.log(this.props);
+    if (this.state.myCommunitiesData) {
+      if (this.state.myCommunitiesData.communities) {
+        console.log(
+          "INSSSIDDEEEE IFFFFF",
+          this.state.myCommunitiesData.communities
+        );
+        myCommunities = this.state.myCommunitiesData.communities.map(
+          (community) => {
+            console.log(community);
+            return (
+              <CommunityModList
+                key={community._id}
+                data={community}
+                communityMod={this.state}
+              />
+            );
+          }
+        );
+      }
+    }
 
-    // removeButtonClicked = (community) => {
-    //     console.log("Remove button clicked>>>>>>>>>>>>>>>>>>>>>", community)
-    //     // Delete Community
-
-    //     const newMyCommunitiesData = this.state.myCommunitiesData.filter((filteredCommunity) => {
-    //         return community._id != filteredCommunity._id
-    //     });
-    //     const emptyCommunitiesFlag = newMyCommunitiesData.length == 0 ? true : false;
-    //     this.setState({
-    //         myCommunitiesData: newMyCommunitiesData,
-    //         emptyCommunitiesFlag
-    //     })
-    // }
-
-    render() {
-        let redirectVar = null;
-        if (!cookie.load('token')) {
-            // redirectVar = <Redirect to="/" />
-        };
-
-        let myCommunities = <div>No communities to show</div>
-        console.log("PROPS>>>>>>>>>>>>", this.props)
-        if (this.state.myCommunitiesData.length !== 0) {
-            if (this.state.myCommunitiesData.data.length !== 0) {
-                myCommunities = this.props.myCommunityData.data.map((community) => {
-                    return <communityModList
-                        key={community._id}
-                        data={community}
-                    // editButtonClicked = {this.editButtonClicked}
-                    // removeButtonClicked = {this.removeButtonClicked}
-                    />
-                })
-            }
-        }
-
-        return (
-            <div>
-                {redirectVar}
-                <div><Navbar /></div>
-                <div class="com-header">
-                    My Communities Moderation
-                </div>
-                <div class="com-content">
-                    <div class="row">
-                        <div class="col-2" style={{ marginLeft: "95px", paddingLeft: "20px", paddingRight: "24px", paddingTop: "20px" }}>
-                            {/* <Card> */}
-                            {/* <CardBody class="sort-header">
-                                    <div class="row">
-                                        <span style={{ paddingLeft: "20px" }}>Created</span>
-                                    </div>
-                                    <div class="input-group mb-3" style={{ paddingLeft: "5px" }}>
-                                        <select class="form-select" style={{ fontWeight: "bold", width: "350px" }} aria-label="user select">
-                                            <option selected value="1">Most Recent</option>
-                                            <option value="2">Oldest</option>
-                                        </select>
-                                    </div>
-                                    <hr />
-                                    <div class="row">
-                                        <span style={{ paddingLeft: "20px" }}>Number of posts</span>
-                                    </div>
-                                    <div class="input-group mb-3" style={{ paddingLeft: "5px" }}>
-                                        <select class="form-select" style={{ fontWeight: "bold", width: "350px" }} aria-label="user select">
-                                            <option selected value="1">Highest</option>
-                                            <option value="2">Lowest</option>
-                                        </select>
-                                    </div>
-                                    <hr />
-                                    <div class="row">
-                                        <span style={{ paddingLeft: "20px" }}>Number of users</span>
-                                    </div>
-                                    <div class="input-group mb-3" style={{ paddingLeft: "5px" }}>
-                                        <select class="form-select" style={{ fontWeight: "bold", width: "350px" }} aria-label="user select" onChange={this.handlePageSizeChange}>
-                                            <option selected value="1">Highest</option>
-                                            <option value="2">Lowest</option>
-                                        </select>
-                                    </div>
-                                    <hr />
-
-                                </CardBody> */}
-                            {/* <CardBody class="com-card">
-                                    <img src="/logo192.png" alt="Avatar" class="com-avatar"/> <span class="com-name">r/CrytoCurrency</span>
-                                </CardBody> */}
-                            {/* </Card> */}
-                        </div>
-                        <div class="col-6" style={{ paddingLeft: "0", paddingRight: "24px", paddingTop: "20px" }}>
-                            {/* {myCommunities} */}
-                            <InputGroup>
-                                <InputGroupAddon addonType="prepend">
-                                    <InputGroupText>
-                                        <i class="fas fa-search" aria-hidden="true" style={{ color: '#0079d3', fontSize: 18 }}>
-                                        </i>
-                                    </InputGroupText>
-                                </InputGroupAddon>
-                                <Input Style={{ backgroundColor: 'white', color: 'Black' }} placeholder="Search">
-                                </Input>
-                            </InputGroup>
-                            <br/>
-                            <Card>
+    return (
+      <div>
+        {redirectVar}
+        <div>
+          <Navbar />
+        </div>
+        <div class="com-header">My Communities Moderation</div>
+        <div class="com-content">
+          <div class="row">
+            <div
+              class="col-2"
+              style={{
+                marginLeft: "95px",
+                paddingLeft: "20px",
+                paddingRight: "24px",
+                paddingTop: "20px",
+              }}
+            >
+              <Card>
+                <CardBody class="sort-header">
+                  <div class="row">
+                    <span style={{ paddingLeft: "20px" }}>Page Size</span>
+                  </div>
+                  <hr />
+                  <div class="input-group mb-3" style={{ paddingLeft: "5px" }}>
+                    <select
+                      class="form-select"
+                      style={{ fontWeight: "bold", width: "350px" }}
+                      aria-label="user select"
+                      onChange={this.handlePageSizeChange}
+                    >
+                      <option selected value="2">
+                        2
+                      </option>
+                      <option value="5">5</option>
+                      <option value="10">10</option>
+                    </select>
+                  </div>
+                </CardBody>
+              </Card>
+            </div>
+            <div
+              class="col-6"
+              style={{
+                paddingLeft: "0",
+                paddingRight: "24px",
+                paddingTop: "20px",
+              }}
+            >
+              <InputGroup>
+                <InputGroupAddon addonType="prepend">
+                  <InputGroupText>
+                    <i
+                      class="fas fa-search"
+                      aria-hidden="true"
+                      style={{ color: "#0079d3", fontSize: 18 }}
+                    ></i>
+                  </InputGroupText>
+                </InputGroupAddon>
+                <Input
+                  Style={{ backgroundColor: "white", color: "Black" }}
+                  placeholder="Search"
+                ></Input>
+              </InputGroup>
+              <br />
+              {myCommunities}
+              {/* <Card>
                                 <CardBody class="com-card" onClick={this.toggleUsersList}>
                                     <img src="/logo192.png" alt="Avatar" class="com-avatar" /> <span class="com-name">r/CrytoCurrency</span>
                                     <br />
@@ -210,39 +249,66 @@ class CommunityModeration extends Component {
                                     <br />
                                     <span className="com-details"><i class="fas fa-user-clock"></i>100</span>
                                 </CardBody>
-                            </Card>
-                        </div>
-                        <div class="col-2" style={{ paddingLeft: "0", paddingTop: "20px", marginRight: "65px" }}>
-
-                        </div>
-                    </div>
-                </div>
-                <Modal style={customStyles} isOpen={this.state.usersPopUp} ariaHideApp={false}>
-                    <CommunityModUsersList data={this.state} closePopUp={this.toggleUsersList} />
-                </Modal>
+                            </Card> */}
             </div>
-        )
-    }
-
+            <div
+              class="col-2"
+              style={{
+                paddingLeft: "0",
+                paddingTop: "20px",
+                marginRight: "65px",
+              }}
+            ></div>
+          </div>
+          <div className="row">
+            <div className="col pagination-class">
+              <ReactPaginate
+                previousLabel={"prev"}
+                nextLabel={"next"}
+                breakLabel={"..."}
+                breakClassName={"break-me"}
+                pageCount={this.props.myCommunitiesData.totalPages}
+                marginPagesDisplayed={2}
+                pageRangeDisplayed={5}
+                onPageChange={this.handlePageClick}
+                containerClassName={"pagination"}
+                subContainerClassName={"pages pagination"}
+                activeClassName={"active"}
+              />
+            </div>
+          </div>
+        </div>
+        <Modal
+          style={customStyles}
+          isOpen={this.state.usersPopUp}
+          ariaHideApp={false}
+        >
+          <CommunityModUsersList
+            data={this.state}
+            closePopUp={this.toggleUsersList}
+          />
+        </Modal>
+      </div>
+    );
+  }
 }
 
 const matchStateToProps = (state) => {
-    console.log("inside matchStatetoProps", state)
-    return {
-        myCommunitiesError: state.myCommunitiesReducer.error,
-        myCommunitiesMessage: state.myCommunitiesReducer.message,
-        myCommunitiesData: state.myCommunitiesReducer.communityData,
-    }
-
-}
+  console.log("inside matchStatetoProps", state);
+  return {
+    myCommunitiesError: state.getMyCommunityModReducer.error,
+    myCommunitiesMessage: state.getMyCommunityModReducer.message,
+    myCommunitiesData: state.getMyCommunityModReducer.communityData,
+  };
+};
 
 const matchDispatchToProps = (dispatch) => {
-    return {
-        myCommunitiesAction: (data) => dispatch(myCommunitiesAction(data)),
+  return {
+    getMyCommunityModAction: (data) => dispatch(getMyCommunityModAction(data)),
+  };
+};
 
-    }
-}
-
-export default connect(matchStateToProps, matchDispatchToProps)(CommunityModeration)
-
-// export default CommunityModeration;
+export default connect(
+  matchStateToProps,
+  matchDispatchToProps
+)(CommunityModeration);

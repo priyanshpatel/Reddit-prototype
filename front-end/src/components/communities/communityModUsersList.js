@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { TabContent, TabPane, Nav, NavItem, NavLink, Card, Button, CardTitle, CardText, Row, Col, FormGroup } from 'reactstrap';
 import classnames from 'classnames';
+import './communityModUsersList.css';
 
 class CommunityModUsersList extends Component {
     constructor(props) {
@@ -43,6 +44,7 @@ class CommunityModUsersList extends Component {
     render() {
         return (
             <div style={{ backgroundColor: "rgb(218,224,230)", height: "1000px" }}>
+                <span onClick={this.props.closePopUp} style={{float:"right", marginRight:"1%", marginTop:"1%"}}><i class="fas fa-times closeButtonIcon"></i></span>
                 <div className="post-tabs-container">
                     <div class="create-post-header">
                         Community Users
