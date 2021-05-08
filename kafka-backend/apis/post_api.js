@@ -24,7 +24,7 @@ const createPost = async (req, callback) => {
     };
   } else if (req.body.type === "link") {
     rawPost = {
-      type: "text",
+      type: "link",
       description: req.body.description,
       link: req.body.link,
     };
