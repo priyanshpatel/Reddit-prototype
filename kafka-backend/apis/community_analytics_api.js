@@ -20,7 +20,7 @@ export async function communityAnalytics(message, callback) {
         console.log(maxUsersPost);
         const maxCommunityPost = await getMaxPostCommunity();
         console.log(maxCommunityPost);
-    } */
+    }
     const allMostUpVotedPosts = await getAllMostUpVotedPosts();
     const allUsersWithPosts = await getAllUsersWithPosts();
     const allCommunitiesWithNumberOfPosts = await getAllCommunitiesWithNumberOfPosts();
@@ -30,7 +30,7 @@ export async function communityAnalytics(message, callback) {
     const userWhoCreatedMaxPostInCommunity = await getUserWhoCreatedMaxPostInCommunity("608f2818a3f92cb7e499c779", allUsersWithPosts);  
     console.log(userWhoCreatedMaxPostInCommunity);
     const communityWithMaxPosts = await getCommunityWithMaxPosts(allCommunitiesWithNumberOfPosts);
-    console.log(communityWithMaxPosts);
+    console.log(communityWithMaxPosts); */
 
     response.status = 200;
     response.data = numberOfPosts;
@@ -43,7 +43,7 @@ async function getCommunitiesByCreator(creatorId) {
     return communities;
 }
 
-async function getNumberOfUsersInCommunity(communityId) {
+/* async function getNumberOfUsersInCommunity(communityId) {
     console.log("Inside get number of users in community");
     const community = await CommunityModel.findOne({ _id: communityId })
     return community.members.length;
@@ -139,4 +139,4 @@ async function getAllCommunitiesWithNumberOfPosts() {
         },
     ])
     return allCommunitiesWithNumberOfPosts;
-}
+} */

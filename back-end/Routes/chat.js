@@ -36,7 +36,20 @@ const getMessages = async (req, res) => {
     );
 };
 
+const getChatMemberList = async (req, res) => {
+    // Kafka make request call
+    kafka.make_request(
+        "reddit-chat-topic",
+        { path: "get_chat_member_list", body: req.query },
+        (err, results) =>
+            kafka_response_handler(res, err, results, (result) => {
+                return res.status(200).send(result);
+            })
+    );
+};
+
 router.post("/send", addMessages);
 router.get("/get", getMessages);
+router.get("/getchatmemberlist", getChatMemberList);
 
 module.exports = router;
