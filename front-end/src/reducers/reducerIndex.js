@@ -10,6 +10,9 @@ import getByIDCommunityReducer from './communityReducers/getByIDCommunityReducer
 import getPostByIDReducer from './postReducers/getPostByIDReducer';
 import createCommentReducer from './commentReducer/createCommentReducer';
 import getMyCommunityModReducer from './communityReducers/getMyCommunityModReducer';
+import getMyCommunityModUserReqReducer from './communityReducers/getCommunityModUserReqReducer';
+import bulkRequestAcceptReducer from './communityReducers/bulkRequestAcceptReducer';
+import getMyCommunityModMemReducer from './communityReducers/getCommunityModMemReducer';
 
 var rootReducer = combineReducers({
     SignUpReducer: SignUpReducer,
@@ -23,6 +26,9 @@ var rootReducer = combineReducers({
     getPostByIDReducer: getPostByIDReducer,
     createCommentReducer: createCommentReducer,
     getMyCommunityModReducer: getMyCommunityModReducer,
+    getMyCommunityModUserReqReducer: getMyCommunityModUserReqReducer,
+    bulkRequestAcceptReducer: bulkRequestAcceptReducer,
+    getMyCommunityModMemReducer: getMyCommunityModMemReducer,
 })
 
 
