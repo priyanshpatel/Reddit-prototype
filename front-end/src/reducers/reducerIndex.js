@@ -20,6 +20,7 @@ import downVoteCommentReducer from './commentReducer/downVoteCommentReducer';
 import getAllCommunityReducer from './communityReducers/getAllCommunityReducer';
 import upVoteCommunityReducer from './communityReducers/upVoteCommunityReducer';
 import downVoteCommunityReducer from './communityReducers/downVoteCommunityReducer';
+import chatReducer from './chatReducer/chatReducer';
 
 
 var rootReducer = combineReducers({
@@ -43,7 +44,9 @@ var rootReducer = combineReducers({
     upvoteCommentReducer: upvoteCommentReducer,
     getAllCommunityReducer: getAllCommunityReducer,
     upVoteCommunityReducer: upVoteCommunityReducer,
-    downVoteCommunityReducer: downVoteCommunityReducer
+    downVoteCommunityReducer: downVoteCommunityReducer,
+    chatReducer: chatReducer
+
 })
 
 

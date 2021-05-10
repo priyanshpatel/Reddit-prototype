@@ -3,21 +3,45 @@
 import React, { Component } from 'react'
 import { Redirect, withRouter } from "react-router"
 import './navbar.css'
-import { Row, Col } from 'reactstrap';
+import { Row, Col, Container } from 'reactstrap';
 import home_page from '../../images/home-page.png'
 import reddit_logo from '../../images/reddit-logo-vector.svg'
 import chat_icon from '../../images/chat-icon.png'
-
+import axios from 'axios';
+import { BACKEND_URL, BACKEND_PORT } from '../../config/config';
+import cookie from "react-cookies";
 import Modal from 'react-bootstrap/modal';
 import loginAction from '../../actions/loginAction'
 import signUpAction from '../../actions/signupAction'
+import chatSubmitAction from '../../actions/chat/chatSubmitAction'
+import { SystemMessage } from 'react-chat-elements'
+
 import { connect } from "react-redux";
-import cookie from "react-cookies";
 import { Link } from 'react-router-dom';
 import login from '../../images/login.png';
 import no_chat_icon from '../../images/no_chat_icon.png';
+import List from 'react-list-select'
+import AsyncSelect from 'react-select/async'
+// RCE CSS
+import 'react-chat-elements/dist/main.css';
+// MessageBox component
+import { MessageBox } from 'react-chat-elements';
+import { MessageList } from 'react-chat-elements'
+import { Input } from 'react-chat-elements'
+import { Button } from 'react-chat-elements'
 
-
+const customStyles = {
+    content: {
+        top: '40%',
+        left: '50%',
+        right: 'auto',
+        bottom: 'auto',
+        marginRight: '-50%',
+        height: '460px',
+        width: '500px',
+        transform: 'translate(-50%, -50%)'
+    }
+};
 class Navbar extends Component {
     constructor(props) {
         super(props)
@@ -33,7 +57,14 @@ class Navbar extends Component {
             signUpBackendError: false,
             loginBackendError: false,
             chatFlag: false,
-            newChatFlag: false
+            newChatFlag: false,
+            users: [],
+            selectedUsers: [],
+            startChatFlag: false,
+            stateUserClick: false,
+            chatDescription: "",
+            chatData: [],
+            messages: []
         }
     }
 
@@ -44,6 +75,36 @@ class Navbar extends Component {
         })
     }
 
+    handleStartChatClick = inp => {
+
+        this.setState(
+            {
+                stateUserClick: true,
+                startChatFlag: false,
+                newChatFlag: false,
+                chatFlag: false,
+
+
+            }
+        )
+        axios.defaults.headers.common["authorization"] = cookie.load('token')
+        axios.defaults.withCredentials = true;
+        return axios
+            .get(BACKEND_URL + ":" + BACKEND_PORT + '/chat/get?members=' + cookie.load('userId') + "&members=" + this.state.selectedUsers.value
+            )
+            .then((response) => {
+                if (response.status === 200) {
+                    this.setState(
+                        {
+                            messages: response.data.data.messages
+                        }
+                    )
+                    // console.log(response.data.data.messages)
+                }
+            })
+            .catch((err) => {
+            });
+    }
     handleEmailChange = inp => {
         if (/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(inp.target.value)) {
             this.setState({
@@ -80,7 +141,9 @@ class Navbar extends Component {
         this.setState(
             {
                 chatFlag: false,
-                newChatFlag: true
+                newChatFlag: true,
+                stateUserClick: false
+
             }
         )
         // this.setState({
@@ -92,7 +155,13 @@ class Navbar extends Component {
             loginButton: !this.state.loginButton
         })
     }
-
+    handleChatDescriptionChange = (e) => {
+        this.setState(
+            {
+                chatDescription: e.target.value
+            }
+        )
+    }
     mutualButtonCLick = (e) => {
         this.setState({
             loginButton: !this.state.loginButton,
@@ -100,7 +169,36 @@ class Navbar extends Component {
 
         })
     }
+    handleSelectChange = (selectedUsers) => {
+        this.setState({
+            selectedUsers: selectedUsers,
+            startChatFlag: true,
 
+
+        })
+    }
+    handleUserSearch = async (inp, callback) => {
+        axios.defaults.headers.common["authorization"] = cookie.load('token')
+        axios.defaults.withCredentials = true;
+        return axios
+            .get(BACKEND_URL + ":" + BACKEND_PORT + '/user/search?searchKeyword=' + inp)
+            .then((response) => {
+                if (response.status === 200) {
+                    console.log("api response>>>>>>>>>>", response)
+                    this.setState(
+                        {
+                            users: response.data.users
+                        }
+                    )
+                    callback(response.data.users.map(i => ({
+                        label: i.name,
+                        value: i._id
+                    })));
+                }
+            })
+            .catch((err) => {
+            });
+    }
     handleSignUpSubmit = (e) => {
 
 
@@ -111,7 +209,6 @@ class Navbar extends Component {
                 password: this.state.signuppassword,
             }
         }
-        console.log("sign up>>>>>>>>>>>>>>", signUpObject)
         e.preventDefault();
         if (!this.state.error) {
             this.props.signUpAction(signUpObject).then(response => {
@@ -166,6 +263,41 @@ class Navbar extends Component {
         // this.props.history.push("/")
     }
 
+    handleChatSubmit = (e) => {
+        let obj = {
+
+            members: [
+
+                cookie.load("userId"),
+                this.state.selectedUsers.value
+            ],
+            message:
+            {
+                "from": cookie.load("userId"),
+                "content": this.state.chatDescription
+            }
+        }
+
+        this.props.chatSubmitAction(obj).then(response => {
+            console.log(this.state.messages)
+            console.log(this.props.chatData)
+
+            let newChatData = {
+                content: this.props.chatData.data.content,
+                createdAt: this.props.chatData.data.createdAt,
+                from: this.props.chatData.data.from._id
+            }
+            this.setState(
+                {
+                    messages: [...this.state.messages, newChatData]
+                }
+            )
+            this.inputRef.clear();
+
+        })
+
+
+    }
 
     signupButtonClick = (e) => {
         this.setState({
@@ -176,10 +308,67 @@ class Navbar extends Component {
     handleChatApplicationClick = (e) => {
         this.setState({
             chatFlag: !this.state.chatFlag,
-            newChatFlag: false
+            newChatFlag: false,
+            stateUserClick: false
+
         })
     }
     render() {
+        console.log("This statte", this.state);
+
+
+
+        let chatDataForDisplay = this.state.messages.map((docs, index) => {
+
+            if (docs.from == cookie.load('userId')) {
+                return (
+                    <div key={index} >
+                        <Row>
+                            <Col style={{ marginTop: "6%", float: "right" }}>
+                                <MessageList
+                                    className='message-list'
+                                    lockable={false}
+                                    dataSource={[
+                                        {
+                                            position: 'right',
+                                            type: 'text',
+                                            text: docs.content,
+                                            date: new Date(docs.createdAt),
+                                        },
+                                    ]} />
+
+                            </Col>
+                        </Row>
+                    </div>
+                )
+            }
+            else {
+                return (
+                    <div key={index} >
+                        <Row>
+                            <Col style={{ marginTop: "6%", float: "right" }}>
+                                <MessageList
+                                    className='message-list'
+                                    lockable={false}
+                                    dataSource={[
+                                        {
+                                            position: 'left',
+                                            type: 'text',
+                                            text: docs.content,
+                                            date: new Date(docs.createdAt),
+                                        },
+                                    ]} />
+
+                            </Col>
+
+                        </Row>
+                    </div>
+                )
+            }
+
+        })
+
+
         let invalidLoginError = null
         let invalidSignUpError = null
 
@@ -223,7 +412,7 @@ class Navbar extends Component {
                             </div>
                         </div>
                         < div className="col-2 nav-icon-div" style={{ paddingRight: "0px" }}>
-                            <Link to="/"> <i class="fas fa-comment-dots nav-icon-button" onClick={this.handleChatApplicationClick} style={{ marginRight: "10px" }} ></i></Link>
+                            <Link > <i class="fas fa-comment-dots nav-icon-button" onClick={this.handleChatApplicationClick} style={{ marginRight: "10px" }} ></i></Link>
                             <Link to="/"><i class="fas fa-bell nav-icon-button" style={{ marginRight: "10px" }} ></i></Link>
                         </div>
                         {/* <Dropdown isOpen={dropdownOpen} toggle={toggle}> */}
@@ -283,30 +472,70 @@ class Navbar extends Component {
                             </div>
                             : this.state.newChatFlag ?
                                 <div className="chat-new-application">
-                                    <Row>
-                                        <Col xs="10" style={{ height: "430px", border: "1px solid #DADADA", borderTopLeftRadius: "10px", width: "600px" }}>
-                                            <Row style={{ borderBottom: "1px solid #DADADA", height: "10%" }}>
-                                                <span style={{ padding: "2%" }}>
-                                                    <bold>TO:-
+                                    <Col xs="10" style={{ height: "430px", border: "1px solid #DADADA", borderTopLeftRadius: "10px", width: "600px" }}>
+                                        <Row style={{ borderBottom: "1px solid #DADADA", height: "10%" }}>
+                                            <Col xs="1" style={{ paddingTop: "2%" }}> <strong>TO:- </strong> </Col>
+                                            <Col>
+                                                <AsyncSelect
+                                                    value={this.state.selectedUsers}
+                                                    onChange={this.handleSelectChange}
+                                                    placeholder={'Type members for chatting...'}
+                                                    loadOptions={this.handleUserSearch}
+                                                />
+                                            </Col>
+                                        </Row>
+                                        <Row>
+                                            {
+                                                this.state.startChatFlag ?
+                                                    <button type="submit" className="btn btn-danger" style={{ backgroundColor: "#0079d3", marginTop: "20%", marginLeft: "40%" }} onClick={this.handleStartChatClick} value={this.state.description}>START CHAT</button>
 
-                                                    </bold>
+                                                    : ""
+                                            }
 
-                                                </span>
-                                            </Row>
-                                            <Row>
+                                        </Row>
+                                    </Col>
+                                </div> : ""
+                    }
+                    {
 
-                                            </Row>
-                                        </Col>
+                        this.state.stateUserClick ?
+                            <div className="chat-new-application">
+                                <Col xs="10" style={{ height: "430px", border: "1px solid #DADADA", borderTopLeftRadius: "10px", width: "600px" }}>
+                                    <Row style={{ borderBottom: "1px solid #DADADA", height: "10%" }}>
+                                        <Col style={{ paddingTop: "2%", fontSize: "12px", fontFamily: "Arial" }}> <strong>START CHAT WITH <strong>{this.state.selectedUsers.label}</strong> </strong> </Col>
+                                    </Row>
+
+                                    <Container style={{ height: "45vh", overflow: "scroll" }}>
+                                        {chatDataForDisplay}
+                                        <SystemMessage
+                                            text={'End of conversation'} />
+                                    </Container>
+                                    <Row style={{ borderTop: "1px solid #DADADA", borderBottom: "1px solid #DADADA" }}>
+                                        <Input
+                                            ref={el => (this.inputRef = el)}
+                                            onChange={this.handleChatDescriptionChange}
+                                            placeholder="Type here..."
+                                            multiline={true}
+                                            rightButtons={
+                                                <Button
+                                                    onClick={this.handleChatSubmit}
+
+                                                    color='white'
+                                                    backgroundColor='#0079d3'
+                                                    text='Send' />
+                                            }
+                                        />
+                                        {/* TODO : ADD THIS */}
 
                                     </Row>
-                                </div> : ""
+                                </Col>
+                            </div> : ""
                     }
 
                 </div>
 
             )
         } else {
-            console.log("token not found")
             return (
                 <div >
                     <div className="manual-container">
@@ -405,7 +634,6 @@ class Navbar extends Component {
 
                                             </button>
                                         </Row>
-
                                         <div className="Sso__divider m-small-margin">
                                             <div className="Sso__dividerLine">
 
@@ -455,7 +683,6 @@ class Navbar extends Component {
 
                                 </Col>
                                 <Col>
-
                                     <Row>
                                         <div style={{ fontFamily: "IBMPlexSans", fontSize: "18px" }}>
                                             <strong>Sign Up</strong>
@@ -539,7 +766,8 @@ const matchStateToProps = (state) => {
         loginError: state.loginReducer.loginError,
         loginMessage: state.loginReducer.loginMessage,
         signUpError: state.SignUpReducer.signUpError,
-        signUpMessage: state.SignUpReducer.signUpMessage
+        signUpMessage: state.SignUpReducer.signUpMessage,
+        chatData: state.chatReducer.chatData
     }
 
 }
@@ -548,6 +776,7 @@ const matchDispatchToProps = (dispatch) => {
     return {
         loginAction: (data) => dispatch(loginAction(data)),
         signUpAction: (data) => dispatch(signUpAction(data)),
+        chatSubmitAction: (data) => dispatch(chatSubmitAction(data)),
 
     }
 }
