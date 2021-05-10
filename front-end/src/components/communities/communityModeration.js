@@ -20,7 +20,7 @@ const customStyles = {
     top: "40%",
     left: "50%",
     right: "auto",
-    // bottom: "auto",
+    bottom: "auto",
     marginRight: "-50%",
     height: "500px",
     width: "1280px",

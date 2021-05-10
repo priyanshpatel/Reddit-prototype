@@ -6,7 +6,6 @@ var Joi = require("joi");
 var { userschema } = require("../dataSchema/userschema");
 const updateInviteSchema = require("../dataSchema/updateInvitationSchema");
 const kafka = require("../kafka/client");
-const { checkAuth } = require("../Utils/passport");
 var {
   kafka_response_handler,
   kafka_default_response_handler,
