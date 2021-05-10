@@ -1,6 +1,6 @@
 const express = require("express");
 import { uploadS3 } from "../Utils/imageupload";
-import { checkAuth } from "../Utils/passport";
+import { checkAuth } from "../utils/passport";
 const jwt = require("jsonwebtoken");
 var Joi = require("joi");
 var { userschema } = require("../dataSchema/userschema");

@@ -8,7 +8,7 @@ export async function communityAnalytics(message, callback) {
     console.log("Add Message ", JSON.stringify(message.body));
     const communities = await getCommunitiesByCreator(message.body.userId);
     console.log(communities);
-    let numberOfPosts = 0;
+    const result = await getAnalyticsForAllCommunities(communities);
     /* if (communities.length !== 0) {
         const numberOfUsers = await getNumberOfUsersInCommunity(communities[0]._id);
         console.log(numberOfUsers);
@@ -33,8 +33,16 @@ export async function communityAnalytics(message, callback) {
     console.log(communityWithMaxPosts); */
 
     response.status = 200;
-    response.data = numberOfPosts;
+    response.data = result;
     return callback(null, response);
+}
+
+async function getAnalyticsForAllCommunities(communities) {
+    return Promise.all(communities.map(async (community) => {
+        const numberOfUsers = await getNumberOfUsersInCommunity(community._id);
+        const numberOfPosts = await getNumberOfPostsInCommunity("6086d5efbf72b94cb61f38b2");
+        return {numberOfUsers, numberOfPosts}
+    }));
 }
 
 async function getCommunitiesByCreator(creatorId) {
@@ -43,10 +51,15 @@ async function getCommunitiesByCreator(creatorId) {
     return communities;
 }
 
-/* async function getNumberOfUsersInCommunity(communityId) {
+async function getNumberOfUsersInCommunity(communityId) {
     console.log("Inside get number of users in community");
     const community = await CommunityModel.findOne({ _id: communityId })
-    return community.members.length;
+    const users = community.members.map((user) => {
+        if(user.communityJoinStatus == "JOINED") {
+            return user
+        } 
+    });
+    return users.length;
 }
 
 async function getNumberOfPostsInCommunity(communityId) {
@@ -56,7 +69,7 @@ async function getNumberOfPostsInCommunity(communityId) {
     return numberOfPosts;
 }
 
-async function getMostUpVotedPostForCommunity(communityId, allUpVotedPosts) {
+/* async function getMostUpVotedPostForCommunity(communityId, allUpVotedPosts) {
     console.log("Inside get most upvoted post for a community");
     const mostUpVotedPostForCommunity = allUpVotedPosts.find(x => x._id.community.toString() === communityId);
     const postDetails = await PostsModel.findOne({ _id: mostUpVotedPostForCommunity.postId }, { title: 1, description: 1 });

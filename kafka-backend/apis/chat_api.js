@@ -40,20 +40,15 @@ export async function getChatMemberList(message, callback) {
     let response = {};
     console.log("Inside get messages get Request");
     const userId = message.body.userId;
-    const messages = await ChatModel.find({ members: { $in: userId } })
-    let membersArray = []
-    messages.forEach((message) => {
-        membersArray = [...membersArray, ...message.members]
+    const messages = await ChatModel.find({ members: { $in: userId } }).populate("members", "name avatar");
+    const chatDetails = await getAllUserDetailsAndLastMessage(messages);
+    chatDetails.forEach((chatDetail) => {
+        const indx = chatDetail.userDetails.findIndex(v => v._id.toString() === userId);
+        chatDetail.userDetails.splice(indx,1);
+        console.log(chatDetail.userDetails);
     })
-    const uniq = new Set(membersArray.map((e) => JSON.stringify(e)));
-    const uniqueResult = Array.from(uniq).map((e) => JSON.parse(e));
-    const index = uniqueResult.indexOf(userId);
-    if (index > -1) {
-        uniqueResult.splice(index, 1);
-    }
-    const chatMemberList = await UserModel.find({ _id: uniqueResult }, { name: 1, avatar: 1 });;
     response.status = 200;
-    response.data = chatMemberList;
+    response.data = chatDetails;
     return callback(null, response);
 }
 
@@ -68,6 +63,14 @@ async function getLastMessage(chatId) {
     const chat = await ChatModel.findOne({ _id: chatId }).populate("messages.from", "name avatar");
     const lastMessage = chat.messages[chat.messages.length - 1]
     return lastMessage;
+}
+
+async function getAllUserDetailsAndLastMessage(messages) {
+    return Promise.all(messages.map(async (message) => {
+        const userDetails = message.members;
+        const lastMessage = await getLastMessage(message._id);
+        return { userDetails, lastMessage }
+    }));
 }
 
 
