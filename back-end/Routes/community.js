@@ -1,4 +1,4 @@
-import { checkAuth } from "../Utils/passport";
+import { checkAuth } from "../utils/passport";
 import { uploadS3 } from "../Utils/imageupload";
 
 const express = require("express");

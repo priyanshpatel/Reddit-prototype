@@ -1,4 +1,5 @@
 const ChatModel = require('../models/ChatModel');
+const UserModel = require('../models/UsersModel');
 
 export async function addMessage(message, callback) {
     let response = {};
@@ -35,6 +36,27 @@ export async function getMessages(message, callback) {
     return callback(null, response);
 }
 
+export async function getChatMemberList(message, callback) {
+    let response = {};
+    console.log("Inside get messages get Request");
+    const userId = message.body.userId;
+    const messages = await ChatModel.find({ members: { $in: userId } })
+    let membersArray = []
+    messages.forEach((message) => {
+        membersArray = [...membersArray, ...message.members]
+    })
+    const uniq = new Set(membersArray.map((e) => JSON.stringify(e)));
+    const uniqueResult = Array.from(uniq).map((e) => JSON.parse(e));
+    const index = uniqueResult.indexOf(userId);
+    if (index > -1) {
+        uniqueResult.splice(index, 1);
+    }
+    const chatMemberList = await UserModel.find({ _id: uniqueResult }, { name: 1, avatar: 1 });;
+    response.status = 200;
+    response.data = chatMemberList;
+    return callback(null, response);
+}
+
 async function getChat(members) {
     console.log("Inside get chat");
     const chat = await ChatModel.findOne({ members: { $all: members } });
@@ -47,6 +69,8 @@ async function getLastMessage(chatId) {
     const lastMessage = chat.messages[chat.messages.length - 1]
     return lastMessage;
 }
+
+
 
 
 
