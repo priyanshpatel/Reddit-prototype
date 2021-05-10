@@ -1,7 +1,7 @@
 import { createError } from "../helper/error";
 import config from "../config/config";
 import { createIndexes } from "../models/PostsModel";
-const CommunityModel = require("../models/communityModel");
+const CommunityModel = require("../models/CommunityModel");
 const PostsModel = require("../models/PostsModel");
 const mongoose = require("mongoose");
 const UsersModel = require("../models/UsersModel");
