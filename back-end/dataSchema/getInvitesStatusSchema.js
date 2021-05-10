@@ -1,5 +1,5 @@
 const Joi = require("joi");
-const config = require("./../Utils/config");
+const config = require("./../utils/config");
 
 // Construct schema
 const schema = Joi.object({

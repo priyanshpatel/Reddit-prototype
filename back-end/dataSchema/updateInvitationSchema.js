@@ -1,6 +1,6 @@
 const Joi = require("joi");
 const ObjectId = require("mongoose").Types.ObjectId;
-const config = require("../Utils/config");
+const config = require("../utils/config");
 const schema = Joi.object({
   invitation_id: Joi.string()
     .required()
