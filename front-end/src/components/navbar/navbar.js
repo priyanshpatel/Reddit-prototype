@@ -15,21 +15,18 @@ import loginAction from '../../actions/loginAction'
 import signUpAction from '../../actions/signupAction'
 import chatSubmitAction from '../../actions/chat/chatSubmitAction'
 import { SystemMessage } from 'react-chat-elements'
-
 import { connect } from "react-redux";
 import { Link } from 'react-router-dom';
 import login from '../../images/login.png';
-import no_chat_icon from '../../images/no_chat_icon.png';
+import { ChatList } from 'react-chat-elements'
 import List from 'react-list-select'
 import AsyncSelect from 'react-select/async'
-// RCE CSS
 import 'react-chat-elements/dist/main.css';
-// MessageBox component
 import { MessageBox } from 'react-chat-elements';
 import { MessageList } from 'react-chat-elements'
 import { Input } from 'react-chat-elements'
 import { Button } from 'react-chat-elements'
-
+// /chat/getChatMemberList
 const customStyles = {
     content: {
         top: '40%',
@@ -57,6 +54,7 @@ class Navbar extends Component {
             signUpBackendError: false,
             loginBackendError: false,
             chatFlag: false,
+            chatiID: '',
             newChatFlag: false,
             users: [],
             selectedUsers: [],
@@ -64,10 +62,39 @@ class Navbar extends Component {
             stateUserClick: false,
             chatDescription: "",
             chatData: [],
-            messages: []
+            messages: [],
+            chatList: []
         }
     }
+    componentDidMount() {
+        axios.defaults.headers.common["authorization"] = cookie.load('token')
+        axios.defaults.withCredentials = true;
+        return axios
+            .get(BACKEND_URL + ":" + BACKEND_PORT + '/chat/getchatmemberlist?userId=' + cookie.load('userId')
+            )
+            .then((response) => {
+                let newObject = []
 
+                for (let i = 0; i < response.data.data.length; i++) {
+                    let obj = {
+                        alt: "Chat icon",
+                        title: response.data.data[i].name,
+                        subtitle: "hi",
+                        id: response.data.data[i]._id
+                    }
+                    newObject.push(obj);
+                }
+                if (response.status === 200) {
+                    this.setState(
+                        {
+                            chatList: newObject
+                        }
+                    )
+                }
+            })
+            .catch((err) => {
+            });
+    }
     handleOtherChange = inp => {
         this.setState({
             error: false,
@@ -76,15 +103,12 @@ class Navbar extends Component {
     }
 
     handleStartChatClick = inp => {
-
         this.setState(
             {
                 stateUserClick: true,
                 startChatFlag: false,
                 newChatFlag: false,
                 chatFlag: false,
-
-
             }
         )
         axios.defaults.headers.common["authorization"] = cookie.load('token')
@@ -99,7 +123,6 @@ class Navbar extends Component {
                             messages: response.data.data.messages
                         }
                     )
-                    // console.log(response.data.data.messages)
                 }
             })
             .catch((err) => {
@@ -137,6 +160,33 @@ class Navbar extends Component {
             })
         }
     }
+    handleChatClick = (e) => {
+        this.setState(
+            {
+                stateUserClick: true,
+                startChatFlag: false,
+                newChatFlag: false,
+                chatFlag: false,
+                chatiID: e.id
+            }
+        )
+        axios.defaults.headers.common["authorization"] = cookie.load('token')
+        axios.defaults.withCredentials = true;
+        return axios
+            .get(BACKEND_URL + ":" + BACKEND_PORT + '/chat/get?members=' + cookie.load('userId') + "&members=" + e.id
+            )
+            .then((response) => {
+                if (response.status === 200) {
+                    this.setState(
+                        {
+                            messages: response.data.data.messages
+                        }
+                    )
+                }
+            })
+            .catch((err) => {
+            });
+    }
     handleNewChatButtonClick = (e) => {
         this.setState(
             {
@@ -146,9 +196,6 @@ class Navbar extends Component {
 
             }
         )
-        // this.setState({
-        //     loginButton: !this.state.loginButton
-        // })
     }
     loginButtonClick = (e) => {
         this.setState({
@@ -264,12 +311,17 @@ class Navbar extends Component {
     }
 
     handleChatSubmit = (e) => {
+        let id = null
+        if (this.state.selectedUsers == "") {
+            id = this.state.chatiID
+        }
+        else {
+            id = this.state.selectedUsers.value
+        }
         let obj = {
-
             members: [
-
                 cookie.load("userId"),
-                this.state.selectedUsers.value
+                id
             ],
             message:
             {
@@ -277,11 +329,8 @@ class Navbar extends Component {
                 "content": this.state.chatDescription
             }
         }
-
+        console.log(obj);
         this.props.chatSubmitAction(obj).then(response => {
-            console.log(this.state.messages)
-            console.log(this.props.chatData)
-
             let newChatData = {
                 content: this.props.chatData.data.content,
                 createdAt: this.props.chatData.data.createdAt,
@@ -314,10 +363,7 @@ class Navbar extends Component {
         })
     }
     render() {
-        console.log("This statte", this.state);
-
-
-
+        console.log(this.state);
         let chatDataForDisplay = this.state.messages.map((docs, index) => {
 
             if (docs.from == cookie.load('userId')) {
@@ -424,10 +470,8 @@ class Navbar extends Component {
                                 <div className="dropdown-menu" aria-labelledby="dropdownMenu2">
                                     <Link to="/" className="dropdown-item" type="button" value="home"><i class="fas fa-home dd-icon"></i><span className="dd-item">Home</span></Link>
                                     <Link to="/profile" className="dropdown-item" type="button" value="profile"><i class="fas fa-id-badge dd-icon" /><span className="dd-item">Profile</span></Link>
-
                                     <Link to="/my-communities" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-users dd-icon"></i><span className="dd-item">My Communities</span></Link>
                                     <Link to="/search-community" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-search"></i><span className="dd-item">Search Communities</span></Link>
-
                                     <Link className="dropdown-item" type="button" value="logout" onClick={this.handleLogout}><i class="fas fa-sign-out-alt dd-icon"></i><span className="dd-item">Logout</span></Link>
                                 </div>
                             </div>
@@ -440,13 +484,23 @@ class Navbar extends Component {
                             <div className="chat-application">
                                 <Row>
                                     <Col xs="4" style={{ height: "430px", padding: "10px", border: "1px solid #DADADA", borderTopLeftRadius: "10px", width: "550px" }}>
-                                        <span style={{ padding: "7%", marginTop: "1%", font: "14px Arial", color: "#1C1C1C" }}>
-                                            Chat
+                                        <Row>
+                                            <span style={{ padding: "7%", marginTop: "1%", font: "14px Arial", color: "#1C1C1C" }}>
+                                                Chat
                                         </span>
-                                        <span style={{ marginLeft: "60%", paddingTop: "5%" }} >
+                                            <span style={{ marginLeft: "60%", paddingTop: "5%" }} >
 
-                                            <img src={chat_icon} height="20px" alt="reddit-logo" />
-                                        </span>
+                                                <img src={chat_icon} height="20px" alt="reddit-logo" />
+                                            </span>
+                                        </Row>
+                                        <Row>
+                                            <ChatList
+                                                className='chat-list'
+                                                onClick={this.handleChatClick}
+                                                dataSource={this.state.chatList} />
+
+
+                                        </Row>
                                     </Col>
                                     <Col xs="6" style={{ border: "1px solid #DADADA", }}>
                                         <Row style={{ borderBottom: "1px solid #DADADA", font: "14px Arial #1C1C1C", height: "10%" }}>
@@ -454,14 +508,12 @@ class Navbar extends Component {
                                             <br></br>
                                         </Row>
                                         <Row style={{ height: "80%" }}>
-                                            {/* <img src={no_chat_icon} style={{marginLeft:"15%"}} width = "300px"alt="reddit-logo" /> */}
 
                                         </Row>
                                         <Row style={{ borderTop: "1px solid #DADADA" }}>
                                             <div style={{ paddingLeft: "40%", paddingTop: "10px" }}>
                                                 <button style={{ backgroundColor: "#0079d3", border: "none", cursor: "pointer", color: "white", borderRadius: "60px" }} onClick={this.handleNewChatButtonClick}><span style={{ fontSize: "14px", fontWeight: "300px" }}><strong>New Chat </strong></span></button>
                                             </div>
-                                            {/* <button type="button"  style={{ backgroundColor: "#0079d3", color: "white", borderRadius: "60px" }} class="btn btn-outline-primary btn-xs" onClick={this.postClick}><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Create Post</strong></span></button> */}
                                         </Row>
 
                                     </Col>

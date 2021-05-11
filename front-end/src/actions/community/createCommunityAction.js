@@ -24,7 +24,11 @@ var errorCommunity = (err, data) => {
 }
 var createCommunityAction = (data) => (dispatch) => {
     return axios
-        .post(BACKEND_URL + ":" + BACKEND_PORT + '/community/create', data)
+        .post(BACKEND_URL + ":" + BACKEND_PORT + '/community/create', data, {
+            headers: Object.assign(
+                { "content-type": "multipart/form-data" }
+            )
+        })
         .then((response) => {
             if (response.status === 200) {
                 dispatch(successCommunity(response, data));

@@ -24,7 +24,8 @@ const router = express.Router();
 
 const createCommunity = async (req, res) => {
   console.log("Inside create community post Request");
-
+console.log("Body",req.body);
+console.log("Files",req.files)
   if (!req.files.communityAvatar) {
     res
       .status(400)
