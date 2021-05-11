@@ -9,6 +9,7 @@ const postVoteService = require("./services/postVote");
 const commentVoteService = require("./services/commentVote");
 const chatService = require("./services/chat");
 const invitationService = require("./services/invitation");
+const testService = require("./services/testing");
 
 const mongoose = require("mongoose");
 
