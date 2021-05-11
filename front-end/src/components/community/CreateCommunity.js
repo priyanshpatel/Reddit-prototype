@@ -146,6 +146,8 @@ class CreateCommunity extends Component {
             })
         }
         else {
+
+            console.log(this.state)
             const formData = new FormData();
             const files = this.state.commmunityAvatar;
             for (let i = 0; i < files.length; i++) {
