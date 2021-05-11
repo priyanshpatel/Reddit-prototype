@@ -28,4 +28,9 @@ export const communitySchema = Joi.object().keys({
 export const updateCommunitySchema = Joi.object().keys({
   ...communityfields,
   _id: Joi.string().required(),
+  communityAvatar: Joi.array().items(Joi.string().uri()).optional(),
+  posts: Joi.optional(),
+  createdAt: Joi.optional(),
+  updatedAt: Joi.optional(),
+  communityCover: Joi.string().uri().optional(),
 });

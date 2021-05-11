@@ -71,18 +71,31 @@ const createCommunity = async (req, res) => {
 
 const updateCommunity = async (req, res) => {
   console.log("Inside update community post Request");
-  console.log("Request ", req.body.community);
-  const { error, value } = Joi.object()
-    .keys({ community: updateCommunitySchema.required() })
-    .validate(req.body);
+  console.log("Request ", req.body);
+  if (!req.body.community) {
+    res.status(400).send({ errorMessage: ["Community must be specified."] });
+    return;
+  }
+
+  const { error, value } = updateCommunitySchema
+    .validate(JSON.parse(req.body.community));
 
   if (error) {
     res.status(400).send(error.details);
     return;
   }
+
+  if (req.files.communityAvatar && req.files.communityAvatar.length) {
+    value.communityAvatar = req.files.communityAvatar.map((f) => f.location);
+  }
+
+  if (req.files.communityCover && req.files.communityCover.length) {
+    value.communityCover = req.files.communityCover[0].location;
+  }
+
   kafka.make_request(
     "reddit-community-topic",
-    { path: "community-update", body: value },
+    { path: "community-update", body: { community: value } },
     (err, results) => kafka_default_response_handler(res, err, results)
   );
 };
@@ -307,7 +320,7 @@ export async function searchCommunity(req, res) {
         pageSize: req.query.pageSize || 50,
         sortBy: req.query.sortBy || 'createdAt',
         sortOrder: req.query.sortOrder || 'desc',
-        searchKeyword:req.query.searchKeyword ? `${req.query.searchKeyword}.*` : '.*'
+        searchKeyword: req.query.searchKeyword ? `${req.query.searchKeyword}.*` : '.*'
       },
     },
     (err, results) => kafka_default_response_handler(res, err, results)
@@ -329,7 +342,17 @@ router.post(
   createCommunity
 );
 
-router.post("/update", updateCommunity);
+router.post("/update",
+  uploadS3.fields([
+    {
+      name: "communityAvatar",
+      maxCount: 100,
+    },
+    {
+      name: "communityCover",
+      maxCount: 1,
+    },
+  ]), updateCommunity);
 router.post("/join", checkAuth, requestToJoinCommunity);
 router.post("/upvote", checkAuth, upVoteCommunity);
 router.post("/downvote", checkAuth, downVoteCommunity);
