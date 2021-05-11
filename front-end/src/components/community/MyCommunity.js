@@ -8,8 +8,9 @@ import post from '../../images/post-image.png';
 import houseicon from '../../images/house-icon.png';
 import cakeicon from '../../images/cake-icon.png';
 import { Accordion } from "react-bootstrap";
-import { Button } from '@material-ui/core';
-import ReactPaginate from 'react-paginate';
+import axios from 'axios';
+import { BACKEND_URL, BACKEND_PORT } from '../../config/config'; import ReactPaginate from 'react-paginate';
+import cookie from "react-cookies";
 import './Pagination.css'
 import linkicon from '../../images/link.png';
 import {
@@ -19,6 +20,10 @@ import './MyCommunity.css'
 import { CarouselProvider, Slider, Slide, ButtonBack, ButtonNext } from 'pure-react-carousel';
 import 'pure-react-carousel/dist/react-carousel.es.css';
 import getPostsByIDAction from '../../actions/posts/getPostAction';
+import communityJoinRequestAction from '../../actions/community/communityJoinRequestAction';
+
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Post from './Post';
 import WhatshotTwoToneIcon from '@material-ui/icons/WhatshotTwoTone';
 import { relativeTimeThreshold } from 'moment';
@@ -39,12 +44,14 @@ class MyCommunity extends Component {
 
                 }
             ],
+            buttonStatus: "",
             postFlag: false,
             communityCover: "",
             communityAvatar: "",
             communityID: this.props.location.state.communityData._id,
             description: "",
             communityName: "",
+            errorMsg: false,
             totalUsers: [],
             communityNameWithoutSpaces: "",
             rules: [
@@ -82,7 +89,7 @@ class MyCommunity extends Component {
     }
     handlePageClick = (e) => {
         let obj = {
-            communityID : this.state.communityID,
+            communityID: this.state.communityID,
             sorting: this.state.sorting,
             popularity: this.state.popularity,
             pageNumber: Number(e.selected) + 1,
@@ -155,6 +162,27 @@ class MyCommunity extends Component {
             )
         })
     }
+    handleRequestAcceptClick = (e) => {
+        this.props.communityJoinRequestAction(this.state.communityID).then(response => {
+            if (this.props.error) {
+                toast.error(this.props.errorMessage, {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                    draggable: true,
+                    progress: undefined,
+                });
+            }
+            // this.setState(
+            //     {
+            //         errorMsg : this.props.error
+            //     }
+            // )
+        })
+
+    }
     handlePopularityChange = (e) => {
         e.preventDefault()
         this.setState(
@@ -218,6 +246,7 @@ class MyCommunity extends Component {
         })
     }
     componentDidMount() {
+        console.log(this.props.location.state)
         this.setState(
             {
                 communityID: this.props.location.state.communityData._id,
@@ -228,10 +257,38 @@ class MyCommunity extends Component {
                 members: this.props.location.state.communityData.members.length,
                 description: this.props.location.state.communityData.description,
                 totalPosts: this.props.location.state.communityData.numberOfPosts,
+                rules: this.props.location.state.communityData.rules,
+
 
             }
         )
 
+        axios.defaults.headers.common["authorization"] = cookie.load('token')
+        axios.defaults.withCredentials = true;
+        axios
+            .get(BACKEND_URL + ":" + BACKEND_PORT + '/community/get?communityId=' + this.props.location.state.communityData._id
+            )
+            .then((response) => {
+                if (response.status === 200) {
+                    console.log(response.data.members)
+
+                    for (let i = 0; i < response.data.members.length; i++) {
+                        console.log(response.data.members[i]._id._id)
+                        if (response.data.members[i]._id._id == cookie.load('userId')) {
+                            console.log(response.data.members[i].communityJoinStatus)
+                            this.setState(
+                                {
+                                    buttonStatus: response.data.members[i].communityJoinStatus
+                                }
+                            )
+                        }
+
+                    }
+
+                }
+            })
+            .catch((err) => {
+            });
         document.title = this.props.location.state.communityData.communityName
         var str = this.props.location.state.communityData.communityName;
         str = str.replace(/\s+/g, '').toLowerCase();
@@ -258,8 +315,48 @@ class MyCommunity extends Component {
         })
     }
     render() {
-        console.log(this.state)
         let renderPost = null;
+        let renderButton = null;
+        let renderJoinError = null;
+
+        if (this.state.errorMsg) {
+
+            renderJoinError = toast(this.props.errorMessage, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+
+        }
+        if (this.state.buttonStatus == 'JOINED') {
+            renderButton =
+                <button className="joined" type="button" id="login-button" style={{ color: "#0079d3", borderRadius: "60px" }} onClick={this.handleRequestAcceptClick} class="btn btn-outline-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>JOINED</strong></span></button>
+
+        }
+        if (this.state.buttonStatus == 'INVITED') {
+            renderButton = <button type="button" id="login-button" style={{ color: "#0079d3", borderRadius: "60px" }} class="btn btn-outline-primary" onClick={this.handleRequestAcceptClick}><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>INVITED</strong></span></button>
+
+        }
+        if (this.state.buttonStatus == 'REQUESTED') {
+            renderButton = <button type="button" id="login-button" style={{ color: "#0079d3", borderRadius: "60px" }} class="btn btn-outline-primary" onClick={this.handleRequestAcceptClick}><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>REQUESTED</strong></span></button>
+
+        }
+        if (this.state.buttonStatus == 'REJECTED') {
+            renderButton = <button type="button" id="login-button" style={{ color: "#0079d3", borderRadius: "60px" }} class="btn btn-outline-primary" onClick={this.handleRequestAcceptClick}><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>REJECTED</strong></span></button>
+
+        }
+        if (this.state.buttonStatus == 'PENDING_INVITE') {
+            renderButton = <button type="button" id="login-button" style={{ color: "#0079d3", borderRadius: "60px" }} class="btn btn-outline-primary" onClick={this.handleRequestAcceptClick}><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>PENDING_INVITE</strong></span></button>
+
+        }
+        if (this.state.buttonStatus == 'ACCEPTED_INVITE') {
+            renderButton = <button type="button" id="login-button" style={{ color: "#0079d3", borderRadius: "60px" }} class="btn btn-outline-primary" onClick={this.handleRequestAcceptClick}><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>ACCEPTED_INVITE</strong></span></button>
+
+        }
         let postComponent = this.props.postData.posts.map((postData, index) => (
             <div>
                 <Post
@@ -270,6 +367,7 @@ class MyCommunity extends Component {
                 />
             </div>
         ))
+
         let rulesAccordion = this.state.rules.map((rule, index) => {
             return (
                 <div>
@@ -315,7 +413,8 @@ class MyCommunity extends Component {
                             <img src={this.state.communityAvatar[0]} style={{ borderRadius: "50%", border: "4px solid white" }} height="80px" width="80px" alt="reddit-logo" />
                             &nbsp;&nbsp;&nbsp;&nbsp;
                             {/* TODO : CHANGE THIS TO THIS.STATE.NAME */}
-                            <span className="heading" style={{ fontSize: "25px", fontSize: "1.5vw", color: "#1C1C1C", fontWeight: "700", lineHeight: "32px", overflow: "scroll" }}>{this.state.communityName}   </span>
+                            <span className="heading" style={{ fontSize: "25px", fontSize: "1.5vw", color: "#1C1C1C", fontWeight: "700", lineHeight: "32px", overflow: "scroll" }}>{this.state.communityName}                             {renderButton}
+                            </span>
                         </Col>
                     </Col>
                     <Col style={{ backgroundColor: "white" }}>
@@ -456,8 +555,9 @@ class MyCommunity extends Component {
                             subContainerClassName={"pages pagination"}
                             activeClassName={"active"} />
                     </Col>
+                    {renderJoinError}
+                    <ToastContainer />
                 </Row>
-
             </div>
         )
     }
@@ -465,8 +565,14 @@ class MyCommunity extends Component {
 const matchStateToProps = (state) => {
     console.log("inside matchStatetoProps", state)
     return {
+
         postData: state.getPostByIDReducer.getPostData,
         message: state.getPostByIDReducer.message,
+        requestAcceptData: state.communityJoinReducer.joinRequestAcceptData,
+        error: state.communityJoinReducer.error,
+        errorMessage: state.communityJoinReducer.message,
+
+
     }
 
 }
@@ -474,6 +580,8 @@ const matchStateToProps = (state) => {
 const matchDispatchToProps = (dispatch) => {
     return {
         getPostsByIDAction: (data) => dispatch(getPostsByIDAction(data)),
+        communityJoinRequestAction: (data) => dispatch(communityJoinRequestAction(data)),
+
     }
 }
 

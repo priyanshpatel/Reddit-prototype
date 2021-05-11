@@ -107,7 +107,6 @@ class CreatePost extends Component {
     }
 
     render() {
-        console.log(this.state);
         return (
             <div>
                 <div><Navbar /></div>

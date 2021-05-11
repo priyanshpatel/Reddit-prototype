@@ -147,8 +147,6 @@ class CreateCommunity extends Component {
             })
         }
         else {
-
-            console.log(this.state)
             const formData = new FormData();
             const files = this.state.commmunityAvatar;
             for (let i = 0; i < files.length; i++) {
@@ -160,10 +158,11 @@ class CreateCommunity extends Component {
                 communityName: this.state.communityName,
                 description: this.state.description,
                 creator: cookie.load('userId'),
-                rules : this.state.rules,
+                rules: this.state.rules,
                 members: [
                     {
-                        _id: cookie.load('userId')
+                        _id: cookie.load('userId'),
+                        communityJoinStatus: 'JOINED'
                     }
                 ]
             }

@@ -13,7 +13,6 @@ var {
 require("dotenv").config();
 const ObjectId = require("mongoose").Types.ObjectId;
 const router = express.Router();
-import { checkAuth } from "../Utils/passport";
 
 const registerUser = async (req, res) => {
   console.log("Inside register user post Request");

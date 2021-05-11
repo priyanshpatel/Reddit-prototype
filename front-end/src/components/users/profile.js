@@ -64,9 +64,9 @@ class Profile extends Component {
             this.setState({
                 name: this.props.getByIDuserData.data.user.name,
                 email: this.props.getByIDuserData.data.user.email,
-                gender: this.props.getByIDuserData.data.user.gender,
-                location: this.props.getByIDuserData.data.user.location,
-                description: this.props.getByIDuserData.data.user.description,
+                gender: this.props.getByIDuserData.data.user.gender == undefined ? "" : this.props.getByIDuserData.data.user.gender,
+                location: this.props.getByIDuserData.data.user.location == undefined ? "" : this.props.getByIDuserData.data.user.location,
+                description: this.props.getByIDuserData.data.user.description == undefined ? "" : this.props.getByIDuserData.data.user.description,
                 image: this.props.getByIDuserData.data.user.avatar,
                 rawImagePath: this.props.getByIDuserData.data.user.avatar,
                 profilePicture: this.props.getByIDuserData.data.user.avatar,

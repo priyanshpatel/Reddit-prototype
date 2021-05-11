@@ -74,13 +74,14 @@ class Navbar extends Component {
             )
             .then((response) => {
                 let newObject = []
-
                 for (let i = 0; i < response.data.data.length; i++) {
                     let obj = {
+                        avatar: response.data.data[i].userDetails.avatar,
                         alt: "Chat icon",
-                        title: response.data.data[i].name,
-                        subtitle: "hi",
-                        id: response.data.data[i]._id
+                        title: response.data.data[i].userDetails[0].name,
+                        subtitle: response.data.data[i].lastMessage.content,
+                        id: response.data.data[i].userDetails[0]._id,
+                        date: new Date(response.data.data[i].lastMessage.createdAt),
                     }
                     newObject.push(obj);
                 }
@@ -161,13 +162,17 @@ class Navbar extends Component {
         }
     }
     handleChatClick = (e) => {
+        let selectedUsers = {
+            label: e.title
+        }
         this.setState(
             {
                 stateUserClick: true,
                 startChatFlag: false,
                 newChatFlag: false,
                 chatFlag: false,
-                chatiID: e.id
+                chatiID: e.id,
+                selectedUsers: selectedUsers
             }
         )
         axios.defaults.headers.common["authorization"] = cookie.load('token')
