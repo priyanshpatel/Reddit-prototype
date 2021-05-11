@@ -49,6 +49,7 @@ const usersSchema = new Schema(
     ],
   },
   {
+    timestamps: true,
     versionKey: false,
   }
 );

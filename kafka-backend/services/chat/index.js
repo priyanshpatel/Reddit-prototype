@@ -1,4 +1,4 @@
-const { addMessage, getMessages } = require("../../apis/chat_api");
+const { addMessage, getMessages, getChatMemberList } = require("../../apis/chat_api");
 
 export const handle_request = async (message, callback) => {
   switch (message.path) {
@@ -6,5 +6,7 @@ export const handle_request = async (message, callback) => {
       return addMessage(message, callback);
     case "get_messages":
       return getMessages(message, callback);
+    case "get_chat_member_list":
+      return getChatMemberList(message, callback);
   }
 };

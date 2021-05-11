@@ -1,59 +1,80 @@
 // Created by Priyansh Patel
 
-import React, { Component } from 'react';
-import { Card, Button, CardTitle, CardText, CardBody } from 'reactstrap';
-// import ImageThumbnail from './imageThumbnail';
-import './myCommunities.css';
-import { v4 as uuidv4 } from 'uuid';
+import React, { Component } from "react";
+import { Card, Button, CardTitle, CardText, CardBody } from "reactstrap";
+import "./myCommunities.css";
+import CommunityModUsersList from "./communityModUsersList";
+import Modal from "react-modal";
 
-class communityModList extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            communityAvatar: this.props.communityAvatar,
-            communityId: this.props._id,
-            communityName: this.props.communityName,
-            communityCover: this.props.communityCover,
-            description: this.props.description,
-            members: this.props.members,
-            posts: this.props.posts,
-        }
-    }
+const customStyles = {
+  content: {
+    top: "40%",
+    left: "50%",
+    right: "auto",
+    // bottom: "auto",
+    marginRight: "-50%",
+    height: "500px",
+    width: "1280px",
+    transform: "translate(-50%, -50%)",
+  },
+};
 
-    componentDidMount() {
-        console.log("----------inside list component-------------", this.props);
-    }
+class CommunityModList extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      communityAvatar: this.props.data.communityAvatar,
+      communityId: this.props.data._id,
+      communityName: this.props.data.communityName,
+      description: this.props.data.description,
+      totalRequests: this.props.data.totalRequests,
+      usersPopUp: false,
+    };
+  }
 
-    render() {
+  componentDidMount() {
+    console.log("----------inside list component-------------", this.props);
+  }
 
-        // let communityImages = <div>No images to show</div>
-        // // console.log("PROPS>>>>>>>>>>>>", this.props)
-        // if (this.props.communityAvatar.length !== 0) {
-        //     if (this.state.communityAvatar.length !== 0) {
-        //         communityImages = this.props.communityAvatar.map((image) => {
-        //             return <imageThumbnail
-        //                 key = {uuidv4}
-        //                 data={image}
-        //             />
-        //         })
-        //     }
-        // }
+  toggleUsersList = () => {
+    this.setState({
+      usersPopUp: !this.state.usersPopUp,
+    });
+  };
 
-        return (
-            <Card>
-                <CardBody class="com-card">
-                    <img src={this.state.communityCover} alt="Avatar" class="com-avatar" /> <span class="com-name">r/{this.state.communityName}</span>
-                    {/* <button type="button" onClick={this.props.removeButtonClicked.bind(this, this.state)} style={{ borderColor: "#0079d3", color: "rgb(0, 121, 211)", borderRadius: "60px", marginLeft: "1%", float: "right"}} class="btn btn-outline-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Remove</strong></span></button>
-                    <button type="button" onClick={this.props.editButtonClicked.bind(this, this.state)} style={{ borderColor: "#0079d3", color: "white", borderRadius: "60px", marginLeft: "10%", float: "right"}} class="btn btn-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Edit</strong></span></button> */}
-                    <br/>
-                    <span className="com-desc">{this.state.description}</span>
-                    <br/>
-                    <span className="com-details"><i class="fas fa-users"></i> {this.state.members.length}</span>
-                    <span className="com-details"><i class="fas fa-copy"></i> {this.state.posts.length}</span>
-                    {/* {communityImages} */}
-                </CardBody>
-            </Card>
-        )
-    }
+  render() {
+    return (
+      <div>
+        <Card>
+          <CardBody class="com-card" onClick={this.toggleUsersList}>
+            {this.state.communityAvatar ? (
+              <img
+                src={this.state.communityAvatar}
+                alt="Avatar"
+                class="com-avatar"
+              />
+            ) : null}{" "}
+            <span class="com-name">r/{this.state.communityName}</span>
+            <br />
+            <span className="com-desc">{this.state.description}</span>
+            <br />
+            <span className="com-details">
+              <i class="fas fa-users"></i> {this.state.totalRequests}
+            </span>
+          </CardBody>
+        </Card>
+        <Modal
+          style={customStyles}
+          isOpen={this.state.usersPopUp}
+          ariaHideApp={false}
+        >
+          <CommunityModUsersList
+            data={this.state}
+            closePopUp={this.toggleUsersList}
+          />
+        </Modal>
+      </div>
+    );
+  }
 }
-export default communityModList;
+export default CommunityModList;

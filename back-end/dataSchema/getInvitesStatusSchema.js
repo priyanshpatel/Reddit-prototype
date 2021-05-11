@@ -14,17 +14,6 @@ const schema = Joi.object({
     "number.min": "Select a valid page size",
     "number.base": "Select a valid page size",
   }),
-  searchKeyword: Joi.string(),
-  userType: Joi.string()
-    .valid(
-      config.REQUESTED_TO_JOIN_COMMUNITY,
-      config.ACCEPTED_REQUEST_TO_JOIN_COMMUNITY
-    )
-    .required()
-    .messages({
-      "any.required": "Enter a valid userType.",
-      "string.valid": "Enter a valid userType.",
-    }),
 });
 
 module.exports = schema;
