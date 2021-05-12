@@ -357,7 +357,7 @@ router.post("/join", checkAuth, requestToJoinCommunity);
 router.post("/upvote", checkAuth, upVoteCommunity);
 router.post("/downvote", checkAuth, downVoteCommunity);
 router.get("/search", checkAuth, searchCommunity);
-router.get("/get", getCommunityDetails);
+router.get("/get", checkAuth, getCommunityDetails);
 router.get("/mycommunities", checkAuth, getMyCommunities);
 router.get(
   "/mycommunities/users/:community_id",
