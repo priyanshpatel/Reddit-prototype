@@ -25,7 +25,8 @@ import 'react-chat-elements/dist/main.css';
 import { MessageBox } from 'react-chat-elements';
 import { MessageList } from 'react-chat-elements'
 import { Input } from 'react-chat-elements'
-import { Button } from 'react-chat-elements'
+import { Button } from 'react-chat-elements';
+import _ from 'lodash';
 // /chat/getChatMemberList
 const customStyles = {
     content: {
@@ -63,7 +64,8 @@ class Navbar extends Component {
             chatDescription: "",
             chatData: [],
             messages: [],
-            chatList: []
+            chatList: [],
+            logout: false
         }
     }
     componentDidMount() {
@@ -308,10 +310,19 @@ class Navbar extends Component {
 
 
     handleLogout = (e) => {
-        cookie.remove('token', { path: '/' })
-        cookie.remove('auth', { path: '/' })
-        cookie.remove('handle', { path: '/' })
-        cookie.remove('userId', { path: '/' })
+        var cookies = null;
+        if (cookie.load("auth")) {
+            cookies = cookie.loadAll();
+            console.log(cookies);
+            _.forEach(cookies, function (value, key) {
+                cookie.remove(key, { path: '/' })
+            });
+            this.setState(
+                {
+                    logout: true
+                }
+            )
+        }
         // this.props.history.push("/")
     }
 
@@ -433,6 +444,7 @@ class Navbar extends Component {
             return (
                 <div className="manual-container">
                     <div class="row">
+                        {this.state.logout ? <Link to="/"></Link> : ""}
 
                     </div>
                     <div className="row">
@@ -440,9 +452,9 @@ class Navbar extends Component {
                             <Link to="/"><img src={reddit_logo} className="logo-image" alt="reddit-logo" /></Link>
                         </div>
                         <div className="row">
-                            <div className="col-1">
+                            {/* <div className="col-1">
                                 <Link to="/"><img src={reddit_logo} className="logo-image" alt="reddit-logo" /></Link>
-                            </div>
+                            </div> */}
                             <div className="col-1">
                                 <Link to="/my-community-analytics">My Community Analytics</Link>
                             </div>

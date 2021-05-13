@@ -1,7 +1,7 @@
 //author-Het 
 import React, { Component } from 'react'
 import { connect } from "react-redux";
-import Navbar from "../navbar/navbar";
+import Navbar from "../Navbar/Navbar";
 import { Row, Col, CardTitle } from 'reactstrap';
 import avatar from '../../images/post-image.png';
 import post from '../../images/post-image.png';
@@ -246,7 +246,6 @@ class MyCommunity extends Component {
         })
     }
     componentDidMount() {
-        console.log(this.props.location.state)
         this.setState(
             {
                 communityID: this.props.location.state.communityData._id,

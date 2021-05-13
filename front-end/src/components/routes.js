@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Route } from "react-router-dom"
-import Navbar from './navbar/navbar'
+import Navbar from './Navbar/Navbar'
 
 import CreatePost from './posts/createPost';
 import CreateCommunity from './community/CreateCommunity'
@@ -15,6 +15,7 @@ import MyCommunityAnalytics from './community/MyCommunityAnalytics';
 
 import UserProfilePage from './users/user-profile';
 import CommunitySearch from './community/CommunitySearch';
+import logout from './users/logout';
 
 
 class Routes extends Component {
@@ -28,6 +29,7 @@ class Routes extends Component {
                 <Route exact path="/create-community/:id" component={CreateCommunity} />
                 <Route path="/users/profile-page" component={UserProfilePage} />
                 <Route path="/search-community" component={CommunitySearch} />
+                <Route path="/logout" component={logout} />
 
                 <Route path="/profile" component={Profile} />
                 <Route path="/my-communities" component={MyCommunities} />
