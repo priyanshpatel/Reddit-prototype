@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Route } from "react-router-dom"
-import Navbar from './navbar/navbar'
+import Navbar from './Navbar/Navbar'
 
 import CreatePost from './posts/createPost';
 import CreateCommunity from './community/CreateCommunity'

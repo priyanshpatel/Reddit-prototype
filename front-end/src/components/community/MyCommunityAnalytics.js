@@ -4,7 +4,7 @@ import axios from 'axios';
 import { BACKEND_URL, BACKEND_PORT } from '../../config/config';
 import cookie from "react-cookies";
 import { Card, Container, Dropdown, Form, ListGroup, Row, Col } from 'react-bootstrap';
-import Navbar from "../navbar/navbar";
+import Navbar from "../Navbar/Navbar";
 
 const data = [
   ["Year", "Visitations", { role: "style" }],
@@ -122,7 +122,7 @@ class MyCommunityAnalytics extends React.Component {
         <Row>
           <Col lg={6}>
             <div className="App">
-              <Chart chartType="ColumnChart" width="100%" height="400px" data={this.state.numberOfUsers} options={{is3D: true}}/>
+              <Chart chartType="ColumnChart" width="100%" height="400px" data={this.state.numberOfUsers} options={{ is3D: true }} />
             </div>
           </Col>
           <Col lg={6}>
@@ -139,7 +139,7 @@ class MyCommunityAnalytics extends React.Component {
           </Col>
           <Col lg={6}>
             <div className="App">
-              <Chart chartType="PieChart" width="100%" height="400px" data={this.state.numberOfPosts} options={pieOptions}/>
+              <Chart chartType="PieChart" width="100%" height="400px" data={this.state.numberOfPosts} options={pieOptions} />
             </div>
           </Col>
         </Row>

@@ -444,7 +444,7 @@ class Navbar extends Component {
             return (
                 <div className="manual-container">
                     <div class="row">
-                    {this.state.logout ? <Link to="/"></Link> : ""}
+                        {this.state.logout ? <Link to="/"></Link> : ""}
 
                     </div>
                     <div className="row">
@@ -452,9 +452,9 @@ class Navbar extends Component {
                             <Link to="/"><img src={reddit_logo} className="logo-image" alt="reddit-logo" /></Link>
                         </div>
                         <div className="row">
-                            <div className="col-1">
+                            {/* <div className="col-1">
                                 <Link to="/"><img src={reddit_logo} className="logo-image" alt="reddit-logo" /></Link>
-                            </div>
+                            </div> */}
                             <div className="col-1">
                                 <Link to="/my-community-analytics">My Community Analytics</Link>
                             </div>
@@ -509,7 +509,7 @@ class Navbar extends Component {
                                     <Link to="/profile" className="dropdown-item" type="button" value="profile"><i class="fas fa-id-badge dd-icon" /><span className="dd-item">Profile</span></Link>
                                     <Link to="/my-communities" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-users dd-icon"></i><span className="dd-item">My Communities</span></Link>
                                     <Link to="/search-community" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-search"></i><span className="dd-item">Search Communities</span></Link>
-                                    <Link  className="dropdown-item" type="button" value="logout" onClick={this.handleLogout}><i class="fas fa-sign-out-alt dd-icon"></i><span className="dd-item">Logout</span></Link>
+                                    <Link className="dropdown-item" type="button" value="logout" onClick={this.handleLogout}><i class="fas fa-sign-out-alt dd-icon"></i><span className="dd-item">Logout</span></Link>
                                 </div>
                             </div>
                         </div>
