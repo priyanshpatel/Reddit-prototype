@@ -119,7 +119,7 @@ export async function getAllCommunityForUser(message, callback) {
 }
 
 // Function to fetch communities of whom the user is a part of by userId
-async function getCommunityByUserId(userId) {
+export async function getCommunityByUserId(userId) {
   console.log("Inside get Community By User ID XX ", userId);
   const result = await CommunityModel.find({
     members: { $elemMatch: { _id: userId } },
@@ -129,6 +129,52 @@ async function getCommunityByUserId(userId) {
     .populate("posts");
   console.log("ResultsX ", JSON.stringify(result));
   return result;
+}
+
+export async function getCommunityByUserIdV2(userId) {
+  const communityInfos = await CommunityModel.aggregate([
+    {
+      $match: {
+        creator: ObjectId(userId),
+      },
+    },
+    {
+      $lookup: {
+        from: "communityvotes",
+        localField: "_id",
+        foreignField: "communityId",
+        as: "communityvotes",
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "creator",
+        foreignField: "_id",
+        as: "creator",
+      },
+    },
+    {
+      $addFields: {
+        numberOfVotes: {
+          $cond: {
+            if: { $isArray: "$communityvotes" },
+            then: { $sum: "$communityvotes.vote" },
+            else: 0,
+          },
+        },
+        numberOfPosts: {
+          $cond: {
+            if: { $isArray: "$posts" },
+            then: { $size: "$posts" },
+            else: 0,
+          },
+        },
+        numberOfUsers: { $size: "$members" },
+      },
+    },
+  ]);
+  return communityInfos;
 }
 
 // Function to get all the community details
@@ -378,7 +424,7 @@ export const requestToJoinCommunity = async (req, callback) => {
   if (
     index !== -1 &&
     community.members[index].communityJoinStatus ===
-      config.ACCEPTED_REQUEST_TO_JOIN_COMMUNITY
+    config.ACCEPTED_REQUEST_TO_JOIN_COMMUNITY
   ) {
     callback(null, {
       errorMessage: ["You are already a member of this community."],
@@ -390,7 +436,7 @@ export const requestToJoinCommunity = async (req, callback) => {
   else if (
     index !== -1 &&
     community.members[index].communityJoinStatus ===
-      config.INVITED_TO_JOIN_COMMUNITY
+    config.INVITED_TO_JOIN_COMMUNITY
   ) {
     callback(null, {
       errorMessage: [
@@ -404,7 +450,7 @@ export const requestToJoinCommunity = async (req, callback) => {
   else if (
     index !== -1 &&
     community.members[index].communityJoinStatus ===
-      config.REQUESTED_TO_JOIN_COMMUNITY
+    config.REQUESTED_TO_JOIN_COMMUNITY
   ) {
     callback(null, {
       errorMessage: ["You have already requested to join this community."],
@@ -554,297 +600,297 @@ export async function getCommunityListCreatedByUser(message, callback) {
   }
 }
 
-  // Update users createdCommunities Array
-  async function updateCreatorsCommunityList(userId, communityId) {
-    // Find the user
-    const user = await UsersModel.findById(userId);
-    if (user) {
-      // Update the user's createdCommuity array if you find it successfully
-      user.createdCommunities.push(communityId);
-      user.memberships.push(communityId);
-      return await user.save();
-    } else {
-      return null;
-    }
+// Update users createdCommunities Array
+async function updateCreatorsCommunityList(userId, communityId) {
+  // Find the user
+  const user = await UsersModel.findById(userId);
+  if (user) {
+    // Update the user's createdCommuity array if you find it successfully
+    user.createdCommunities.push(communityId);
+    user.memberships.push(communityId);
+    return await user.save();
+  } else {
+    return null;
   }
+}
 
-  // Populate the votes of posts and nested comments along with their votes
-  export const populateVotesAndCommentsOfPosts = async (
-    posts,
-    user_id,
-    orderByDateIdentifier
-  ) => {
-    const finalPosts = [];
-    for (let index = 0; index < posts.length; index++) {
-      let voteStatus = 0;
-      const postVote = await PostsVotesModel.findOne({
-        post_id: posts[index]._id,
-        createdBy: user_id,
-      });
-      if (postVote != null) {
-        voteStatus = postVote.vote;
-      }
-      posts[index].comments = await organizeComments(
-        posts[index].comments,
-        user_id,
-        posts[index]._id,
-        orderByDateIdentifier
-      );
-      posts[index].voteStatus = voteStatus;
-      finalPosts.push({
-        ...posts[index],
-      });
-    }
-    return finalPosts;
-  };
-
-  // Populate only the votes of parent comment
-  const populateVoteOfParentComment = async (post_id, comment_id, user_id) => {
-    const commentVote = await CommentsVotesModel.findOne({
-      comment_id,
-      post_id,
+// Populate the votes of posts and nested comments along with their votes
+export const populateVotesAndCommentsOfPosts = async (
+  posts,
+  user_id,
+  orderByDateIdentifier
+) => {
+  const finalPosts = [];
+  for (let index = 0; index < posts.length; index++) {
+    let voteStatus = 0;
+    const postVote = await PostsVotesModel.findOne({
+      post_id: posts[index]._id,
       createdBy: user_id,
     });
-    let voteStatus = 0;
-    if (commentVote != null) {
-      voteStatus = commentVote.voteStatus;
+    if (postVote != null) {
+      voteStatus = postVote.vote;
     }
-    return voteStatus;
-  };
-
-  // Function which organizes the comments in a nested fashion. This is the starting
-  // point to the recursive solution of nested comments
-  const organizeComments = async (
-    commentsArray,
-    user_id,
-    post_id,
-    orderByDateIdentifier
-  ) => {
-    let threads = {};
-    let comment = null;
-    for (let index = 0; index < commentsArray.length; index++) {
-      comment = commentsArray[index];
-      comment["children"] = {};
-      if (commentsArray[index].depth == 0) {
-        comment.voteStatus = await populateVoteOfParentComment(
-          post_id,
-          commentsArray[index]._id,
-          user_id
-        );
-        comment.user = await populateUser(comment.createdBy);
-        threads[comment._id] = comment;
-        continue;
-      }
-      await organizeChildComments(comment, threads);
-    }
-    threads = getSortedCommentsArray(threads, orderByDateIdentifier);
-    return threads;
-  };
-
-  // Recursive function used to organize comments in the nested manner.
-  const organizeChildComments = async (comment, threads) => {
-    for (let thread in threads) {
-      const currentParent = threads[thread];
-      if (ObjectId(thread).equals(ObjectId(comment.parent_id))) {
-        comment.user = await populateUser(comment.createdBy);
-        currentParent.children[comment._id] = comment;
-        return;
-      }
-      if (currentParent.children) {
-        organizeChildComments(comment, currentParent.children);
-      }
-    }
-  };
-
-  // Function which sorts the parent comment on the basis of popularity. If there is a tie
-  // It is broken by createdAt value
-  const getSortedCommentsArray = (commentsObject, orderByDateIdentifier) => {
-    const sortCommentsByVotesAndDate = (a, b) => {
-      // Sort by most popular
-      if (a.votes > b.votes) {
-        return -1;
-      } else if (b.votes > a.votes) {
-        return 1;
-      } else {
-        // Sort the ties using date
-        const d1 = new Date(a.createdAt);
-        const d2 = new Date(b.createdAt);
-        if (d1 > d2) {
-          return orderByDateIdentifier;
-        } else if (d1 < d2) {
-          return orderByDateIdentifier;
-        } else {
-          return 0;
-        }
-      }
-    };
-    const sortedCommentsArray = Object.values(commentsObject).sort(
-      sortCommentsByVotesAndDate
+    posts[index].comments = await organizeComments(
+      posts[index].comments,
+      user_id,
+      posts[index]._id,
+      orderByDateIdentifier
     );
-    return sortedCommentsArray;
-  };
-
-  // Populates the user data for each and every comment
-  const populateUser = async (user_id) => {
-    return await UsersModel.findById(user_id, "name email handle avatar");
-  };
-
-  const UPVOTE = 1;
-  const DOWNVOTE = -1;
-
-  export async function communityUpVote(message, callback) {
-    console.log("messg X", message);
-    message.value.type = UPVOTE;
-    return communityVote(message.value, callback);
-  }
-
-  export async function communityDownVote(message, callback) {
-    message.value.type = DOWNVOTE;
-    return communityVote(message.value, callback);
-  }
-
-  async function communityVote(message, callback) {
-    const type = message.type;
-    const communityId = message.communityId;
-    console.log("communityId ", communityId);
-    const userId = message.userId;
-    const vote = await CommunityVotesModel.findOne({
-      communityId: communityId,
-      createdBy: userId,
+    posts[index].voteStatus = voteStatus;
+    finalPosts.push({
+      ...posts[index],
     });
-    let newVote = 0;
-    let response = {};
-    if (!vote) {
-      console.log("Vote does not exist");
-      newVote = type;
+  }
+  return finalPosts;
+};
+
+// Populate only the votes of parent comment
+const populateVoteOfParentComment = async (post_id, comment_id, user_id) => {
+  const commentVote = await CommentsVotesModel.findOne({
+    comment_id,
+    post_id,
+    createdBy: user_id,
+  });
+  let voteStatus = 0;
+  if (commentVote != null) {
+    voteStatus = commentVote.voteStatus;
+  }
+  return voteStatus;
+};
+
+// Function which organizes the comments in a nested fashion. This is the starting
+// point to the recursive solution of nested comments
+const organizeComments = async (
+  commentsArray,
+  user_id,
+  post_id,
+  orderByDateIdentifier
+) => {
+  let threads = {};
+  let comment = null;
+  for (let index = 0; index < commentsArray.length; index++) {
+    comment = commentsArray[index];
+    comment["children"] = {};
+    if (commentsArray[index].depth == 0) {
+      comment.voteStatus = await populateVoteOfParentComment(
+        post_id,
+        commentsArray[index]._id,
+        user_id
+      );
+      comment.user = await populateUser(comment.createdBy);
+      threads[comment._id] = comment;
+      continue;
+    }
+    await organizeChildComments(comment, threads);
+  }
+  threads = getSortedCommentsArray(threads, orderByDateIdentifier);
+  return threads;
+};
+
+// Recursive function used to organize comments in the nested manner.
+const organizeChildComments = async (comment, threads) => {
+  for (let thread in threads) {
+    const currentParent = threads[thread];
+    if (ObjectId(thread).equals(ObjectId(comment.parent_id))) {
+      comment.user = await populateUser(comment.createdBy);
+      currentParent.children[comment._id] = comment;
+      return;
+    }
+    if (currentParent.children) {
+      organizeChildComments(comment, currentParent.children);
+    }
+  }
+};
+
+// Function which sorts the parent comment on the basis of popularity. If there is a tie
+// It is broken by createdAt value
+const getSortedCommentsArray = (commentsObject, orderByDateIdentifier) => {
+  const sortCommentsByVotesAndDate = (a, b) => {
+    // Sort by most popular
+    if (a.votes > b.votes) {
+      return -1;
+    } else if (b.votes > a.votes) {
+      return 1;
     } else {
-      const prevVote = vote.vote;
-      console.log("Prev Vote ", prevVote);
-      if (!(prevVote ^ type)) {
-        console.log("Delete Vote ", prevVote);
-        // Delete the vote
-        await CommunityVotesModel.deleteOne({
-          communityId: communityId,
-          createdBy: userId,
-        });
-        const community = await getCommunityById(communityId);
-        response.status = 200;
-        response.data = community;
-        return callback(null, response);
+      // Sort the ties using date
+      const d1 = new Date(a.createdAt);
+      const d2 = new Date(b.createdAt);
+      if (d1 > d2) {
+        return orderByDateIdentifier;
+      } else if (d1 < d2) {
+        return orderByDateIdentifier;
       } else {
-        newVote = prevVote + type * 2;
-        console.log("New Vote ", newVote);
+        return 0;
       }
     }
+  };
+  const sortedCommentsArray = Object.values(commentsObject).sort(
+    sortCommentsByVotesAndDate
+  );
+  return sortedCommentsArray;
+};
 
-    await CommunityVotesModel.updateOne(
-      { communityId: communityId, createdBy: userId },
-      { $set: { vote: newVote } },
-      { upsert: true } // Make this update into an upsert
-    );
+// Populates the user data for each and every comment
+const populateUser = async (user_id) => {
+  return await UsersModel.findById(user_id, "name email handle avatar");
+};
 
-    const community = await getCommunityById(communityId);
-    response.status = 200;
-    response.data = community;
-    console.log("CommunityX ", community);
-    return callback(null, response);
-  }
+const UPVOTE = 1;
+const DOWNVOTE = -1;
 
-  export async function communitySearch(message, callback) {
-    let options = message.options;
-    let response = {};
-    let error = {};
-    try {
-      const communityInfos = await getCommunityBySearchQuery(options);
+export async function communityUpVote(message, callback) {
+  console.log("messg X", message);
+  message.value.type = UPVOTE;
+  return communityVote(message.value, callback);
+}
+
+export async function communityDownVote(message, callback) {
+  message.value.type = DOWNVOTE;
+  return communityVote(message.value, callback);
+}
+
+async function communityVote(message, callback) {
+  const type = message.type;
+  const communityId = message.communityId;
+  console.log("communityId ", communityId);
+  const userId = message.userId;
+  const vote = await CommunityVotesModel.findOne({
+    communityId: communityId,
+    createdBy: userId,
+  });
+  let newVote = 0;
+  let response = {};
+  if (!vote) {
+    console.log("Vote does not exist");
+    newVote = type;
+  } else {
+    const prevVote = vote.vote;
+    console.log("Prev Vote ", prevVote);
+    if (!(prevVote ^ type)) {
+      console.log("Delete Vote ", prevVote);
+      // Delete the vote
+      await CommunityVotesModel.deleteOne({
+        communityId: communityId,
+        createdBy: userId,
+      });
+      const community = await getCommunityById(communityId);
       response.status = 200;
-      response.data = communityInfos;
+      response.data = community;
       return callback(null, response);
-    } catch (err) {
-      console.log("Error search X", err);
-      error.data = {
-        code: err.code,
-        msg:
-          "Unable to successfully get the Communities! Please check the application logs for more details.",
-      };
-      return callback(error, null);
+    } else {
+      newVote = prevVote + type * 2;
+      console.log("New Vote ", newVote);
     }
   }
 
-  async function getCommunityBySearchQuery(options) {
-    const newOptions = Object.assign(
-      {
-        pageIndex: 1,
-        pageSize: 50,
-        sortBy: "createdAt",
-        sortOrder: "desc",
-        searchKeyword: ".*",
-      },
-      options
-    );
-    console.log("New options ", JSON.stringify(newOptions));
-    const sortBy = newOptions.sortBy;
-    const sortOrder = newOptions.sortOrder;
-    const sort = {};
-    sort[`${sortBy}`] = sortOrder == "desc" ? -1 : 1;
-    const communityInfos = CommunityModel.aggregate([
-      {
-        $match: {
-          $or: [
-            {
-              communityName: { $regex: newOptions.searchKeyword },
-            },
-            {
-              description: { $regex: newOptions.searchKeyword },
-            },
-          ],
-        },
-      },
-      {
-        $lookup: {
-          from: "communityvotes",
-          localField: "_id",
-          foreignField: "communityId",
-          as: "communityvotes",
-        },
-      },
-      {
-        $lookup: {
-          from: "users",
-          localField: "creator",
-          foreignField: "_id",
-          as: "creator",
-        },
-      },
-      {
-        $addFields: {
-          numberOfVotes: {
-            $cond: {
-              if: { $isArray: "$communityvotes" },
-              then: { $sum: "$communityvotes.vote" },
-              else: 0,
-            },
-          },
-          numberOfPosts: {
-            $cond: {
-              if: { $isArray: "$posts" },
-              then: { $size: "$posts" },
-              else: 0,
-            },
-          },
-          numberOfUsers: { $size: "$members" },
-        },
-      },
-    ]);
+  await CommunityVotesModel.updateOne(
+    { communityId: communityId, createdBy: userId },
+    { $set: { vote: newVote } },
+    { upsert: true } // Make this update into an upsert
+  );
 
-    console.log("community Infos ", communityInfos);
-    const paginatedCommunity = await CommunityModel.aggregatePaginate(
-      communityInfos,
-      {
-        page: newOptions.pageIndex,
-        limit: newOptions.pageSize,
-        sort,
-      }
-    );
-    return paginatedCommunity;
+  const community = await getCommunityById(communityId);
+  response.status = 200;
+  response.data = community;
+  console.log("CommunityX ", community);
+  return callback(null, response);
+}
+
+export async function communitySearch(message, callback) {
+  let options = message.options;
+  let response = {};
+  let error = {};
+  try {
+    const communityInfos = await getCommunityBySearchQuery(options);
+    response.status = 200;
+    response.data = communityInfos;
+    return callback(null, response);
+  } catch (err) {
+    console.log("Error search X", err);
+    error.data = {
+      code: err.code,
+      msg:
+        "Unable to successfully get the Communities! Please check the application logs for more details.",
+    };
+    return callback(error, null);
   }
+}
+
+async function getCommunityBySearchQuery(options) {
+  const newOptions = Object.assign(
+    {
+      pageIndex: 1,
+      pageSize: 50,
+      sortBy: "createdAt",
+      sortOrder: "desc",
+      searchKeyword: ".*",
+    },
+    options
+  );
+  console.log("New options ", JSON.stringify(newOptions));
+  const sortBy = newOptions.sortBy;
+  const sortOrder = newOptions.sortOrder;
+  const sort = {};
+  sort[`${sortBy}`] = sortOrder == "desc" ? -1 : 1;
+  const communityInfos = CommunityModel.aggregate([
+    {
+      $match: {
+        $or: [
+          {
+            communityName: { $regex: newOptions.searchKeyword },
+          },
+          {
+            description: { $regex: newOptions.searchKeyword },
+          },
+        ],
+      },
+    },
+    {
+      $lookup: {
+        from: "communityvotes",
+        localField: "_id",
+        foreignField: "communityId",
+        as: "communityvotes",
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "creator",
+        foreignField: "_id",
+        as: "creator",
+      },
+    },
+    {
+      $addFields: {
+        numberOfVotes: {
+          $cond: {
+            if: { $isArray: "$communityvotes" },
+            then: { $sum: "$communityvotes.vote" },
+            else: 0,
+          },
+        },
+        numberOfPosts: {
+          $cond: {
+            if: { $isArray: "$posts" },
+            then: { $size: "$posts" },
+            else: 0,
+          },
+        },
+        numberOfUsers: { $size: "$members" },
+      },
+    },
+  ]);
+
+  console.log("community Infos ", communityInfos);
+  const paginatedCommunity = await CommunityModel.aggregatePaginate(
+    communityInfos,
+    {
+      page: newOptions.pageIndex,
+      limit: newOptions.pageSize,
+      sort,
+    }
+  );
+  return paginatedCommunity;
+}
 

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import './Comment.css'
 import moment from 'moment'
 import { Button } from '@material-ui/core';
-import avatar from '../../images/avatar.png';
+import avatar from '../../images/post-image.png';
 import { Row, Col } from 'reactstrap';
 import ModeCommentTwoToneIcon from '@material-ui/icons/ModeCommentTwoTone';
 import ArrowUpwardTwoToneIcon from '@material-ui/icons/ArrowUpwardTwoTone';

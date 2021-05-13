@@ -247,6 +247,15 @@ const getUserProfile = async (req, res) => {
       })
   );
 };
+const getMyCommunityAnalyticsData = async (req, res) => {
+  console.log("Inside get my Community Analytics Request");
+  console.log("Request ", req.user);
+  kafka.make_request(
+    "reddit-user-topic",
+    { path: "get_user_community-analytics", body: req.user },
+    (err, results) => kafka_default_response_handler(res, err, results)
+  );
+};
 
 router.post("/signup", registerUser);
 router.get("/communities", getAllCommunitiesForUser);
@@ -259,5 +268,6 @@ router.get("/search", checkAuth, searchAllUsers);
 router.get("/notifications", checkAuth, getNotifications);
 router.post("/invite/update", checkAuth, updateInviteStatus);
 router.get("/getUserProfile", getUserProfile);
+router.get("/myCommunityAnalytics", checkAuth, getMyCommunityAnalyticsData);
 
 module.exports = router;

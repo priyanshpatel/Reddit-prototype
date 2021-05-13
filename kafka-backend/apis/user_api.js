@@ -8,7 +8,7 @@ const { uniqueNamesGenerator, names } = require("unique-names-generator");
 const aleaRNGFactory = require("number-generator/lib/aleaRNGFactory");
 const { uInt32 } = aleaRNGFactory(10);
 const ObjectId = require("mongodb").ObjectID;
-import { populateVotesAndCommentsOfPosts } from "./community_api";
+import { populateVotesAndCommentsOfPosts, getCommunityByUserIdV2 } from "./community_api";
 const redis = require("redis");
 const client = redis.createClient({ detect_buffers: true });
 
@@ -480,3 +480,31 @@ const checkStatusOfSelectedUsers = (memberships, users, status) => {
   }
   return true;
 };
+
+export async function getMyCommunityAnalyticsData(message, callback) {
+  console.log("Users ",message);
+  const userId = message.body._id;
+  console.log("UserID", userId);
+  let response = {};
+  let err = {};
+  try {
+    const communityResponseAnlaytics = await getMyCommunityAnalyticsDataPerUser(userId);
+    console.log("Here ", communityResponseAnlaytics);
+    response.data = communityResponseAnlaytics;
+    response.status = 200;
+    return callback(null,response);
+  } catch (error) {
+    err.status = 500;
+    err.data = {
+      code: err.code,
+      msg:
+        "Unable to successfully get the community analytics data! Please check the application logs for more details.",
+    };
+  }
+}
+
+async function getMyCommunityAnalyticsDataPerUser(userId) {
+  let communities = await getCommunityByUserIdV2(userId);
+  //console.log("Communities Info",communities);
+  return communities;
+}

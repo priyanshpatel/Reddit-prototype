@@ -41,7 +41,7 @@ class Navbar extends Component {
     }
 
     handleEmailChange = inp => {
-        if (/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(inp.target.value)) {
+        if (true) {
             this.setState({
                 error: false,
                 [inp.target.name]: inp.target.value,
@@ -176,8 +176,11 @@ class Navbar extends Component {
 
                         </div>
                         <div className="row">
-                            <div className="col-2">
+                            <div className="col-1">
                                 <Link to="/"><img src={reddit_logo} className="logo-image" alt="reddit-logo" /></Link>
+                            </div>
+                            <div className="col-1">
+                                <Link to="/my-community-analytics">My Community Analytics</Link>
                             </div>
                             <div className="col-1 dropdown" style={{paddingRight:"0px"}}>
                                     <button className="btn dropdown-toggle navbar-dropdown-button" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

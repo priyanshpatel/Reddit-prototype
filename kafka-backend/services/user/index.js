@@ -7,6 +7,7 @@ import {
   getCommunityAndPosts,
   bulkApproveRequests,
   searchAllUsers,
+  getMyCommunityAnalyticsData
 } from "../../apis/user_api";
 import { getUserProfileDetails } from '../../apis/user_profile_api';
 
@@ -31,6 +32,8 @@ export const handle_request = async (message, callback) => {
       return searchAllUsers(message, callback);
     case "get_user_profile":
       return getUserProfileDetails(message, callback);
+    case "get_user_community-analytics":
+      return getMyCommunityAnalyticsData(message, callback);  
     default:
       return callback({ status: 500, data: "no path found" }, null);
   }
