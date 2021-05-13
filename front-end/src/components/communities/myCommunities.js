@@ -1,6 +1,6 @@
 //Created by Priyansh Patel
 
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import Navbar from '../navbar/navbar';
 import cookie from 'react-cookies';
 import { Redirect } from 'react-router';
@@ -73,8 +73,8 @@ class MyCommunities extends Component {
                     return <communityList
                         key={community._id}
                         data={community}
-                        editButtonClicked = {this.editButtonClicked}
-                        removeButtonClicked = {this.removeButtonClicked}
+                        editButtonClicked={this.editButtonClicked}
+                        removeButtonClicked={this.removeButtonClicked}
                     />
                 })
             }
@@ -134,11 +134,11 @@ class MyCommunities extends Component {
                             <Card>
                                 <CardBody class="com-card">
                                     <img src="/logo192.png" alt="Avatar" class="com-avatar" /> <span class="com-name">r/CrytoCurrency</span>
-                                    <button type="button" style={{ borderColor: "#0079d3", color: "rgb(0, 121, 211)", borderRadius: "60px", marginLeft: "1%", float: "right"}} class="btn btn-outline-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Remove</strong></span></button>
-                                    <button type="button" style={{ borderColor: "#0079d3", color: "white", borderRadius: "60px", marginLeft: "10%", float: "right"}} class="btn btn-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Edit</strong></span></button>
-                                    <br/>
+                                    <button type="button" style={{ borderColor: "#0079d3", color: "rgb(0, 121, 211)", borderRadius: "60px", marginLeft: "1%", float: "right" }} class="btn btn-outline-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Remove</strong></span></button>
+                                    <button type="button" style={{ borderColor: "#0079d3", color: "white", borderRadius: "60px", marginLeft: "10%", float: "right" }} class="btn btn-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Edit</strong></span></button>
+                                    <br />
                                     <span className="com-desc">Description. Trying to make it long. Even more long. Like really very long.</span>
-                                    <br/>
+                                    <br />
                                     <span className="com-details"><i class="fas fa-users"></i> 100</span>
                                     <span className="com-details"><i class="fas fa-copy"></i> 200</span>
                                 </CardBody>
@@ -146,11 +146,11 @@ class MyCommunities extends Component {
                             <Card>
                                 <CardBody class="com-card">
                                     <img src="/logo192.png" alt="Avatar" class="com-avatar" /> <span class="com-name">r/coolGuides</span>
-                                    <button type="button" style={{ borderColor: "#0079d3", color: "rgb(0, 121, 211)", borderRadius: "60px", marginLeft: "1%", float: "right"}} class="btn btn-outline-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Remove</strong></span></button>
-                                    <button type="button" style={{ borderColor: "#0079d3", color: "white", borderRadius: "60px", marginLeft: "10%", float: "right"}} class="btn btn-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Edit</strong></span></button>
-                                    <br/>
+                                    <button type="button" style={{ borderColor: "#0079d3", color: "rgb(0, 121, 211)", borderRadius: "60px", marginLeft: "1%", float: "right" }} class="btn btn-outline-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Remove</strong></span></button>
+                                    <button type="button" style={{ borderColor: "#0079d3", color: "white", borderRadius: "60px", marginLeft: "10%", float: "right" }} class="btn btn-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Edit</strong></span></button>
+                                    <br />
                                     <span className="com-desc">Description. Trying to make it long. Even more long. Like really very long.</span>
-                                    <br/>
+                                    <br />
                                     <span className="com-details"><i class="fas fa-users"></i> 100</span>
                                     <span className="com-details"><i class="fas fa-copy"></i> 200</span>
                                 </CardBody>
@@ -158,11 +158,11 @@ class MyCommunities extends Component {
                             <Card>
                                 <CardBody class="com-card">
                                     <img src="/logo192.png" alt="Avatar" class="com-avatar" /> <span class="com-name">r/Cars</span>
-                                    <button type="button" style={{ borderColor: "#0079d3", color: "rgb(0, 121, 211)", borderRadius: "60px", marginLeft: "1%", float: "right"}} class="btn btn-outline-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Remove</strong></span></button>
-                                    <button type="button" style={{ borderColor: "#0079d3", color: "white", borderRadius: "60px", marginLeft: "10%", float: "right"}} class="btn btn-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Edit</strong></span></button>
-                                    <br/>
+                                    <button type="button" style={{ borderColor: "#0079d3", color: "rgb(0, 121, 211)", borderRadius: "60px", marginLeft: "1%", float: "right" }} class="btn btn-outline-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Remove</strong></span></button>
+                                    <button type="button" style={{ borderColor: "#0079d3", color: "white", borderRadius: "60px", marginLeft: "10%", float: "right" }} class="btn btn-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Edit</strong></span></button>
+                                    <br />
                                     <span className="com-desc">Description. Trying to make it long. Even more long. Like really very long.</span>
-                                    <br/>
+                                    <br />
                                     <span className="com-details"><i class="fas fa-users"></i> 100</span>
                                     <span className="com-details"><i class="fas fa-copy"></i> 200</span>
                                 </CardBody>
@@ -170,11 +170,11 @@ class MyCommunities extends Component {
                             <Card>
                                 <CardBody class="com-card">
                                     <img src="/logo192.png" alt="Avatar" class="com-avatar" /> <span class="com-name">r/gadgets</span>
-                                    <button type="button" style={{ borderColor: "#0079d3", color: "rgb(0, 121, 211)", borderRadius: "60px", marginLeft: "1%", float: "right"}} class="btn btn-outline-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Remove</strong></span></button>
-                                    <button type="button" style={{ borderColor: "#0079d3", color: "white", borderRadius: "60px", marginLeft: "10%", float: "right"}} class="btn btn-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Edit</strong></span></button>
-                                    <br/>
+                                    <button type="button" style={{ borderColor: "#0079d3", color: "rgb(0, 121, 211)", borderRadius: "60px", marginLeft: "1%", float: "right" }} class="btn btn-outline-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Remove</strong></span></button>
+                                    <button type="button" style={{ borderColor: "#0079d3", color: "white", borderRadius: "60px", marginLeft: "10%", float: "right" }} class="btn btn-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Edit</strong></span></button>
+                                    <br />
                                     <span className="com-desc">Description. Trying to make it long. Even more long. Like really very long.</span>
-                                    <br/>
+                                    <br />
                                     <span className="com-details"><i class="fas fa-users"></i> 100</span>
                                     <span className="com-details"><i class="fas fa-copy"></i> 200</span>
                                 </CardBody>
@@ -182,11 +182,11 @@ class MyCommunities extends Component {
                             <Card>
                                 <CardBody class="com-card">
                                     <img src="/logo192.png" alt="Avatar" class="com-avatar" /> <span class="com-name">r/formula1</span>
-                                    <button type="button" style={{ borderColor: "#0079d3", color: "rgb(0, 121, 211)", borderRadius: "60px", marginLeft: "1%", float: "right"}} class="btn btn-outline-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Remove</strong></span></button>
-                                    <button type="button" style={{ borderColor: "#0079d3", color: "white", borderRadius: "60px", marginLeft: "10%", float: "right"}} class="btn btn-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Edit</strong></span></button>
-                                    <br/>
+                                    <button type="button" style={{ borderColor: "#0079d3", color: "rgb(0, 121, 211)", borderRadius: "60px", marginLeft: "1%", float: "right" }} class="btn btn-outline-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Remove</strong></span></button>
+                                    <button type="button" style={{ borderColor: "#0079d3", color: "white", borderRadius: "60px", marginLeft: "10%", float: "right" }} class="btn btn-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Edit</strong></span></button>
+                                    <br />
                                     <span className="com-desc">Description. Trying to make it long. Even more long. Like really very long.</span>
-                                    <br/>
+                                    <br />
                                     <span className="com-details"><i class="fas fa-users"></i> 100</span>
                                     <span className="com-details"><i class="fas fa-copy"></i> 200</span>
                                 </CardBody>

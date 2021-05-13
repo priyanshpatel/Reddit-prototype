@@ -11,7 +11,6 @@ import { connect } from "react-redux";
 import getByIDCommunityAction from '../../actions/community/getCommunityByID';
 import { CarouselProvider, Slider, Slide, ButtonBack, ButtonNext } from 'pure-react-carousel';
 import 'pure-react-carousel/dist/react-carousel.es.css';
-
 import Navbar from "../navbar/navbar";
 import { Link } from 'react-router-dom';
 import cookie from "react-cookies";
@@ -111,8 +110,6 @@ class CreateCommunity extends Component {
                             communityAvatar: this.props.getCommunityData.data.communityAvatar,
                             communityAvatarLength: this.props.getCommunityData.data.communityAvatar.length,
                             rulesTitle: "Edit Rules"
-
-
                         }
                     )
                 }
@@ -159,10 +156,12 @@ class CreateCommunity extends Component {
             let obj = {
                 communityName: this.state.communityName,
                 description: this.state.description,
+                creator: cookie.load('userId'),
                 rules: this.state.rules,
                 members: [
                     {
-                        _id: cookie.load('userID')
+                        _id: cookie.load('userId'),
+                        communityJoinStatus: 'JOINED'
                     }
                 ]
             }
@@ -200,12 +199,6 @@ class CreateCommunity extends Component {
                             <img src={data} style={{ position: "absolute" }} alt="" />
 
                         </Slide>
-
-                        {/* <Slide index={0}>I am the first Slide.</Slide>
-                            <Slide index={1}>
-                                <img src={community_page} style={{ position: "absolute" }} width="100%" height="40%" alt="" />
-                            </Slide>
-                            <Slide index={2}>I am the third Slide.</Slide> */}
                     </Slider>
                 </CarouselProvider>
             </div>
@@ -293,27 +286,12 @@ class CreateCommunity extends Component {
                         </div>
                         {fileDivision}
                         <div className="row" style={{ marginLeft: "2%", marginTop: "5%" }}>
-                            <div className="col-5">
-                                <span><strong><div>{this.state.rulesTitle}</div></strong></span>
-                                <div className="col-3">
-                                    <span><strong><div>Choose Multiple Images Files</div></strong></span>
-                                </div>
-                                <div className="col-3">
-                                    <span><strong><div>Choose Community Avatar</div></strong></span>
+                            <div className="row" >
+                                <div className="col-8" style={{ marginLeft: "20%", marginTop: "5%" }}>
+                                    <span ><strong><div> Rules</div></strong></span>
                                 </div>
                             </div>
-
-                            <div className="row" style={{ marginLeft: "2%" }}>
-                                <input style={{ background: "none", border: "none" }} type="file" id="file" multiple name="file" data-show-upload="true" data-show-caption="true" onChange={this.fileSelectedHandler} />
-                                <input style={{ background: "none", border: "none" }} type="file" id="file" name="file" data-show-upload="true" data-show-caption="true" onChange={this.fileAvatarHandler} />
-
-                            </div>
-                            <div className="row" style={{ marginLeft: "2%", marginTop: "5%" }}>
-                                <div className="col-5">
-                                    <span><strong><div>Add Rules</div></strong></span>
-                                </div>
-                            </div>
-                            <div className="row" style={{ marginLeft: "2%", width: "120%" }}>
+                            <div className="row" style={{ marginLeft: "2px", width: "120%" }}>
                                 <div className="col-8">
                                     <form onSubmit={this.handleSubmit}>
 

@@ -41,9 +41,11 @@ function auth() {
     new JwtStrategy(opts, (decodedPayload, callback) => {
       const user_id = decodedPayload._id;
       client.get(user_id, function (err, user) {
-
+        console.log("REDIS",user);
         if (user) {
-          callback(null, JSON.parse(user));
+          console.log("Coming here ", user);
+          user = JSON.parse(user);
+          callback(null, user);
           return;
         }
         Users.findById(user_id, "name email", (error, user) => {
@@ -51,7 +53,8 @@ function auth() {
           if (error) {
             return callback(error, false);
           } else if (user) {
-            console.log("Key not found ",user);
+            //client.setex("user",6000,user);
+            console.log("Key not found ", user);
             client.set(user_id, JSON.stringify(user));
             callback(null, user);;
           } else {

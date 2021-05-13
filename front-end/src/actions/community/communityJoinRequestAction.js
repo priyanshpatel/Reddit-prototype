@@ -1,14 +1,16 @@
+// Created by Het Brahmbhatt
+
 import axios from 'axios';
 import { BACKEND_URL } from '../../config/config';
 import { BACKEND_PORT } from '../../config/config';
 import cookie from "react-cookies";
 
 
-const POST_GET_SUCCESS = "post_get_success";
-const POST_GET_FAIL = "post_get_fail";
+const COMMUNITY_JOIN_REQUEST_SUCCESS = "community_join_request_success";
+const COMMUNITY_JOIN_REQUEST_FAIL = "community_join_request_fail";
 var success = (response) => {
     return {
-        type: POST_GET_SUCCESS,
+        type: COMMUNITY_JOIN_REQUEST_SUCCESS,
         payload: {
             response: response,
         }
@@ -16,20 +18,22 @@ var success = (response) => {
 }
 
 var error = (err) => {
-    console.log("err", err)
     return {
-        type: POST_GET_FAIL,
+        type: COMMUNITY_JOIN_REQUEST_FAIL,
         payload: {
             response: err
         }
     }
 }
-var getPostsByIDAction = (data) => (dispatch) => {
-    console.log(data);
+var communityJoinRequestAction = (data) => (dispatch) => {
+
+    let obj = {
+        community_id: data
+    }
     axios.defaults.headers.common["authorization"] = cookie.load('token')
     axios.defaults.withCredentials = true;
     return axios
-        .get(BACKEND_URL + ":" + BACKEND_PORT + "/community/posts?orderByDate=" + data.sorting + "&orderByPopularity=" + data.popularity + "&pageNumber=" + data.pageNumber + "&pageSize=" + data.pageSize + "&community_id=" + data.communityID).then(response => {
+        .post(BACKEND_URL + ":" + BACKEND_PORT + "/community/join", obj).then(response => {
             if (response.status === 200) {
                 console.log(response.data)
                 dispatch(success(response, data));
@@ -40,4 +44,4 @@ var getPostsByIDAction = (data) => (dispatch) => {
         });
 }
 
-export default getPostsByIDAction
+export default communityJoinRequestAction

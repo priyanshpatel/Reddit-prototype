@@ -1,4 +1,4 @@
-const CommunityModel = require("../models/communityModel");
+const CommunityModel = require("../models/CommunityModel");
 const PostsModel = require("../models/PostsModel");
 const UserModel = require('../models/UsersModel');
 

@@ -1,5 +1,5 @@
 const InvitationModel = require("../models/InvitationModel");
-const CommunityModel = require("../models/communityModel");
+const CommunityModel = require("../models/CommunityModel");
 const UserModel = require("../models/UsersModel");
 const config = require("../config/config");
 const ObjectId = require("mongodb").ObjectID;

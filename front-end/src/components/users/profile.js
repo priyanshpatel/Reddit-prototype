@@ -6,8 +6,10 @@ import { BACKEND_PORT } from '../../config/config';
 import updateUserProfileAction from '../../actions/userUpdateAction';
 import userGetByIDAction from '../../actions/userGetByIDAction';
 import { connect } from "react-redux";
+import Navbar from "../Navbar/Navbar";
+
 import cookie from "react-cookies";
-import Navbar from "../navbar/navbar";
+//import Navbar from "../navbar/navbar";
 import ReactDOM from 'react-dom';
 import { WithContext as ReactTags } from 'react-tag-input';
 import { displayName } from 'react-grid-gallery';
@@ -63,9 +65,9 @@ class Profile extends Component {
             this.setState({
                 name: this.props.getByIDuserData.data.user.name,
                 email: this.props.getByIDuserData.data.user.email,
-                gender: this.props.getByIDuserData.data.user.gender,
-                location: this.props.getByIDuserData.data.user.location,
-                description: this.props.getByIDuserData.data.user.description,
+                gender: this.props.getByIDuserData.data.user.gender == undefined ? "" : this.props.getByIDuserData.data.user.gender,
+                location: this.props.getByIDuserData.data.user.location == undefined ? "" : this.props.getByIDuserData.data.user.location,
+                description: this.props.getByIDuserData.data.user.description == undefined ? "" : this.props.getByIDuserData.data.user.description,
                 image: this.props.getByIDuserData.data.user.avatar,
                 rawImagePath: this.props.getByIDuserData.data.user.avatar,
                 profilePicture: this.props.getByIDuserData.data.user.avatar,
@@ -338,7 +340,7 @@ class Profile extends Component {
                         <br></br>
                         <div className="row" >
                             <div className="col-7">
-                                <textarea id="w3review" name="description" onChange={this.handleOtherChange} rows="4" cols="76">
+                                <textarea id="w3review" name="description" value={this.state.description} onChange={this.handleOtherChange} rows="4" cols="76">
                                 </textarea>
                             </div>
                         </div>

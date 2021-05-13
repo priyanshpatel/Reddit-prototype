@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Route } from "react-router-dom"
 import Navbar from './navbar/navbar'
+
 import CreatePost from './posts/createPost';
 import CreateCommunity from './community/CreateCommunity'
 import MyCommunity from './community/MyCommunity'
@@ -9,7 +10,12 @@ import MyCommunities from './communities/myCommunities'
 import Profile from './users/profile'
 import { Profiler } from 'react';
 import CommunityModeration from './communities/communityModeration';
+
 import MyCommunityAnalytics from './community/MyCommunityAnalytics';
+
+import UserProfilePage from './users/user-profile';
+import CommunitySearch from './community/CommunitySearch';
+
 
 class Routes extends Component {
     render() {
@@ -20,11 +26,15 @@ class Routes extends Component {
                 <Route exact path="/create-community" component={CreateCommunity} />
                 <Route path="/community-home-page" component={MyCommunity} />
                 <Route exact path="/create-community/:id" component={CreateCommunity} />
+                <Route path="/users/profile-page" component={UserProfilePage} />
+                <Route path="/search-community" component={CommunitySearch} />
 
                 <Route path="/profile" component={Profile} />
                 <Route path="/my-communities" component={MyCommunities} />
                 <Route path="/my-communities-mod" component={CommunityModeration} />
-                <Route path="/my-community-analytics" component={MyCommunityAnalytics}/> 
+
+                <Route path="/my-community-analytics" component={MyCommunityAnalytics} />
+
             </div>
         )
     }

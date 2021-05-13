@@ -13,6 +13,16 @@ import getMyCommunityModReducer from './communityReducers/getMyCommunityModReduc
 import getMyCommunityModUserReqReducer from './communityReducers/getCommunityModUserReqReducer';
 import bulkRequestAcceptReducer from './communityReducers/bulkRequestAcceptReducer';
 import getMyCommunityModMemReducer from './communityReducers/getCommunityModMemReducer';
+import upvotePostReducer from './postReducers/upVotePostReducer';
+import downVotePostReducer from './postReducers/downVotePostReducer';
+import upvoteCommentReducer from './commentReducer/upvoteCommentReducer';
+import downVoteCommentReducer from './commentReducer/downVoteCommentReducer';
+import getAllCommunityReducer from './communityReducers/getAllCommunityReducer';
+import upVoteCommunityReducer from './communityReducers/upVoteCommunityReducer';
+import downVoteCommunityReducer from './communityReducers/downVoteCommunityReducer';
+import chatReducer from './chatReducer/chatReducer';
+import communityJoinReducer from './communityReducers/communityJoinReducer';
+
 
 var rootReducer = combineReducers({
     SignUpReducer: SignUpReducer,
@@ -29,6 +39,17 @@ var rootReducer = combineReducers({
     getMyCommunityModUserReqReducer: getMyCommunityModUserReqReducer,
     bulkRequestAcceptReducer: bulkRequestAcceptReducer,
     getMyCommunityModMemReducer: getMyCommunityModMemReducer,
+    upvotePostReducer: upvotePostReducer,
+    downVotePostReducer: downVotePostReducer,
+    downVoteCommentReducer: downVoteCommentReducer,
+    upvoteCommentReducer: upvoteCommentReducer,
+    getAllCommunityReducer: getAllCommunityReducer,
+    upVoteCommunityReducer: upVoteCommunityReducer,
+    downVoteCommunityReducer: downVoteCommunityReducer,
+    chatReducer: chatReducer,
+    communityJoinReducer: communityJoinReducer
+
+
 })
 
 

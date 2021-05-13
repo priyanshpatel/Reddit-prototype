@@ -155,8 +155,31 @@ background-color: white
 
 
 
+.modal-chat{
+    height:"200px"
+}
 
+.column-1-chat{
+    height: "400px";
+    width: "550px"
+}
+.chat-application{
+    position : absolute;
+    bottom : 0;
+    right : 30px;
+    z-index: 10;
 
+}
+.chat-new-application{
+    position : absolute;
+    bottom : 0;
+    right : 40px;
+    z-index: 1;
+}
+
+.chat-row{
+    height:"20%"
+}
 
 
 

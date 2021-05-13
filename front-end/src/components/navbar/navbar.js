@@ -3,19 +3,42 @@
 import React, { Component } from 'react'
 import { Redirect, withRouter } from "react-router"
 import './navbar.css'
-import { Row, Col } from 'reactstrap';
+import { Row, Col, Container } from 'reactstrap';
 import home_page from '../../images/home-page.png'
 import reddit_logo from '../../images/reddit-logo-vector.svg'
-import Modal from 'react-bootstrap/Modal'
+import chat_icon from '../../images/chat-icon.png'
+import axios from 'axios';
+import { BACKEND_URL, BACKEND_PORT } from '../../config/config';
+import cookie from "react-cookies";
+import Modal from 'react-bootstrap/modal';
 import loginAction from '../../actions/loginAction'
 import signUpAction from '../../actions/signupAction'
+import chatSubmitAction from '../../actions/chat/chatSubmitAction'
+import { SystemMessage } from 'react-chat-elements'
 import { connect } from "react-redux";
-import cookie from "react-cookies";
 import { Link } from 'react-router-dom';
-import login from '../../images/login.png'
-
-
-
+import login from '../../images/login.png';
+import { ChatList } from 'react-chat-elements'
+import List from 'react-list-select'
+import AsyncSelect from 'react-select/async'
+import 'react-chat-elements/dist/main.css';
+import { MessageBox } from 'react-chat-elements';
+import { MessageList } from 'react-chat-elements'
+import { Input } from 'react-chat-elements'
+import { Button } from 'react-chat-elements'
+// /chat/getChatMemberList
+const customStyles = {
+    content: {
+        top: '40%',
+        left: '50%',
+        right: 'auto',
+        bottom: 'auto',
+        marginRight: '-50%',
+        height: '460px',
+        width: '500px',
+        transform: 'translate(-50%, -50%)'
+    }
+};
 class Navbar extends Component {
     constructor(props) {
         super(props)
@@ -29,10 +52,50 @@ class Navbar extends Component {
             signuppassword: "",
             signupButton: false,
             signUpBackendError: false,
-            loginBackendError: false
+            loginBackendError: false,
+            chatFlag: false,
+            chatiID: '',
+            newChatFlag: false,
+            users: [],
+            selectedUsers: [],
+            startChatFlag: false,
+            stateUserClick: false,
+            chatDescription: "",
+            chatData: [],
+            messages: [],
+            chatList: []
         }
     }
-
+    componentDidMount() {
+        axios.defaults.headers.common["authorization"] = cookie.load('token')
+        axios.defaults.withCredentials = true;
+        return axios
+            .get(BACKEND_URL + ":" + BACKEND_PORT + '/chat/getchatmemberlist?userId=' + cookie.load('userId')
+            )
+            .then((response) => {
+                let newObject = []
+                for (let i = 0; i < response.data.data.length; i++) {
+                    let obj = {
+                        avatar: response.data.data[i].userDetails.avatar,
+                        alt: "Chat icon",
+                        title: response.data.data[i].userDetails[0].name,
+                        subtitle: response.data.data[i].lastMessage.content,
+                        id: response.data.data[i].userDetails[0]._id,
+                        date: new Date(response.data.data[i].lastMessage.createdAt),
+                    }
+                    newObject.push(obj);
+                }
+                if (response.status === 200) {
+                    this.setState(
+                        {
+                            chatList: newObject
+                        }
+                    )
+                }
+            })
+            .catch((err) => {
+            });
+    }
     handleOtherChange = inp => {
         this.setState({
             error: false,
@@ -40,6 +103,32 @@ class Navbar extends Component {
         })
     }
 
+    handleStartChatClick = inp => {
+        this.setState(
+            {
+                stateUserClick: true,
+                startChatFlag: false,
+                newChatFlag: false,
+                chatFlag: false,
+            }
+        )
+        axios.defaults.headers.common["authorization"] = cookie.load('token')
+        axios.defaults.withCredentials = true;
+        return axios
+            .get(BACKEND_URL + ":" + BACKEND_PORT + '/chat/get?members=' + cookie.load('userId') + "&members=" + this.state.selectedUsers.value
+            )
+            .then((response) => {
+                if (response.status === 200) {
+                    this.setState(
+                        {
+                            messages: response.data.data.messages
+                        }
+                    )
+                }
+            })
+            .catch((err) => {
+            });
+    }
     handleEmailChange = inp => {
         if (true) {
             this.setState({
@@ -72,12 +161,59 @@ class Navbar extends Component {
             })
         }
     }
+    handleChatClick = (e) => {
+        let selectedUsers = {
+            label: e.title
+        }
+        this.setState(
+            {
+                stateUserClick: true,
+                startChatFlag: false,
+                newChatFlag: false,
+                chatFlag: false,
+                chatiID: e.id,
+                selectedUsers: selectedUsers
+            }
+        )
+        axios.defaults.headers.common["authorization"] = cookie.load('token')
+        axios.defaults.withCredentials = true;
+        return axios
+            .get(BACKEND_URL + ":" + BACKEND_PORT + '/chat/get?members=' + cookie.load('userId') + "&members=" + e.id
+            )
+            .then((response) => {
+                if (response.status === 200) {
+                    this.setState(
+                        {
+                            messages: response.data.data.messages
+                        }
+                    )
+                }
+            })
+            .catch((err) => {
+            });
+    }
+    handleNewChatButtonClick = (e) => {
+        this.setState(
+            {
+                chatFlag: false,
+                newChatFlag: true,
+                stateUserClick: false
+
+            }
+        )
+    }
     loginButtonClick = (e) => {
         this.setState({
             loginButton: !this.state.loginButton
         })
     }
-
+    handleChatDescriptionChange = (e) => {
+        this.setState(
+            {
+                chatDescription: e.target.value
+            }
+        )
+    }
     mutualButtonCLick = (e) => {
         this.setState({
             loginButton: !this.state.loginButton,
@@ -85,7 +221,36 @@ class Navbar extends Component {
 
         })
     }
+    handleSelectChange = (selectedUsers) => {
+        this.setState({
+            selectedUsers: selectedUsers,
+            startChatFlag: true,
 
+
+        })
+    }
+    handleUserSearch = async (inp, callback) => {
+        axios.defaults.headers.common["authorization"] = cookie.load('token')
+        axios.defaults.withCredentials = true;
+        return axios
+            .get(BACKEND_URL + ":" + BACKEND_PORT + '/user/search?searchKeyword=' + inp)
+            .then((response) => {
+                if (response.status === 200) {
+                    console.log("api response>>>>>>>>>>", response)
+                    this.setState(
+                        {
+                            users: response.data.users
+                        }
+                    )
+                    callback(response.data.users.map(i => ({
+                        label: i.name,
+                        value: i._id
+                    })));
+                }
+            })
+            .catch((err) => {
+            });
+    }
     handleSignUpSubmit = (e) => {
 
 
@@ -94,9 +259,8 @@ class Navbar extends Component {
                 name: this.state.signupname,
                 email: this.state.signupemail,
                 password: this.state.signuppassword,
-            } 
+            }
         }
-        console.log("sign up>>>>>>>>>>>>>>", signUpObject)
         e.preventDefault();
         if (!this.state.error) {
             this.props.signUpAction(signUpObject).then(response => {
@@ -151,6 +315,43 @@ class Navbar extends Component {
         // this.props.history.push("/")
     }
 
+    handleChatSubmit = (e) => {
+        let id = null
+        if (this.state.selectedUsers == "") {
+            id = this.state.chatiID
+        }
+        else {
+            id = this.state.selectedUsers.value
+        }
+        let obj = {
+            members: [
+                cookie.load("userId"),
+                id
+            ],
+            message:
+            {
+                "from": cookie.load("userId"),
+                "content": this.state.chatDescription
+            }
+        }
+        console.log(obj);
+        this.props.chatSubmitAction(obj).then(response => {
+            let newChatData = {
+                content: this.props.chatData.data.content,
+                createdAt: this.props.chatData.data.createdAt,
+                from: this.props.chatData.data.from._id
+            }
+            this.setState(
+                {
+                    messages: [...this.state.messages, newChatData]
+                }
+            )
+            this.inputRef.clear();
+
+        })
+
+
+    }
 
     signupButtonClick = (e) => {
         this.setState({
@@ -158,7 +359,67 @@ class Navbar extends Component {
 
         })
     }
+    handleChatApplicationClick = (e) => {
+        this.setState({
+            chatFlag: !this.state.chatFlag,
+            newChatFlag: false,
+            stateUserClick: false
+
+        })
+    }
     render() {
+        console.log(this.state);
+        let chatDataForDisplay = this.state.messages.map((docs, index) => {
+
+            if (docs.from == cookie.load('userId')) {
+                return (
+                    <div key={index} >
+                        <Row>
+                            <Col style={{ marginTop: "6%", float: "right" }}>
+                                <MessageList
+                                    className='message-list'
+                                    lockable={false}
+                                    dataSource={[
+                                        {
+                                            position: 'right',
+                                            type: 'text',
+                                            text: docs.content,
+                                            date: new Date(docs.createdAt),
+                                        },
+                                    ]} />
+
+                            </Col>
+                        </Row>
+                    </div>
+                )
+            }
+            else {
+                return (
+                    <div key={index} >
+                        <Row>
+                            <Col style={{ marginTop: "6%", float: "right" }}>
+                                <MessageList
+                                    className='message-list'
+                                    lockable={false}
+                                    dataSource={[
+                                        {
+                                            position: 'left',
+                                            type: 'text',
+                                            text: docs.content,
+                                            date: new Date(docs.createdAt),
+                                        },
+                                    ]} />
+
+                            </Col>
+
+                        </Row>
+                    </div>
+                )
+            }
+
+        })
+
+
         let invalidLoginError = null
         let invalidSignUpError = null
 
@@ -169,11 +430,14 @@ class Navbar extends Component {
             invalidSignUpError = <div style={{ 'color': 'red' }}>{this.props.signUpMessage}</div>
         }
         if (cookie.load('token')) {
-            console.log("token found")
-            return(
+            return (
                 <div className="manual-container">
-                        <div class="row">
+                    <div class="row">
 
+                    </div>
+                    <div className="row">
+                        <div className="col-2">
+                            <Link to="/"><img src={reddit_logo} className="logo-image" alt="reddit-logo" /></Link>
                         </div>
                         <div className="row">
                             <div className="col-1">
@@ -182,17 +446,17 @@ class Navbar extends Component {
                             <div className="col-1">
                                 <Link to="/my-community-analytics">My Community Analytics</Link>
                             </div>
-                            <div className="col-1 dropdown" style={{paddingRight:"0px"}}>
-                                    <button className="btn dropdown-toggle navbar-dropdown-button" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <div className="col-1 dropdown" style={{ paddingRight: "0px" }}>
+                                <button className="btn dropdown-toggle navbar-dropdown-button" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <i class="fas fa-edit"></i> <span class="nav-username">Create</span>
-                                    </button>
-                                    <div className="dropdown-menu" aria-labelledby="dropdownMenu2">
-                                        <Link to="/create-post" className="dropdown-item" type="button" value="home"><i class="fas fa-edit dd-icon"></i><span className="dd-item">Create Post</span></Link>
-                                        <Link to="/create-community" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-edit dd-icon"></i><span className="dd-item">Create Community</span></Link>
-                                    </div>
+                                </button>
+                                <div className="dropdown-menu" aria-labelledby="dropdownMenu2">
+                                    <Link to="/create-post" className="dropdown-item" type="button" value="home"><i class="fas fa-edit dd-icon"></i><span className="dd-item">Create Post</span></Link>
+                                    <Link to="/create-community" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-edit dd-icon"></i><span className="dd-item">Create Community</span></Link>
+                                </div>
                             </div>
                             <div className="col-1 nav-icon-div">
-                                <Link to="/"><i class="fas fa-chart-line nav-icon-button" style={{marginRight:"10px"}} ></i></Link>
+                                <Link to="/"><i class="fas fa-chart-line nav-icon-button" style={{ marginRight: "10px" }} ></i></Link>
                                 <Link to="/"><i class="fas fa-chart-bar nav-icon-button"></i></Link>
                             </div>
                             <div className="col-4">
@@ -204,30 +468,151 @@ class Navbar extends Component {
                                     </input>
                                 </div>
                             </div>
-                            < div className="col-2 nav-icon-div" style={{paddingRight:"0px"}}>
-                                <Link to="/"><i class="fas fa-comment-dots nav-icon-button" style={{marginRight:"10px"}} ></i></Link>
-                                <Link to="/"><i class="fas fa-bell nav-icon-button" style={{marginRight:"10px"}} ></i></Link>
+                        </div>
+                        <div className="col-1 nav-icon-div">
+                            <Link to="/"><i class="fas fa-chart-line nav-icon-button" style={{ marginRight: "10px" }} ></i></Link>
+                            <Link to="/"><i class="fas fa-chart-bar nav-icon-button"></i></Link>
+                        </div>
+                        <div className="col-4">
+                            <div className="form-group has-search">
+                                <span class="form-control-feedback">
+                                    <svg viewBox="-1 0 15 15" fill="none" className="navbar-search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M14.5 14.5l-4-4m-4 2a6 6 0 110-12 6 6 0 010 12z" stroke="#6a6b6a"></path></svg>
+                                </span>
+                                <input type="text" style={{ backgroundColor: "#eaeef3", border: "none" }} class="form-control" placeholder="Search">
+                                </input>
                             </div>
-                                {/* <Dropdown isOpen={dropdownOpen} toggle={toggle}> */}
-                            <div className="col-2" style={{textAlign:"right"}} style={{paddingLeft:"0px"}}>
-                                <div className="dropdown">
-                                    <button className="btn dropdown-toggle navbar-dropdown-button" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <img src="/logo192.png" alt="Avatar" class="nav-avatar"/>  <span class="nav-username">{cookie.load('userName')}</span>
-                                    </button>
-                                    <div className="dropdown-menu" aria-labelledby="dropdownMenu2">
-                                        <Link to="/" className="dropdown-item" type="button" value="home"><i class="fas fa-home dd-icon"></i><span className="dd-item">Home</span></Link>
-                                        <Link to="/my-communities" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-users dd-icon"></i><span className="dd-item">My Communities</span></Link>
-                                        <Link to="/profile" className="dropdown-item" type="button" value="profile"><i class="fas fa-id-badge dd-icon"/><span className="dd-item">Profile</span></Link>
-                                        <Link className="dropdown-item" type="button" value="logout" onClick={this.handleLogout}><i class="fas fa-sign-out-alt dd-icon"></i><span className="dd-item">Logout</span></Link>
-                                    </div>
+                        </div>
+                        < div className="col-2 nav-icon-div" style={{ paddingRight: "0px" }}>
+                            <Link > <i class="fas fa-comment-dots nav-icon-button" onClick={this.handleChatApplicationClick} style={{ marginRight: "10px" }} ></i></Link>
+                            <Link to="/"><i class="fas fa-bell nav-icon-button" style={{ marginRight: "10px" }} ></i></Link>
+                        </div>
+                        {/* <Dropdown isOpen={dropdownOpen} toggle={toggle}> */}
+                        <div className="col-2" style={{ textAlign: "right" }} style={{ paddingLeft: "0px" }}>
+                            <div className="dropdown">
+                                <button className="btn dropdown-toggle navbar-dropdown-button" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <img src="/logo192.png" alt="Avatar" class="nav-avatar" />  <span class="nav-username">{cookie.load('userName')}</span>
+                                </button>
+                                <div className="dropdown-menu" aria-labelledby="dropdownMenu2">
+                                    <Link to="/" className="dropdown-item" type="button" value="home"><i class="fas fa-home dd-icon"></i><span className="dd-item">Home</span></Link>
+                                    <Link to="/profile" className="dropdown-item" type="button" value="profile"><i class="fas fa-id-badge dd-icon" /><span className="dd-item">Profile</span></Link>
+                                    <Link to="/my-communities" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-users dd-icon"></i><span className="dd-item">My Communities</span></Link>
+                                    <Link to="/search-community" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-search"></i><span className="dd-item">Search Communities</span></Link>
+                                    <Link className="dropdown-item" type="button" value="logout" onClick={this.handleLogout}><i class="fas fa-sign-out-alt dd-icon"></i><span className="dd-item">Logout</span></Link>
                                 </div>
                             </div>
                         </div>
-                        <hr class="nav-hr"/>
                     </div>
+                    <hr class="nav-hr" />
+                    {
+                        this.state.chatFlag ?
+
+                            <div className="chat-application">
+                                <Row>
+                                    <Col xs="4" style={{ height: "430px", padding: "10px", border: "1px solid #DADADA", borderTopLeftRadius: "10px", width: "550px" }}>
+                                        <Row>
+                                            <span style={{ padding: "7%", marginTop: "1%", font: "14px Arial", color: "#1C1C1C" }}>
+                                                Chat
+                                        </span>
+                                            <span style={{ marginLeft: "60%", paddingTop: "5%" }} >
+
+                                                <img src={chat_icon} height="20px" alt="reddit-logo" />
+                                            </span>
+                                        </Row>
+                                        <Row>
+                                            <ChatList
+                                                className='chat-list'
+                                                onClick={this.handleChatClick}
+                                                dataSource={this.state.chatList} />
+
+
+                                        </Row>
+                                    </Col>
+                                    <Col xs="6" style={{ border: "1px solid #DADADA", }}>
+                                        <Row style={{ borderBottom: "1px solid #DADADA", font: "14px Arial #1C1C1C", height: "10%" }}>
+                                            <span style={{ font: "14px Arial", padding: "10px" }}>Start Chatting</span>
+                                            <br></br>
+                                        </Row>
+                                        <Row style={{ height: "80%" }}>
+
+                                        </Row>
+                                        <Row style={{ borderTop: "1px solid #DADADA" }}>
+                                            <div style={{ paddingLeft: "40%", paddingTop: "10px" }}>
+                                                <button style={{ backgroundColor: "#0079d3", border: "none", cursor: "pointer", color: "white", borderRadius: "60px" }} onClick={this.handleNewChatButtonClick}><span style={{ fontSize: "14px", fontWeight: "300px" }}><strong>New Chat </strong></span></button>
+                                            </div>
+                                        </Row>
+
+                                    </Col>
+
+                                </Row>
+
+
+                            </div>
+                            : this.state.newChatFlag ?
+                                <div className="chat-new-application">
+                                    <Col xs="10" style={{ height: "430px", border: "1px solid #DADADA", borderTopLeftRadius: "10px", width: "600px" }}>
+                                        <Row style={{ borderBottom: "1px solid #DADADA", height: "10%" }}>
+                                            <Col xs="1" style={{ paddingTop: "2%" }}> <strong>TO:- </strong> </Col>
+                                            <Col>
+                                                <AsyncSelect
+                                                    value={this.state.selectedUsers}
+                                                    onChange={this.handleSelectChange}
+                                                    placeholder={'Type members for chatting...'}
+                                                    loadOptions={this.handleUserSearch}
+                                                />
+                                            </Col>
+                                        </Row>
+                                        <Row>
+                                            {
+                                                this.state.startChatFlag ?
+                                                    <button type="submit" className="btn btn-danger" style={{ backgroundColor: "#0079d3", marginTop: "20%", marginLeft: "40%" }} onClick={this.handleStartChatClick} value={this.state.description}>START CHAT</button>
+
+                                                    : ""
+                                            }
+
+                                        </Row>
+                                    </Col>
+                                </div> : ""
+                    }
+                    {
+
+                        this.state.stateUserClick ?
+                            <div className="chat-new-application">
+                                <Col xs="10" style={{ height: "430px", border: "1px solid #DADADA", borderTopLeftRadius: "10px", width: "600px" }}>
+                                    <Row style={{ borderBottom: "1px solid #DADADA", height: "10%" }}>
+                                        <Col style={{ paddingTop: "2%", fontSize: "12px", fontFamily: "Arial" }}> <strong>START CHAT WITH <strong>{this.state.selectedUsers.label}</strong> </strong> </Col>
+                                    </Row>
+
+                                    <Container style={{ height: "45vh", overflow: "scroll" }}>
+                                        {chatDataForDisplay}
+                                        <SystemMessage
+                                            text={'End of conversation'} />
+                                    </Container>
+                                    <Row style={{ borderTop: "1px solid #DADADA", borderBottom: "1px solid #DADADA" }}>
+                                        <Input
+                                            ref={el => (this.inputRef = el)}
+                                            onChange={this.handleChatDescriptionChange}
+                                            placeholder="Type here..."
+                                            multiline={true}
+                                            rightButtons={
+                                                <Button
+                                                    onClick={this.handleChatSubmit}
+
+                                                    color='white'
+                                                    backgroundColor='#0079d3'
+                                                    text='Send' />
+                                            }
+                                        />
+                                        {/* TODO : ADD THIS */}
+
+                                    </Row>
+                                </Col>
+                            </div> : ""
+                    }
+
+                </div>
+
             )
         } else {
-            console.log("token not found")
             return (
                 <div >
                     <div className="manual-container">
@@ -254,7 +639,7 @@ class Navbar extends Component {
 
                             </div>
                         </div>
-                        <hr class="nav-hr"/>
+                        <hr class="nav-hr" />
                     </div>
 
                     {/* LOGIN MODAL */}
@@ -286,9 +671,9 @@ class Navbar extends Component {
                                     <Row>
                                         <div style={{ fontSize: "12px", fontFamily: "sans-serif", marginTop: "2%" }}>
                                             By continuing , you agree to our{' '}
-                                            <a target="_blank" href="https://www.redditinc.com/policies/user-agreement">User Agreement{' '}</a>
+                                            <a target="_blank" href="https://www.redditinc.com/policies/user-agreement" rel="noreferrer">User Agreement{' '}</a>
                                         and{' '}
-                                            <a target="_blank" href="https://www.redditinc.com/policies/user-agreement">Privacy Policy.{' '}</a>
+                                            <a target="_blank" href="https://www.redditinc.com/policies/user-agreement" rel="noreferrer">Privacy Policy.{' '}</a>
                                         </div>
 
                                     </Row>
@@ -326,7 +711,6 @@ class Navbar extends Component {
 
                                             </button>
                                         </Row>
-
                                         <div className="Sso__divider m-small-margin">
                                             <div className="Sso__dividerLine">
 
@@ -359,9 +743,6 @@ class Navbar extends Component {
                     </Modal>
 
 
-
-
-
                     {/* SIGN UP MODAL */}
                     <Modal
                         size="lg"
@@ -379,7 +760,6 @@ class Navbar extends Component {
 
                                 </Col>
                                 <Col>
-
                                     <Row>
                                         <div style={{ fontFamily: "IBMPlexSans", fontSize: "18px" }}>
                                             <strong>Sign Up</strong>
@@ -391,9 +771,9 @@ class Navbar extends Component {
                                     <Row>
                                         <div style={{ fontSize: "12px", fontFamily: "sans-serif", marginTop: "2%" }}>
                                             By continuing , you agree to our{' '}
-                                            <a target="_blank" href="https://www.redditinc.com/policies/user-agreement">User Agreement{' '}</a>
+                                            <a target="_blank" href="https://www.redditinc.com/policies/user-agreement" rel="noreferrer">User Agreement{' '}</a>
                                         and{' '}
-                                            <a target="_blank" href="https://www.redditinc.com/policies/user-agreement">Privacy Policy.{' '}</a>
+                                            <a target="_blank" href="https://www.redditinc.com/policies/user-agreement" rel="noreferrer">Privacy Policy.{' '}</a>
                                         </div>
 
                                     </Row>
@@ -463,7 +843,8 @@ const matchStateToProps = (state) => {
         loginError: state.loginReducer.loginError,
         loginMessage: state.loginReducer.loginMessage,
         signUpError: state.SignUpReducer.signUpError,
-        signUpMessage: state.SignUpReducer.signUpMessage
+        signUpMessage: state.SignUpReducer.signUpMessage,
+        chatData: state.chatReducer.chatData
     }
 
 }
@@ -472,6 +853,7 @@ const matchDispatchToProps = (dispatch) => {
     return {
         loginAction: (data) => dispatch(loginAction(data)),
         signUpAction: (data) => dispatch(signUpAction(data)),
+        chatSubmitAction: (data) => dispatch(chatSubmitAction(data)),
 
     }
 }

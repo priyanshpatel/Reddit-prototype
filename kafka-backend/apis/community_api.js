@@ -1,7 +1,7 @@
 import { createError } from "../helper/error";
 import config from "../config/config";
 import { createIndexes } from "../models/PostsModel";
-const CommunityModel = require("../models/communityModel");
+const CommunityModel = require("../models/CommunityModel");
 const PostsModel = require("../models/PostsModel");
 const mongoose = require("mongoose");
 const UsersModel = require("../models/UsersModel");
@@ -332,7 +332,7 @@ export const getAllCreatedCommunitiesByUserId = async (req, callback) => {
       "createdCommunities"
     ).populate({
       path: "createdCommunities",
-      select: "communityName communityAvatar members description",
+      select: "communityName communityAvatar members",
       options: {
         sort: {
           createdAt: orderByDateInDescending,
@@ -359,7 +359,7 @@ export const getAllCreatedCommunitiesByUserId = async (req, callback) => {
       "createdCommunities"
     ).populate({
       path: "createdCommunities",
-      select: "communityName communityAvatar members description",
+      select: "communityName communityAvatar members",
       options: {
         sort: {
           createdAt: orderByDateInDescending,
@@ -379,11 +379,6 @@ export const getAllCreatedCommunitiesByUserId = async (req, callback) => {
     finalCommunitiesList.push({
       _id: loggedInUser.createdCommunities[index]._id,
       communityName: loggedInUser.createdCommunities[index].communityName,
-      communityAvatar:
-        loggedInUser.createdCommunities[index].communityAvatar.length === 0
-          ? null
-          : loggedInUser.createdCommunities[index].communityAvatar[0],
-      description: loggedInUser.createdCommunities[index].description,
       totalRequests: loggedInUser.createdCommunities[index].members.filter(
         (membership) => {
           return (
@@ -418,6 +413,8 @@ export const requestToJoinCommunity = async (req, callback) => {
   }
   // Find user's Id who is requesting join in the members array
   const index = community.members.findIndex((membership) => {
+    console.log(membership);
+    console.log(ObjectId(membership._id) === ObjectId(req.user._id));
     return ObjectId(membership._id).equals(ObjectId(req.user._id));
   });
   // Check whether the user has joined the community
@@ -480,12 +477,14 @@ async function insertCommunity(community) {
   var community = new CommunityModel(community);
   return await community.save();
 }
+
 // Get community details by community_id
 async function getCommunityById(communityId) {
-  const community = await CommunityModel.findOne({ _id: communityId })
-    .populate("members._id")
-    .populate("creator")
-    .populate("Posts");
+  const community = await CommunityModel.findOne(
+    { _id: communityId }
+  ).populate('members._id')
+    .populate('creator')
+    .populate('Posts');
 
   console.log("Community ID ", communityId);
   console.log("Community ", community);
@@ -502,49 +501,42 @@ async function getCommunityById(communityId) {
 }
 
 //For my communities page
-export async function getCommunitiesByUserId(userId, options) {
+export async function getCommunitiesByUserId(
+  userId,
+  options
+) {
+
   console.log("userId ", userId);
-  const newOptions = Object.assign(
-    {
-      pageIndex: 1,
-      pageSize: 2,
-      sortBy: "createdAt",
-      sortOrder: "desc",
-    },
-    options
-  );
-  console.log("New options ", JSON.stringify(newOptions));
+  const newOptions = Object.assign({
+    pageIndex: 1,
+    pageSize: 2,
+    sortBy: 'createdAt',
+    sortOrder: 'desc'
+  }, options);
+  console.log('New options ', JSON.stringify(newOptions));
   const sortBy = newOptions.sortBy;
   const sortOrder = newOptions.sortOrder;
   const sort = {};
-  sort[`${sortBy}`] = sortOrder == "desc" ? -1 : 1;
+  sort[`${sortBy}`] = sortOrder == 'desc' ? -1 : 1;
   const communityInfos = CommunityModel.aggregate([
     {
-      $match: { creator: ObjectId(userId) },
+      $match:
+        { creator: ObjectId(userId) },
     },
     {
       $addFields: {
-        numberOfPosts: {
-          $cond: {
-            if: { $isArray: "$posts" },
-            then: { $size: "$posts" },
-            else: 0,
-          },
-        },
+        numberOfPosts: { $cond: { if: { $isArray: "$posts" }, then: { $size: "$posts" }, else: 0 } },
         numberOfUsers: { $size: "$members" },
       },
-    },
-  ]);
+    }
+  ])
 
   console.log("community Infos ", communityInfos);
-  const paginatedCommunity = await CommunityModel.aggregatePaginate(
-    communityInfos,
-    {
-      page: newOptions.pageIndex,
-      limit: newOptions.pageSize,
-      sort,
-    }
-  );
+  const paginatedCommunity = await CommunityModel.aggregatePaginate(communityInfos, {
+    page: newOptions.pageIndex,
+    limit: newOptions.pageSize,
+    sort,
+  });
   return paginatedCommunity;
 }
 
@@ -559,15 +551,16 @@ export async function deleteCommunity(message, callback) {
     response.status = 200;
     response.data = "Deleted Successfully";
     return callback(null, response);
-  } catch (err) {
+  }
+  catch (err) {
     error.status = 500;
     error.data = {
       code: err.code,
-      msg:
-        "Unable to delete the community ID successfully. Please check the logs for more details.",
+      msg: "Unable to delete the community ID successfully. Please check the logs for more details."
     };
     return callback(error, null);
   }
+
 }
 
 export async function getCommunityListCreatedByUser(message, callback) {
@@ -577,8 +570,8 @@ export async function getCommunityListCreatedByUser(message, callback) {
   if (!userId) {
     error.status = 500;
     error.data = {
-      code: "INVALID_PARAM",
-      msg: "Invalid User ID",
+      code: 'INVALID_PARAM',
+      msg: 'Invalid User ID'
     };
     return callback(error, null);
   }
@@ -593,9 +586,8 @@ export async function getCommunityListCreatedByUser(message, callback) {
     error.status = 500;
     error.data = {
       code: err.code,
-      msg:
-        "Unable to successfully get the Activities! Please check the application logs for more details.",
-    };
+      msg: 'Unable to successfully get the Activities! Please check the application logs for more details.'
+    }
     return callback(error, null);
   }
 }
@@ -788,7 +780,6 @@ async function communityVote(message, callback) {
     { $set: { vote: newVote } },
     { upsert: true } // Make this update into an upsert
   );
-
   const community = await getCommunityById(communityId);
   response.status = 200;
   response.data = community;
@@ -893,4 +884,3 @@ async function getCommunityBySearchQuery(options) {
   );
   return paginatedCommunity;
 }
-
