@@ -1,5 +1,5 @@
 const UserModel = require('../models/UsersModel');
-const CommunityModel = require("../models/communityModel");
+const CommunityModel = require("../models/CommunityModel");
 
 export async function getUserProfileDetails(message, callback) {
     let response = {};

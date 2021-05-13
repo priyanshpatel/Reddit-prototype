@@ -44,7 +44,7 @@ export async function getChatMemberList(message, callback) {
     const chatDetails = await getAllUserDetailsAndLastMessage(messages);
     chatDetails.forEach((chatDetail) => {
         const indx = chatDetail.userDetails.findIndex(v => v._id.toString() === userId);
-        chatDetail.userDetails.splice(indx,1);
+        chatDetail.userDetails.splice(indx, 1);
         console.log(chatDetail.userDetails);
     })
     response.status = 200;

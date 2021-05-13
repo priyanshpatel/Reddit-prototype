@@ -3,39 +3,40 @@ import axios from 'axios';
 import { BACKEND_URL, BACKEND_PORT } from '../../config/config';
 import cookie from "react-cookies";
 
-const CREATE_COMMENT_SUCCESS = "create_comment_success";
-const CREATE_COMMENT_FAIL = "create_comment_fail";
-var succesComment = (response, data) => {
+const CHAT_SUBMIT_SUCCESS = "chat_submit_success";
+const CHAT_SUBMIT_FAIL = "chat_submit_fail";
+var successChat = (response, data) => {
     return {
-        type: CREATE_COMMENT_SUCCESS,
+        type: CHAT_SUBMIT_SUCCESS,
         payload: {
             response: response,
             data: data
         }
     }
 }
-var errorComment = (err, data) => {
+var errorChat = (err, data) => {
     return {
-        type: CREATE_COMMENT_FAIL,
+        type: CHAT_SUBMIT_FAIL,
         payload: {
             response: err,
             data: data
         }
     }
 }
-var createCommentAction = (data) => (dispatch) => {
+var chatSubmitAction = (data) => (dispatch) => {
+
     axios.defaults.headers.common["authorization"] = cookie.load('token')
     axios.defaults.withCredentials = true;
     return axios
-        .post(BACKEND_URL + ":" + BACKEND_PORT + '/post/comment', data)
+        .post(BACKEND_URL + ":" + BACKEND_PORT + '/chat/send', data)
         .then((response) => {
             if (response.status === 200) {
-                dispatch(succesComment(response, data));
+                dispatch(successChat(response, data));
             }
         })
         .catch((err) => {
-            dispatch(errorComment(err, data))
+            dispatch(errorChat(err, data))
         });
 }
 
-export default createCommentAction
+export default chatSubmitAction

@@ -14,6 +14,7 @@ const communityfields = {
   rules: Joi.array()
     .items(
       Joi.object().keys({
+        id: Joi.string(),
         title: Joi.string().required().label('Rule title'),
         description: Joi.string().optional().label('Rule description'),
       })

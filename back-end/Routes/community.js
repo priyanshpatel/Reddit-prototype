@@ -24,7 +24,8 @@ const router = express.Router();
 
 const createCommunity = async (req, res) => {
   console.log("Inside create community post Request");
-
+console.log("Body",req.body);
+console.log("Files",req.files)
   if (!req.files.communityAvatar) {
     res
       .status(400)
@@ -397,6 +398,7 @@ export async function downVoteCommunity(req, res) {
 export async function searchCommunity(req, res) {
   console.log("inside community search", req.query);
   const value = req.user._id;
+  console.log("SEARCH COMMUNITY",req.user);
   kafka.make_request(
     "reddit-community-topic",
     {

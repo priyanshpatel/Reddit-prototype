@@ -9,7 +9,9 @@ import ArrowUpwardTwoToneIcon from '@material-ui/icons/ArrowUpwardTwoTone';
 import ArrowDownwardTwoToneIcon from '@material-ui/icons/ArrowDownwardTwoTone';
 import createCommentAction from '../../actions/comment/createCommentAction';
 import { connect } from "react-redux";
-
+import { Link } from 'react-router-dom';
+import upVoteCommentAction from '../../actions/comment/upvoteCommentAction';
+import downVoteCommentAction from '../../actions/comment/downVoteCommentAction';
 class Comment extends Component {
 
     constructor(props) {
@@ -25,7 +27,14 @@ class Comment extends Component {
                 commentText: this.props.commentData.description,
                 replyClicked: false,
                 parent_id: this.props.commentData._id,
-                commentDescription: ""
+                commentDescription: "",
+                user: this.props.commentData.user,
+                votes: this.props.commentData.votes,
+                post_id: this.props.post_id,
+                community_id: this.props.community_id,
+                avatar : this.props.commentData.user.avatar
+
+
             }
         }
         else {
@@ -38,13 +47,54 @@ class Comment extends Component {
                 commentText: this.props.commentData.description,
                 replyClicked: false,
                 parent_id: this.props.commentData._id,
-                commentDescription: ""
+                commentDescription: "",
+                user: this.props.commentData.user,
+                votes: this.props.commentData.votes,
+                post_id: this.props.post_id,
+                community_id: this.props.community_id,
+                avatar : this.props.commentData.user.avatar
+
             }
         }
 
     }
     replyButtonClicked = (e) => {
         this.setState({ replyClicked: !this.state.replyClicked })
+    }
+
+    upVoteComment = (e) => {
+        let upVoteObject = {
+            post_id: this.state.post_id,
+            comment_id: this.state.parent_id,
+            community_id: this.state.community_id
+        }
+
+        this.props.upVoteCommentAction(upVoteObject).then(response => {
+            console.log(this.props)
+            this.setState(
+                {
+                    votes: this.props.getUpvoteCommentData.comment.votes
+                }
+            )
+        })
+        console.log(upVoteObject)
+    }
+    downVoteComment = (e) => {
+        let upVoteObject = {
+            post_id: this.state.post_id,
+            comment_id: this.state.parent_id,
+            community_id: this.state.community_id
+        }
+
+        this.props.downVoteCommentAction(upVoteObject).then(response => {
+            console.log(this.props)
+            this.setState(
+                {
+                    votes: this.props.getDownVoteDataComment.comment.votes
+                }
+            )
+        })
+        console.log(upVoteObject)
     }
 
     handleDescriptionChange = (e) => {
@@ -69,6 +119,7 @@ class Comment extends Component {
         })
     }
     render() {
+        console.log(this.state)
         let comment = this.props.commentData;
         let replyActionsStyle = { backgroundColor: '#CCC', margin: "5px 0 0 5px", lineHeight: "1" };
         let margin = (this.state.depth + 1) * 10 + '%';
@@ -79,8 +130,17 @@ class Comment extends Component {
 
                     <div className="comment-header">
                         <Row style={{ marginLeft: "0.%" }}>
-                            <img src={avatar} height="17px" style={{ borderRadius: "50px" }} width="17px" alt="" /> &nbsp;
-                            <div style={{ fontSize: "12px" }}><strong>{this.state.userName}&nbsp;</strong></div><div style={{ fontSize: "12px" }}>{moment.utc(this.state.createdAt).local().startOf('seconds').fromNow()}</div>
+                            <img src={this.state.avatar} height="17px" style={{ borderRadius: "50px" }} width="17px" alt="" /> &nbsp;
+                            <div style={{ fontSize: "12px" }}><strong>
+
+
+                                <Link style={{ color: "black" }} to={{
+                                    pathname: "/users/profile-page", state: {
+                                        userData: this.state.user
+                                    }
+                                }}>{this.state.userName}</Link>
+
+                                &nbsp;</strong></div><div style={{ fontSize: "12px" }}>{moment.utc(this.state.createdAt).local().startOf('seconds').fromNow()}</div>
                         </Row>
 
                     </div>
@@ -90,8 +150,21 @@ class Comment extends Component {
 
                     </div>
                     <Row style={{ marginLeft: "0.%" }}>
-                        <ArrowUpwardTwoToneIcon style={{ fontSize: "14px", marginTop: "5px" }} />
-                        <ArrowDownwardTwoToneIcon style={{ fontSize: "14px", marginTop: "5px" }} />
+                        {this.state.depth == 0 ?
+                            <div>
+                                <button
+                                    onClick={this.upVoteComment}>
+                                </button>
+
+                                {this.state.votes}
+                                <button
+                                    onClick={this.downVoteComment}>
+                                </button>
+                            </div> : ""
+                        }
+
+                        {/* <ArrowUpwardTwoToneIcon style={{ fontSize: "14px", marginTop: "5px" }} />
+                        <ArrowDownwardTwoToneIcon style={{ fontSize: "14px", marginTop: "5px" }} /> */}
 
                         <Button
                             size="small"
@@ -121,9 +194,8 @@ class Comment extends Component {
 const matchStateToProps = (state) => {
     console.log("inside matchStatetoProps", state)
     return {
-        // postData: state.createCommunityReducer.postData,
-        // message: state.createCommunityReducer.message,
-        // getPostData: state.getPostByIDReducer.getPostData,
+        getUpvoteCommentData: state.upvoteCommentReducer.getUpvoteCommentData,
+        getDownVoteDataComment: state.downVoteCommentReducer.getDownVoteCommentData,
 
     }
 
@@ -132,6 +204,8 @@ const matchStateToProps = (state) => {
 const matchDispatchToProps = (dispatch) => {
     return {
         createCommentAction: (data) => dispatch(createCommentAction(data)),
+        downVoteCommentAction: (data) => dispatch(downVoteCommentAction(data)),
+        upVoteCommentAction: (data) => dispatch(upVoteCommentAction(data)),
 
     }
 }

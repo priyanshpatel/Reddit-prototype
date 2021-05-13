@@ -2,7 +2,9 @@
     font-size:"28px";
     color : "red"
 }
-
+/* button {width:7em}
+button span {display:none}
+button:hover:before {content:"Leave!" } */
 .post{
     background-color: "white";
     border-radius: 4px;

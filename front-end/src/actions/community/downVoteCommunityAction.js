@@ -4,11 +4,11 @@ import { BACKEND_PORT } from '../../config/config';
 import cookie from "react-cookies";
 
 
-const POST_GET_SUCCESS = "post_get_success";
-const POST_GET_FAIL = "post_get_fail";
+const DOWNVOTE_COMMUNITY_GET_SUCCESS = "downvote_community_get_success";
+const DOWNVOTE_COMMUNITY_GET_FAIL = "downvote_community_get_fail";
 var success = (response) => {
     return {
-        type: POST_GET_SUCCESS,
+        type: DOWNVOTE_COMMUNITY_GET_SUCCESS,
         payload: {
             response: response,
         }
@@ -16,20 +16,22 @@ var success = (response) => {
 }
 
 var error = (err) => {
-    console.log("err", err)
     return {
-        type: POST_GET_FAIL,
+        type: DOWNVOTE_COMMUNITY_GET_FAIL,
         payload: {
             response: err
         }
     }
 }
-var getPostsByIDAction = (data) => (dispatch) => {
-    console.log(data);
+var downVoteCommunityAction = (data) => (dispatch) => {
+
+    let obj = {
+        communityId: data
+    }
     axios.defaults.headers.common["authorization"] = cookie.load('token')
     axios.defaults.withCredentials = true;
     return axios
-        .get(BACKEND_URL + ":" + BACKEND_PORT + "/community/posts?orderByDate=" + data.sorting + "&orderByPopularity=" + data.popularity + "&pageNumber=" + data.pageNumber + "&pageSize=" + data.pageSize + "&community_id=" + data.communityID).then(response => {
+        .post(BACKEND_URL + ":" + BACKEND_PORT + "/community/downvote", obj).then(response => {
             if (response.status === 200) {
                 console.log(response.data)
                 dispatch(success(response, data));
@@ -40,4 +42,4 @@ var getPostsByIDAction = (data) => (dispatch) => {
         });
 }
 
-export default getPostsByIDAction
+export default downVoteCommunityAction

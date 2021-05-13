@@ -1,10 +1,10 @@
 //Created by Priyansh Patel
 
-import React, { Component } from "react";
-import Navbar from "../Navbar/navbar";
-import cookie from "react-cookies";
-import { Redirect } from "react-router";
-import "./myCommunities.css";
+import React, { Component } from 'react'
+import Navbar from '../Navbar/Navbar';
+import cookie from 'react-cookies';
+import { Redirect } from 'react-router';
+import './myCommunities.css';
 import { connect } from "react-redux";
 import { Card, Button, CardTitle, CardText, CardBody } from "reactstrap";
 import myCommunitiesAction from "../../actions/community/myCommunitiesAction";
