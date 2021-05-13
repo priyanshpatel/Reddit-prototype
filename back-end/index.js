@@ -9,7 +9,7 @@ const { auth } = require("./utils/passport");
 const passport = require("passport");
 const redis = require("redis");
 const client = redis.createClient({ detect_buffers: true });
-client.on("error", function(error) {
+client.on("error", function (error) {
   console.error(error);
 });
 
@@ -57,7 +57,7 @@ app.use((req, res, next) => {
 const options = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  poolSize: 500,
+  poolSize: 1,
   bufferMaxEntries: 0,
 };
 
@@ -66,9 +66,10 @@ mongoose.connect(mongoDB, options, (err) => {
     console.log(err);
     console.log("MongoDB Connection Failed");
   } else {
-    console.log("MongoDB Connected");
+    console.log("MongoDB Connected Backend");
   }
 });
+
 
 mongoose.set("useNewUrlParser", true);
 mongoose.set("useFindAndModify", false);

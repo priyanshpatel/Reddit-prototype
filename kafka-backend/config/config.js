@@ -3,6 +3,10 @@ module.exports = {
   defaultPageSizePosts: 2,
   defaultPageSizeCommunityModeration: 2,
 
+  // mongoDBURI: "mongodb://localhost:27017/Redit?retryWrites=true&w=majority",
+  mongoDBURI:
+    "mongodb+srv://poonam2802:py2802@2580@cluster0.illbn.mongodb.net/RedditDb?retryWrites=true&w=majority",
+  // //mongoDBURI:
   // mongoDBURI:
   //   "mongodb+srv://poonam2802:py2802@2580@cluster0.illbn.mongodb.net/RedditDb?retryWrites=true&w=majority",
   mongoDBURI:

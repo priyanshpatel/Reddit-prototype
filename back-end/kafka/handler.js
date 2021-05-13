@@ -1,6 +1,6 @@
 export function kafka_response_handler(res, err, results, successHandler) {
-  console.log('errX ', err);
-  console.log('results ', results);
+  //console.log('errX ', err);
+  //console.log('results ', results);
   if (err) {
     console.log("Inside error kafka");
     console.log(err);

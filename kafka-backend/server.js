@@ -10,6 +10,7 @@ const commentVoteService = require("./services/commentVote");
 const chatService = require("./services/chat");
 const invitationService = require("./services/invitation");
 // const communityAnalyticsService = require('./services/communityAnalytics')
+const testService = require("./services/testing");
 
 const mongoose = require("mongoose");
 
@@ -40,13 +41,13 @@ function handleTopicRequest(topic_name, fname) {
   //console.log(producer);
   console.log("server is running ");
   consumer.on("message", function (message) {
-    console.log("message received for " + topic_name + " ", fname);
-    console.log(JSON.stringify(message.value));
+    //console.log("message received for " + topic_name + " ", fname);
+    //console.log(JSON.stringify(message.value));
     var data = JSON.parse(message.value);
     fname.handle_request(data.data, (err, res) => {
-      console.log("in callback, producer:");
-      console.log("err", err);
-      console.log("res ", res);
+      //console.log("in callback, producer:");
+      //console.log("err", err);
+      // console.log("res ", res);
       //console.log(producer);
       //response(data, res, err, producer);
       var payloads = [
@@ -64,8 +65,8 @@ function handleTopicRequest(topic_name, fname) {
         if (err) {
           console.log("Error when producer sending data", err);
         } else {
-          console.log("responseX ", data);
-          console.log(data);
+          //console.log("responseX ", data);
+          //console.log(data);
         }
       });
       return;
@@ -106,6 +107,7 @@ handleTopicRequest("reddit-community-topic", communityService);
 handleTopicRequest("reddit-post-vote-topic", postVoteService);
 handleTopicRequest("reddit-comment-vote-topic", commentVoteService);
 handleTopicRequest("reddit-chat-topic", chatService);
+handleTopicRequest("reddit-testing-topic", testService);
 handleTopicRequest("reddit-invitation-topic", invitationService);
 // handleTopicRequest("reddit-community-analytics-topic", communityAnalyticsService);
 
