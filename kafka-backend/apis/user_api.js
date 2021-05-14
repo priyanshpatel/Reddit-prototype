@@ -3,6 +3,7 @@ import Post from "../models/PostsModel";
 const bcrypt = require("bcrypt");
 const configuration = require("../config/config");
 const UserModel = require("../models/UsersModel");
+const MySQLUserModel = require('../mySQLModel/UsersModel')();
 const CommunityModel = require("../models/CommunityModel");
 const { uniqueNamesGenerator, names } = require("unique-names-generator");
 const aleaRNGFactory = require("number-generator/lib/aleaRNGFactory");
@@ -31,8 +32,11 @@ export async function registerUser(message, callback) {
       return callback(err, null);
     } else {
       user = await insertUser(user);
+      const mySQLUser = await storeUserInMySQL(user);
+      console.log(mySQLUser);
     }
   } catch (error) {
+    console.log(error);
     err.status = 500;
     err.data = {
       code: error.code,
@@ -53,11 +57,11 @@ export async function loginUser(message, callback) {
   console.log("Inside login user post Request");
   let user = message.body.user;
   console.log("User Login ", JSON.stringify(user));
-  const storedUser = await getUserById(user.email);
-  if (storedUser !== null) {
-    if (await matchPassword(user.password, storedUser.password)) {
+  const mySQLStoredUser = await getUserFromMySQL(user);
+  if (mySQLStoredUser !== null) {
+    if (await matchPassword(user.password, mySQLStoredUser.dataValues.password)) {
       response.status = 200;
-      user._id = storedUser._id;
+      user._id = mySQLStoredUser.dataValues.user_id;
       response.data = user;
       return callback(null, response);
     } else {
@@ -68,11 +72,27 @@ export async function loginUser(message, callback) {
       return callback(err, null);
     }
   } else {
-    err.status = 400;
-    err.data = {
-      msg: "The account does not exist",
-    };
-    return callback(err, null);
+    const storedUser = await getUserById(user.email);
+    if (storedUser !== null) {
+      if (await matchPassword(user.password, storedUser.password)) {
+        response.status = 200;
+        user._id = storedUser._id;
+        response.data = user;
+        return callback(null, response);
+      } else {
+        err.status = 401;
+        err.data = {
+          msg: "Password mismatch",
+        };
+        return callback(err, null);
+      }
+    } else {
+      err.status = 400;
+      err.data = {
+        msg: "The account does not exist",
+      };
+      return callback(err, null);
+    }
   }
 }
 
@@ -136,6 +156,16 @@ export async function editUser(message, callback) {
   }
 }
 
+export async function getUserFromMySQL(user) {
+  console.log("Inside get user from my sql");
+  const mySQLStoredUser = await MySQLUserModel.findOne({
+    where: {
+      email: user.email
+    }
+  });
+  return mySQLStoredUser;
+}
+
 export async function getUserById(userId) {
   console.log("Inside get user by Id", userId);
   const user = await UserModel.findOne({ email: userId });
@@ -172,6 +202,18 @@ async function insertUser(user) {
   user.handle = uniqueNamesGenerator(config) + uInt32().toString().slice(0, 3);
   var user = new UserModel(user);
   return await user.save();
+}
+
+async function storeUserInMySQL(user) {
+  console.log("Inside store User in MySQL");
+  const mySQLUser = await MySQLUserModel.create(
+    {
+      user_id: user._id.toString(),
+      email: user.email,
+      password: user.password,
+    },
+  );
+  return mySQLUser;
 }
 
 async function hashPassword(password) {
