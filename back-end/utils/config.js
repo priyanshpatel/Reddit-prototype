@@ -12,6 +12,11 @@ const config = {
   // mongoDB:
   //   "mongodb+srv://shakthivel:Sunshine123@cluster0.uqmlv.mongodb.net/mongodbreddit?retryWrites=true&w=majority",
   // INVITED_TO_JOIN_COMMUNITY: "INVITED", // Inside community schema
+  //  mongoDB:
+  //  "mongodb+srv://root:root@cluster0.hy57j.mongodb.net/Reddit?retryWrites=true&w=majority",
+  // mongoDB:
+  //   "mongodb+srv://shakthivel:Sunshine123@cluster0.uqmlv.mongodb.net/mongodbreddit?retryWrites=true&w=majority",
+  INVITED_TO_JOIN_COMMUNITY: "INVITED", // Inside community schema
   REQUESTED_TO_JOIN_COMMUNITY: "REQUESTED", // Inside community schema
   REJECTED_REQUEST_TO_JOIN_COMMUNITY: "REJECTED", // Inside community schema
   ACCEPTED_REQUEST_TO_JOIN_COMMUNITY: "JOINED", // Inside community schema
