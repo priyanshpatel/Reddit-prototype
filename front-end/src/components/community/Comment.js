@@ -8,6 +8,8 @@ import ModeCommentTwoToneIcon from '@material-ui/icons/ModeCommentTwoTone';
 import createCommentAction from '../../actions/comment/createCommentAction';
 import { connect } from "react-redux";
 import { Link } from 'react-router-dom';
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
+import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import upVoteCommentAction from '../../actions/comment/upvoteCommentAction';
 import downVoteCommentAction from '../../actions/comment/downVoteCommentAction';
 class Comment extends Component {
@@ -149,14 +151,10 @@ class Comment extends Component {
                     <Row style={{ marginLeft: "0.%" }}>
                         {this.state.depth == 0 ?
                             <div>
-                                <button
-                                    onClick={this.upVoteComment}>
-                                </button>
+                                <ArrowUpwardIcon style={{ cursor: "pointer" }} onClick={this.upVote} />
+                                <span style={{ paddingLeft: "6px" }}> {this.state.votes}</span>
+                                <ArrowDownwardIcon style={{ cursor: "pointer" }} onClick={this.downVote} />
 
-                                {this.state.votes}
-                                <button
-                                    onClick={this.downVoteComment}>
-                                </button>
                             </div> : ""
                         }
                         <Button

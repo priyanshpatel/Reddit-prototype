@@ -1,13 +1,14 @@
 import React, { Component } from 'react'
 import { Redirect } from 'react-router'
 import { Link } from 'react-router-dom'
-import Navbar from "../Navbar/navbar";
+import Navbar from "../Navbar/Navbar";
 import userProfileAction from '../../actions/userProfileAction';
 import { connect } from "react-redux";
 import {
     Card, CardText, CardBody,
 } from 'reactstrap';
 import { Accordion } from "react-bootstrap";
+import cookie from "react-cookies";
 
 import { Row, Col, CardTitle } from 'reactstrap';
 //TODO : Add all the other use Data in the profile

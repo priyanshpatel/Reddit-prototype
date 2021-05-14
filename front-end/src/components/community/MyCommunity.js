@@ -1,7 +1,7 @@
 //author-Het 
 import React, { Component } from 'react'
 import { connect } from "react-redux";
-import Navbar from "../Navbar/navbar";
+import Navbar from "../Navbar/Navbar";
 import { Row, Col, CardTitle } from 'reactstrap';
 import avatar from '../../images/post-image.png';
 import post from '../../images/post-image.png';
@@ -166,6 +166,7 @@ class MyCommunity extends Component {
         })
     }
     handleRequestAcceptClick = (e) => {
+
         this.props.communityJoinRequestAction(this.state.communityID).then(response => {
 
             if (this.props.error) {
@@ -255,6 +256,7 @@ class MyCommunity extends Component {
         })
     }
     componentDidMount() {
+        console.log(this.props.location.state.communityData)
         if (cookie.load('token')) {
             this.setState(
                 {
@@ -267,6 +269,7 @@ class MyCommunity extends Component {
                     description: this.props.location.state.communityData.description,
                     totalPosts: this.props.location.state.communityData.numberOfPosts,
                     rules: this.props.location.state.communityData.rules,
+                    listOfUsers : this.props.location.state.communityData.members
 
 
                 }
@@ -274,6 +277,8 @@ class MyCommunity extends Component {
 
             axios.defaults.headers.common["authorization"] = cookie.load('token')
             axios.defaults.withCredentials = true;
+            console.log("HJABHJABSHJBAHJSBHJS", this.props.location.state.communityData._id)
+            console.log(BACKEND_URL + ":" + BACKEND_PORT + '/community/get?communityId=' + this.props.location.state.communityData._id)
             axios
                 .get(BACKEND_URL + ":" + BACKEND_PORT + '/community/get?communityId=' + this.props.location.state.communityData._id
                 )
@@ -349,10 +354,23 @@ class MyCommunity extends Component {
         }
     }
     render() {
+        console.log(this.state.rules)
         let renderPost = null;
         let renderButton = null;
         let renderJoinError = null;
-
+        // let listOfUsers = this.state.listOfUsers.map((user, index) => {
+        //     return (
+        //         <div>
+        //                 <Card style={{ marginTop: "15px", border: "1px" }}>
+        //                     <CardBody>
+        //                         {user.name}
+        //                     </CardBody>
+        //                 </Card>
+                        
+        //         </div>
+        //     );
+        // }
+        // )
         if (this.state.errorMsg) {
 
             renderJoinError = toast(this.props.errorMessage, {
@@ -409,6 +427,7 @@ class MyCommunity extends Component {
         let rulesAccordion = this.state.rules.map((rule, index) => {
             return (
                 <div>
+                
                     <Accordion style={{ width: "323px" }}>
                         <Card style={{ marginTop: "15px", border: "1px" }}>
                             < Accordion.Toggle as={Card.Header} style={{ backgroundColor: "white", border: "none" }} eventKey={index + 1}>
