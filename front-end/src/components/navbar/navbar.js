@@ -26,6 +26,7 @@ import { MessageList } from 'react-chat-elements'
 import { Input } from 'react-chat-elements'
 import { Button } from 'react-chat-elements';
 import _ from 'lodash';
+import history from '../history';
 // /chat/getChatMemberList
 const customStyles = {
     content: {
@@ -311,6 +312,7 @@ class Navbar extends Component {
 
     handleLogout = (e) => {
         var cookies = null;
+        history.push('/');
         if (cookie.load("auth")) {
             cookies = cookie.loadAll();
             console.log(cookies);
@@ -323,7 +325,8 @@ class Navbar extends Component {
                 }
             )
         }
-        // this.props.history.push("/")
+        // this.props.history.push("/home");
+        history.push('/');
     }
 
     handleChatSubmit = (e) => {

@@ -29,9 +29,9 @@ class Routes extends Component {
                 <Route path="/dashboard" component={Dashboard} />
 
                 <Route path="/submit/:id" component={CreatePost} />
-                <Route exact path="/create-community" component={CreateCommunity} />
+                <Route path="/create-community" component={CreateCommunity} />
                 <Route path="/community-home-page" component={MyCommunity} />
-                <Route exact path="/create-community/:id" component={CreateCommunity} />
+                <Route path="/create-community/:id" component={CreateCommunity} />
                 <Route path="/users/profile-page" component={UserProfilePage} />
                 <Route path="/search-community" component={CommunitySearch} />
                 <Route path="/logout" component={logout} />
