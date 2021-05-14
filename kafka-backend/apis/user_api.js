@@ -32,8 +32,8 @@ export async function registerUser(message, callback) {
       return callback(err, null);
     } else {
       user = await insertUser(user);
-      // const mySQLUser = await storeUserInMySQL(user);
-      // console.log(mySQLUser);
+      const mySQLUser = await storeUserInMySQL(user);
+      console.log(mySQLUser);
     }
   } catch (error) {
     console.log(error);
