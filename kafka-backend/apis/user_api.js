@@ -402,12 +402,12 @@ async function getAggregatedPostsAndCommunity(userId, options) {
         as: "community",
       },
     },
-    
+
     {
       $addFields: {
         createdBy: { $arrayElemAt: ["$createdBy", 0] },
         community: { $arrayElemAt: ["$community", 0] },
-        
+
       },
     },
     {

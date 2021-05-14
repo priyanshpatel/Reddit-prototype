@@ -19,6 +19,7 @@ import UserProfilePage from './users/user-profile';
 import CommunitySearch from './community/CommunitySearch';
 import logout from './users/logout';
 import Dashboard from './users/Dashboard';
+import Chat from './users/Chat';
 
 
 class Routes extends Component {
@@ -35,6 +36,8 @@ class Routes extends Component {
                 <Route exact path="/users/profile-page" component={UserProfilePage} />
                 <Route exact path="/search-community" component={CommunitySearch} />
                 <Route exact path="/logout" component={logout} />
+
+                <Route exact path="/chat" component={Chat} />
 
                 <Route exact path="/profile" component={Profile} />
                 <Route exact path="/my-communities" component={MyCommunities} />

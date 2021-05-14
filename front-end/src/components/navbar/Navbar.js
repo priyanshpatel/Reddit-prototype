@@ -331,7 +331,12 @@ class Navbar extends Component {
 
     handleChatSubmit = (e) => {
         let id = null
-        if (this.state.selectedUsers == "") {
+        console.log(this.state)
+        if (this.state.chatDescription == "") {
+            alert("Please enter the chat's description")
+            return;
+        }
+        if (this.state.selectedUsers.value == undefined) {
             id = this.state.chatiID
         }
         else {
@@ -454,8 +459,6 @@ class Navbar extends Component {
                         {this.state.logout ? <Link to="/"></Link> : ""}
 
                     </div>
-
-
                     <div className="row">
                         <div className="col-2">
                             <Link to="/"><img src={reddit_logo} className="logo-image" alt="reddit-logo" /></Link>
@@ -465,7 +468,6 @@ class Navbar extends Component {
                                 <i class="fas fa-edit"></i> <span class="nav-username">Create</span>
                             </button>
                             <div className="dropdown-menu" aria-labelledby="dropdownMenu2">
-                                <Link to="/create-post" className="dropdown-item" type="button" value="home"><i class="fas fa-edit dd-icon"></i><span className="dd-item">Create Post</span></Link>
                                 <Link to="/create-community" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-edit dd-icon"></i><span className="dd-item">Create Community</span></Link>
                             </div>
                         </div>
@@ -485,6 +487,8 @@ class Navbar extends Component {
                         < div className="col-2 nav-icon-div" style={{ paddingRight: "0px" }}>
                             <Link > <i class="fas fa-comment-dots nav-icon-button" onClick={this.handleChatApplicationClick} style={{ marginRight: "10px" }} ></i></Link>
                             <NotificationIcon />
+                            <Link to="/chat" > <i class="fas fa-comment-dots nav-icon-button" onClick={this.handleChatApplicationClick} style={{ marginRight: "10px" }} ></i></Link>
+                            <Link to="/"><i class="fas fa-bell nav-icon-button" style={{ marginRight: "10px" }} ></i></Link>
                         </div>
                         {/* <Dropdown isOpen={dropdownOpen} toggle={toggle}> */}
                         <div className="col-2" style={{ textAlign: "right" }} style={{ paddingLeft: "0px" }}>

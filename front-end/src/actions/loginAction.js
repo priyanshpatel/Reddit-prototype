@@ -26,6 +26,7 @@ var errorUser = (err, data) => {
     }
 }
 var loginAction = (data) => (dispatch) => {
+    console.log(data)
     return axios
         .post(BACKEND_URL + ":" + BACKEND_PORT + '/user/login', data)
         .then((response) => {

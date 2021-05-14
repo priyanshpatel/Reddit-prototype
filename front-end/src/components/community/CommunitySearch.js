@@ -11,6 +11,8 @@ import { BACKEND_PORT } from '../../config/config';
 import {
     Card, CardText, CardBody,
 } from 'reactstrap';
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
+import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import ReactPaginate from 'react-paginate';
 import { InputGroup, InputGroupAddon, InputGroupText, Input } from 'reactstrap';
 import moment from 'moment'
@@ -208,14 +210,11 @@ export class CommunitySearch extends Component {
 
                         <Row>
                             <Col xs="1" style={{ backgroundColor: "whitesmoke", height: "15vh" }}>
-                                <button
-                                    onClick={() => this.upVote(docs._id)}>
-                                </button>
-                                {docs.numberOfVotes}
-                                {/* {docs.numberOfVotes}{this.state.votes} */}
-                                <button
-                                    onClick={() => this.downVote(docs._id)}>
-                                </button>
+                                <ArrowUpwardIcon style={{ cursor: "pointer" }} onClick={() => this.upVote(docs._id)} />
+                                <span style={{ paddingLeft: "6px" }}>
+                                    {docs.numberOfVotes}
+                                </span>
+                                <ArrowDownwardIcon style={{ cursor: "pointer" }} onClick={() => this.downVote(docs._id)} />
                             </Col>
                             <Col xs="2" style={{ paddingTop: "40px" }}>
                                 <img src={docs.communityAvatar[0]} height="100px" width="100px" alt="Avatar" class="com-avatar" />

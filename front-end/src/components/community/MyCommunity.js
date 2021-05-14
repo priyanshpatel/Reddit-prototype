@@ -33,7 +33,7 @@ class MyCommunity extends Component {
     constructor(props) {
         super(props)
         let communityID = "";
-        if(cookie.load('token')) {
+        if (cookie.load('token')) {
             communityID = this.props.location.state.communityData._id;
         }
         this.state = {
@@ -113,14 +113,12 @@ class MyCommunity extends Component {
                 }
             )
         })
-
     };
     postClick = e => {
         this.setState({ postFlag: true });
 
     }
     refreshCommentsAfterAdd = () => {
-        console.log("In My community refresh comments after add", this.state);
         this.props.getPostsByIDAction(this.state).then(response => {
             this.setState(
                 {
@@ -286,9 +284,7 @@ class MyCommunity extends Component {
                                     }
                                 )
                             }
-
                         }
-
                     }
                 })
                 .catch((err) => {

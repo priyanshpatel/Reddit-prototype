@@ -94,6 +94,7 @@ class Post extends Component {
         })
     }
     handleFirstCommentSubmit = (e) => {
+        alert("hi");
         e.preventDefault();
         let obj = {
             "description": this.state.firstCommentDescription,
@@ -101,7 +102,8 @@ class Post extends Component {
             "community_id": this.state.community_id
         }
         this.props.createCommentAction(obj).then(response => {
-            this.props.refreshComments();
+            console.log(this.props)
+            // this.props.refreshComments();
         })
     }
     commentsClicked = inp => {

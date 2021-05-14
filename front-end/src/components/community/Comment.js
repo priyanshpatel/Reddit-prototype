@@ -5,8 +5,6 @@ import { Button } from '@material-ui/core';
 import avatar from '../../images/post-image.png';
 import { Row, Col } from 'reactstrap';
 import ModeCommentTwoToneIcon from '@material-ui/icons/ModeCommentTwoTone';
-import ArrowUpwardTwoToneIcon from '@material-ui/icons/ArrowUpwardTwoTone';
-import ArrowDownwardTwoToneIcon from '@material-ui/icons/ArrowDownwardTwoTone';
 import createCommentAction from '../../actions/comment/createCommentAction';
 import { connect } from "react-redux";
 import { Link } from 'react-router-dom';
@@ -32,7 +30,7 @@ class Comment extends Component {
                 votes: this.props.commentData.votes,
                 post_id: this.props.post_id,
                 community_id: this.props.community_id,
-                avatar : this.props.commentData.user.avatar
+                avatar: this.props.commentData.user.avatar
 
 
             }
@@ -52,7 +50,7 @@ class Comment extends Component {
                 votes: this.props.commentData.votes,
                 post_id: this.props.post_id,
                 community_id: this.props.community_id,
-                avatar : this.props.commentData.user.avatar
+                avatar: this.props.commentData.user.avatar
 
             }
         }
@@ -114,8 +112,7 @@ class Comment extends Component {
         console.log(obj)
         console.log(this.state)
         this.props.createCommentAction(obj).then(response => {
-            console.log("over here")
-            // this.props.refreshComments();
+            console.log(this.props.getCommentError)
         })
     }
     render() {
@@ -162,10 +159,6 @@ class Comment extends Component {
                                 </button>
                             </div> : ""
                         }
-
-                        {/* <ArrowUpwardTwoToneIcon style={{ fontSize: "14px", marginTop: "5px" }} />
-                        <ArrowDownwardTwoToneIcon style={{ fontSize: "14px", marginTop: "5px" }} /> */}
-
                         <Button
                             size="small"
                             onClick={this.replyButtonClicked}
@@ -196,6 +189,8 @@ const matchStateToProps = (state) => {
     return {
         getUpvoteCommentData: state.upvoteCommentReducer.getUpvoteCommentData,
         getDownVoteDataComment: state.downVoteCommentReducer.getDownVoteCommentData,
+        getCommentData: state.createCommentReducer.getCommentData,
+        getCommentError: state.createCommentReducer.error,
 
     }
 
