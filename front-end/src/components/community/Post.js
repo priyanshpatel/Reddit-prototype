@@ -159,10 +159,14 @@ class Post extends Component {
 
                             </Col>
                             <Col style={{ paddingLeft: "0px" }}>
-                                <span style={{ color: "#787C7E", fontSize: "12px", marginLeft: "7%" }}>Posted by u/{this.state.createdBy} {moment.utc(this.state.createdAt).local().startOf('seconds').fromNow()}
+                                <span style={{ color: "#787C7E", fontSize: "12px", marginLeft: "3%" }} >  Posted by u/
+                        <Link style={{ color: "black" }} to={{
+                                        pathname: "/users/profile-page", state: {
+                                            userData: this.state.userData
+                                        }
+                                    }}>{this.state.createdBy}</Link>&nbsp;{moment.utc(this.state.createdAt).local().startOf('seconds').fromNow()}
 
                                 </span>
-
                                 <CardTitle tag="h5" style={{ marginLeft: "7%", marginTop: "5px" }}>{this.state.title}</CardTitle>
                                 <div style={{ marginBottom: "5px" }}>
                                     <CarouselProvider
@@ -207,8 +211,14 @@ class Post extends Component {
                             </Col>
 
                             <Col>
+                                <span style={{ color: "#787C7E", fontSize: "12px", marginLeft: "3%" }} >  Posted by u/
+                        <Link style={{ color: "black" }} to={{
+                                        pathname: "/users/profile-page", state: {
+                                            userData: this.state.userData
+                                        }
+                                    }}>{this.state.createdBy}</Link>&nbsp;{moment.utc(this.state.createdAt).local().startOf('seconds').fromNow()}
 
-                                <span style={{ color: "#787C7E", fontSize: "12px", marginLeft: "3%" }}>Posted by u/ {this.state.createdBy} {moment.utc(this.state.createdAt).local().startOf('seconds').fromNow()}</span>
+                                </span>
                                 <CardBody>
                                     <CardTitle tag="h5">{this.state.title}</CardTitle>
                                     <CardText>{this.state.description}</CardText>
@@ -243,7 +253,7 @@ class Post extends Component {
                                 pathname: "/users/profile-page", state: {
                                     userData: this.state.userData
                                 }
-                            }}>{this.state.createdBy}</Link>{moment.utc(this.state.createdAt).local().startOf('seconds').fromNow()}
+                            }}>{this.state.createdBy}</Link>&nbsp;{moment.utc(this.state.createdAt).local().startOf('seconds').fromNow()}
 
                         </span>
                         <CardBody>

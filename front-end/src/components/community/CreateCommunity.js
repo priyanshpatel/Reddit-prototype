@@ -8,7 +8,8 @@ import AddIcon from '@material-ui/icons/Add';
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
 import { Row, Col, CardTitle } from 'reactstrap';
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { BACKEND_URL } from '../../config/config';
 import { BACKEND_PORT } from '../../config/config';
 import createCommunityAction from '../../actions/community/createCommunityAction';
@@ -179,6 +180,13 @@ class CreateCommunity extends Component {
                 }
                 formData.append("community", JSON.stringify(obj));
                 this.props.createCommunityAction(formData).then(response => {
+                    if (this.props.communityError) {
+                        alert(this.props.message)
+                    }
+                    else {
+                        alert("Community Created Successfully")
+                    }
+
 
                 })
             }
@@ -340,6 +348,7 @@ class CreateCommunity extends Component {
 
                         </div>
                     </div>
+
                 </div>
             )
         }
@@ -416,6 +425,8 @@ class CreateCommunity extends Component {
                                 </div>
                             </div>
                         </div>
+                        <ToastContainer />
+
                     </div>
                 </div>
             </div>
@@ -427,6 +438,8 @@ const matchStateToProps = (state) => {
     return {
         communityData: state.createCommunityReducer.communityData,
         getCommunityData: state.getByIDCommunityReducer.getCommunityData,
+        communityError: state.createCommunityReducer.error,
+        message: state.createCommunityReducer.message,
 
     }
 

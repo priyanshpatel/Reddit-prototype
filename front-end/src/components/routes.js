@@ -20,6 +20,7 @@ import CommunitySearch from './community/CommunitySearch';
 import logout from './users/logout';
 import Dashboard from './users/Dashboard';
 import Chat from './users/Chat';
+import Invitations from './users/Invitations';
 
 
 class Routes extends Component {
@@ -45,6 +46,7 @@ class Routes extends Component {
 
                 <Route exact path="/my-community-analytics" component={MyCommunityAnalytics} />
                 <Route exact path="/my-notifications" component={Notification} />
+                <Route path="/invitations" component={Invitations} />
 
             </div>
         )

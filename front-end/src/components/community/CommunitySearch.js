@@ -277,7 +277,6 @@ export class CommunitySearch extends Component {
                                 <div class="input-group mb-3" style={{ paddingLeft: "5px" }}>
                                     <select class="form-select" style={{ fontWeight: "bold", width: "350px" }} aria-label="user select" onChange={this.handleSelectChange}>
                                         <option hidden disabled selected value> -- select an option -- </option>
-                                        <option value="numberOfPosts">Most Posts</option>
                                         <option value="numberOfUsers">Most Users</option>
                                     </select>
                                 </div>

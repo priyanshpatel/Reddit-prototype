@@ -133,7 +133,7 @@ export class UserProfile extends Component {
 
                                 </div>
                                 <div className="col-4">
-                                    <input type="text" style={{ width: "100%" }} name="password" placeholder="LOCATION" value={this.state.user.description == " " ? "----------------------" : this.state.user.description} />
+                                    <input type="text" style={{ width: "100%" }} name="password" placeholder="DESCRIPTION" value={this.state.user.description == " " ? "----------------------" : this.state.user.description} />
 
                                 </div>
                             </div>

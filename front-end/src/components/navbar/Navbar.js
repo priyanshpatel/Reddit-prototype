@@ -302,9 +302,12 @@ class Navbar extends Component {
                     this.setState({
                         loginButton: !this.state.loginButton
                     })
+                    window.location.assign('/dashboard')
                 }
             })
-        };
+        }
+
+        ;
 
 
     }
@@ -461,7 +464,7 @@ class Navbar extends Component {
                     </div>
                     <div className="row">
                         <div className="col-2">
-                            <Link to="/"><img src={reddit_logo} className="logo-image" alt="reddit-logo" /></Link>
+                            <Link to="/dashboard"><img src={reddit_logo} className="logo-image" alt="reddit-logo" /></Link>
                         </div>
                         <div className="col-1 dropdown" style={{ paddingRight: "0px" }}>
                             <button className="btn dropdown-toggle navbar-dropdown-button" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -491,11 +494,12 @@ class Navbar extends Component {
                         {/* <Dropdown isOpen={dropdownOpen} toggle={toggle}> */}
                         <div className="col-2" style={{ textAlign: "right" }} style={{ paddingLeft: "0px" }}>
                             <div className="dropdown">
-                                <button className="btn dropdown-toggle navbar-dropdown-button" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <img src="/logo192.png" alt="Avatar" class="nav-avatar" />  <span class="nav-username">{cookie.load('userName')}</span>
+                                <button style={{ marginTop: "5px" }} className="btn dropdown-toggle navbar-dropdown-button" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span class="nav-username">{cookie.load('userName')}</span>
                                 </button>
                                 <div className="dropdown-menu" aria-labelledby="dropdownMenu2">
-                                    <Link to="/" className="dropdown-item" type="button" value="home"><i class="fas fa-home dd-icon"></i><span className="dd-item">Home</span></Link>
+                                    <Link to="/dashboard" className="dropdown-item" type="button" value="home"><i class="fas fa-home dd-icon"></i><span className="dd-item">Home</span></Link>
+
                                     <Link to="/profile" className="dropdown-item" type="button" value="profile"><i class="fas fa-id-badge dd-icon" /><span className="dd-item">Profile</span></Link>
                                     <Link to="/my-communities" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-users dd-icon"></i><span className="dd-item">My Communities</span></Link>
                                     <Link to="/my-community-analytics" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-users dd-icon"></i><span className="dd-item">Community Analytics </span></Link>

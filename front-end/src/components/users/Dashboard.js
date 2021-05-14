@@ -27,6 +27,7 @@ export class Dashboard extends Component {
             pageSize: 2,
             select: "",
             sorting: "desc",
+            noPostFlag: false
 
         }
     }
@@ -158,6 +159,15 @@ export class Dashboard extends Component {
     async componentDidMount() {
         this.props.getDashboardDataAction(this.state).then(response => {
             console.log(this.props.dashboardData)
+            if (this.props.dashboardData.docs.length == 0) {
+                this.setState(
+                    {
+                        noPostFlag: true
+                    }
+                )
+                return
+
+            }
             this.setState(
                 {
                     docs: this.props.dashboardData.docs,
@@ -233,23 +243,34 @@ export class Dashboard extends Component {
                                 </InputGroup>
                             </Row>
                         </div>
-                        <div style={{ marginLeft: "3%" }}>
-                            {postComponent}
+                        <div style={{ marginLeft: "3%", height: "100vh" }}>
+
+                            {this.state.noPostFlag ?
+
+                                <span style={{ marginTop: "30%" }}>
+                                    "No Posts to show"</span> :
+                                <div>
+                                    {postComponent}
+                                    <Col className="pagination-class">
+                                        <ReactPaginate
+                                            previousLabel={"prev"}
+                                            nextLabel={"next"}
+                                            breakLabel={"..."}
+                                            breakClassName={"break-me"}
+                                            pageCount={this.state.totalPages}
+                                            marginPagesDisplayed={2}
+                                            pageRangeDisplayed={5}
+                                            onPageChange={this.handlePageClick}
+                                            containerClassName={"pagination"}
+                                            subContainerClassName={"pages pagination"}
+                                            activeClassName={"active"} />
+                                    </Col>
+                                </div>
+
+                            }
+                            {/* {postComponent} */}
                         </div>
-                        <Col className="pagination-class">
-                            <ReactPaginate
-                                previousLabel={"prev"}
-                                nextLabel={"next"}
-                                breakLabel={"..."}
-                                breakClassName={"break-me"}
-                                pageCount={this.state.totalPages}
-                                marginPagesDisplayed={2}
-                                pageRangeDisplayed={5}
-                                onPageChange={this.handlePageClick}
-                                containerClassName={"pagination"}
-                                subContainerClassName={"pages pagination"}
-                                activeClassName={"active"} />
-                        </Col>
+
                     </Col>
                 </Row>
             </div>
