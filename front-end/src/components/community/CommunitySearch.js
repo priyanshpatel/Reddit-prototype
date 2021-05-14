@@ -35,6 +35,7 @@ export class CommunitySearch extends Component {
             totalPages: "",
             sorting: "desc",
             select: "",
+            searchInput: "",
             votes: 0
         }
     }
@@ -50,7 +51,6 @@ export class CommunitySearch extends Component {
             searchInput: this.state.searchInput,
             pageNumber: Number(e.selected) + 1,
             pageSize: this.state.pageSize,
-            sorting: this.state.sorting,
             select: this.state.select,
 
         }
@@ -90,7 +90,7 @@ export class CommunitySearch extends Component {
         e.preventDefault()
         this.setState(
             {
-                sorting: e.target.value
+                select: e.target.value
             }
         )
         let obj = {
