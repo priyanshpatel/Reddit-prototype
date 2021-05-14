@@ -302,9 +302,12 @@ class Navbar extends Component {
                     this.setState({
                         loginButton: !this.state.loginButton
                     })
+                    window.location.assign('/dashboard')
                 }
             })
-        };
+        }
+
+        ;
 
 
     }
@@ -331,7 +334,12 @@ class Navbar extends Component {
 
     handleChatSubmit = (e) => {
         let id = null
-        if (this.state.selectedUsers == "") {
+        console.log(this.state)
+        if (this.state.chatDescription == "") {
+            alert("Please enter the chat's description")
+            return;
+        }
+        if (this.state.selectedUsers.value == undefined) {
             id = this.state.chatiID
         }
         else {
@@ -454,18 +462,15 @@ class Navbar extends Component {
                         {this.state.logout ? <Link to="/"></Link> : ""}
 
                     </div>
-
-
                     <div className="row">
                         <div className="col-2">
-                            <Link to="/"><img src={reddit_logo} className="logo-image" alt="reddit-logo" /></Link>
+                            <Link to="/dashboard"><img src={reddit_logo} className="logo-image" alt="reddit-logo" /></Link>
                         </div>
                         <div className="col-1 dropdown" style={{ paddingRight: "0px" }}>
                             <button className="btn dropdown-toggle navbar-dropdown-button" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-edit"></i> <span class="nav-username">Create</span>
                             </button>
                             <div className="dropdown-menu" aria-labelledby="dropdownMenu2">
-                                <Link to="/create-post" className="dropdown-item" type="button" value="home"><i class="fas fa-edit dd-icon"></i><span className="dd-item">Create Post</span></Link>
                                 <Link to="/create-community" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-edit dd-icon"></i><span className="dd-item">Create Community</span></Link>
                             </div>
                         </div>
@@ -483,20 +488,22 @@ class Navbar extends Component {
                             </div>
                         </div>
                         < div className="col-2 nav-icon-div" style={{ paddingRight: "0px" }}>
-                            <Link > <i class="fas fa-comment-dots nav-icon-button" onClick={this.handleChatApplicationClick} style={{ marginRight: "10px" }} ></i></Link>
+                            <Link to="/chat" > <i class="fas fa-comment-dots nav-icon-button" onClick={this.handleChatApplicationClick} style={{ marginRight: "10px" }} ></i></Link>
                             <NotificationIcon />
                         </div>
                         {/* <Dropdown isOpen={dropdownOpen} toggle={toggle}> */}
                         <div className="col-2" style={{ textAlign: "right" }} style={{ paddingLeft: "0px" }}>
                             <div className="dropdown">
-                                <button className="btn dropdown-toggle navbar-dropdown-button" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <img src="/logo192.png" alt="Avatar" class="nav-avatar" />  <span class="nav-username">{cookie.load('userName')}</span>
+                                <button style={{ marginTop: "5px" }} className="btn dropdown-toggle navbar-dropdown-button" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span class="nav-username">{cookie.load('userName')}</span>
                                 </button>
                                 <div className="dropdown-menu" aria-labelledby="dropdownMenu2">
-                                    <Link to="/" className="dropdown-item" type="button" value="home"><i class="fas fa-home dd-icon"></i><span className="dd-item">Home</span></Link>
+                                    <Link to="/dashboard" className="dropdown-item" type="button" value="home"><i class="fas fa-home dd-icon"></i><span className="dd-item">Home</span></Link>
+
                                     <Link to="/profile" className="dropdown-item" type="button" value="profile"><i class="fas fa-id-badge dd-icon" /><span className="dd-item">Profile</span></Link>
                                     <Link to="/my-communities" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-users dd-icon"></i><span className="dd-item">My Communities</span></Link>
                                     <Link to="/my-community-analytics" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-users dd-icon"></i><span className="dd-item">Community Analytics </span></Link>
+                                    <Link to="/my-communities-mod" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-bell"></i><span className="dd-item">Community Moderation </span></Link>
 
 
                                     <Link to="/search-community" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-search"></i><span className="dd-item">Search Communities</span></Link>

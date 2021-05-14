@@ -7,7 +7,9 @@ import './myCommunities.css';
 import { v4 as uuidv4 } from 'uuid';
 import { CarouselProvider, Slider, Slide, ButtonBack, ButtonNext } from 'pure-react-carousel';
 import 'pure-react-carousel/dist/react-carousel.es.css';
-
+import { Link } from 'react-router-dom';
+import axios from 'axios';
+import { BACKEND_URL, BACKEND_PORT } from '../../config/config';
 class CommunityList extends Component {
     constructor(props) {
         super(props);
@@ -57,11 +59,17 @@ class CommunityList extends Component {
             <Card>
                 <CardBody class="com-card">
                     <img src={this.state.communityAvatar[0]} alt="Avatar" class="com-avatar" /> <span class="com-name">r/{this.state.communityName}</span>
-                    <button type="button" onClick={this.props.removeButtonClicked.bind(this, this.state)} style={{ borderColor: "#0079d3", color: "rgb(0, 121, 211)", borderRadius: "60px", marginLeft: "1%", float: "right"}} class="btn btn-outline-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Remove</strong></span></button>
-                    <button type="button" onClick={this.props.editButtonClicked.bind(this, this.state)} style={{ borderColor: "#0079d3", color: "white", borderRadius: "60px", marginLeft: "10%", float: "right"}} class="btn btn-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Edit</strong></span></button>
-                    <br/>
+                    <button type="button" onClick={this.props.editButtonClicked.bind(this, this.state)} style={{ borderColor: "#0079d3", color: "rgb(0, 121, 211)", borderRadius: "60px", marginLeft: "1%", float: "right" }} class="btn btn-outline-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>EDIT</strong></span></button>
+
+                    <Link className="btn btn-primary" style={{ color: "#0079d3", color: "white", borderRadius: "60px", }} to={{
+                        pathname: "/invitations", state: {
+                            communityData: this.state,
+                        }
+                    }}>INVITE</Link>                    <br />
+                    <button type="button" onClick={this.props.removeButtonClicked.bind(this, this.state)} style={{ borderColor: "#0079d3", color: "rgb(0, 121, 211)", borderRadius: "60px", marginLeft: "1%", float: "right" }} class="btn btn-outline-primary"><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Remove</strong></span></button>
+
                     <span className="com-desc">{this.state.description}</span>
-                    <br/>
+                    <br />
                     {/* <span className="com-details"><i class="fas fa-users"></i> {this.state.members.length}</span> */}
                     {/* <span className="com-details"><i class="fas fa-copy"></i> {this.state.posts.length}</span> */}
                     {/* {communityImages} */}

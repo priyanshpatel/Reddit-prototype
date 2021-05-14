@@ -1,7 +1,7 @@
 //Created by Priyansh Patel
 
 import React, { Component } from 'react';
-import Navbar from '../navbar/Navbar';
+import Navbar from '../Navbar/navbar';
 import cookie from 'react-cookies';
 import { Redirect } from 'react-router';
 import './myCommunities.css';
@@ -26,7 +26,7 @@ class MyCommunities extends Component {
             sortOrder: "desc",
             communityList: [],
         }
-        
+
         // this.editButtonClicked = this.editButtonClicked.bind(this);
         // this.removeButtonClicked = this.removeButtonClicked(this);
     }
@@ -42,7 +42,7 @@ class MyCommunities extends Component {
                 this.setState({
                     myCommunitiesData: this.props.myCommunitiesData.data,
                     communityList: this.props.myCommunitiesData.data.docs,
-                    totalPages: this.props.myCommunitiesData.data.totalPages, 
+                    totalPages: this.props.myCommunitiesData.data.totalPages,
                 })
             }
         })
@@ -52,11 +52,14 @@ class MyCommunities extends Component {
         console.log("Edit button clicked>>>>>>>>>>>>>>>>>", community)
         window.location.assign('/create-community/' + community._id)
     }
+    inviteButtonClicked = (community) => {
+        alert("hi")
+    }
 
     removeButtonClicked = (community) => {
         console.log("Remove button clicked>>>>>>>>>>>>>>>>>>>>>", community)
         // Delete Community
-        
+
         let answer = window.confirm("Are you sure you want to delete this community?");
         if (answer) {
             let reqObj = {
@@ -68,7 +71,7 @@ class MyCommunities extends Component {
                     this.setState({
                         error: true
                     })
-                } else{
+                } else {
                     const newCommunityList = this.state.communityList.filter((filteredCommunity) => {
                         console.log("Remove button community ", community)
                         console.log("Remove button filtered community", filteredCommunity)
@@ -78,7 +81,7 @@ class MyCommunities extends Component {
                     this.setState({
                         communityList: newCommunityList,
                         emptyCommunitiesFlag,
-                        totalPages: this.props.myCommunitiesData.data.totalPages, 
+                        totalPages: this.props.myCommunitiesData.data.totalPages,
                     })
                 }
             })
@@ -88,11 +91,11 @@ class MyCommunities extends Component {
     handlePageSizeChange = (e) => {
         e.preventDefault();
         this.setState({
-          pageSize: e.target.value,
-          pageNumber: "1"
+            pageSize: e.target.value,
+            pageNumber: "1"
         });
         let pageSize = e.target.value
-        
+
         let reqobj = {
             userId: cookie.load('userId'),
             pageSize: pageSize,
@@ -112,16 +115,16 @@ class MyCommunities extends Component {
             } else {
                 this.setState({
                     myCommunitiesData: this.props.myCommunitiesData.data,
-                    communityList: this.props.myCommunitiesData.data.docs, 
-                    totalPages: this.props.myCommunitiesData.data.totalPages, 
+                    communityList: this.props.myCommunitiesData.data.docs,
+                    totalPages: this.props.myCommunitiesData.data.totalPages,
                 })
             }
         })
     }
-    
+
     handlePageClick = (e) => {
         this.setState({
-          pageNumber: Number(e.selected) + 1,
+            pageNumber: Number(e.selected) + 1,
         });
         let pageNumber = Number(e.selected) + 1
 
@@ -144,8 +147,8 @@ class MyCommunities extends Component {
             } else {
                 this.setState({
                     myCommunitiesData: this.props.myCommunitiesData.data,
-                    communityList: this.props.myCommunitiesData.data.docs, 
-                    totalPages: this.props.myCommunitiesData.data.totalPages, 
+                    communityList: this.props.myCommunitiesData.data.docs,
+                    totalPages: this.props.myCommunitiesData.data.totalPages,
                 })
             }
         })
@@ -153,7 +156,7 @@ class MyCommunities extends Component {
 
     handleSortOrder = (e) => {
         this.setState({
-          sortOrder: e.target.value
+            sortOrder: e.target.value
         });
         let sortOrder = e.target.value
 
@@ -176,8 +179,8 @@ class MyCommunities extends Component {
             } else {
                 this.setState({
                     myCommunitiesData: this.props.myCommunitiesData.data,
-                    communityList: this.props.myCommunitiesData.data.docs, 
-                    totalPages: this.props.myCommunitiesData.data.totalPages, 
+                    communityList: this.props.myCommunitiesData.data.docs,
+                    totalPages: this.props.myCommunitiesData.data.totalPages,
                 })
             }
         })
@@ -185,7 +188,7 @@ class MyCommunities extends Component {
 
     handleSortBy = (e) => {
         this.setState({
-          sortBy: e.target.value
+            sortBy: e.target.value
         });
         let sortBy = e.target.value
 
@@ -208,8 +211,8 @@ class MyCommunities extends Component {
             } else {
                 this.setState({
                     myCommunitiesData: this.props.myCommunitiesData.data,
-                    communityList: this.props.myCommunitiesData.data.docs, 
-                    totalPages: this.props.myCommunitiesData.data.totalPages, 
+                    communityList: this.props.myCommunitiesData.data.docs,
+                    totalPages: this.props.myCommunitiesData.data.totalPages,
                 })
             }
         })
@@ -226,6 +229,8 @@ class MyCommunities extends Component {
                         data={community}
                         editButtonClicked={this.editButtonClicked}
                         removeButtonClicked={this.removeButtonClicked}
+                        inviteButtonClicked={this.inviteButtonClicked}
+
                     />
                 })
             }
@@ -243,7 +248,7 @@ class MyCommunities extends Component {
                         <div class="col-2" style={{ marginLeft: "95px", paddingLeft: "20px", paddingRight: "24px", paddingTop: "20px" }}>
                             <Card>
                                 <CardBody class="sort-header">
-                                <div class="row">
+                                    <div class="row">
                                         <span style={{ paddingLeft: "20px" }}>Page Size</span>
                                     </div>
                                     <div class="input-group mb-3" style={{ paddingLeft: "5px" }}>
@@ -253,7 +258,7 @@ class MyCommunities extends Component {
                                             <option value="10">10</option>
                                         </select>
                                     </div>
-                                    <hr/>
+                                    <hr />
                                     <div class="row">
                                         <span style={{ paddingLeft: "20px" }}>Sort By</span>
                                     </div>
@@ -264,7 +269,7 @@ class MyCommunities extends Component {
                                             <option value="numberOfUsers">Number of Users</option>
                                         </select>
                                     </div>
-                                    <hr/>
+                                    <hr />
                                     <div class="row">
                                         <span style={{ paddingLeft: "20px" }}>Order By</span>
                                     </div>
@@ -281,20 +286,20 @@ class MyCommunities extends Component {
                             {myCommunities}
                             <div className="row">
                                 <div className="col pagination-class">
-                                <ReactPaginate
-                                    previousLabel={"prev"}
-                                    nextLabel={"next"}
-                                    breakLabel={"..."}
-                                    breakClassName={"break-me"}
-                                    pageCount={this.state.totalPages}
-                                    // pageCount={1}
-                                    marginPagesDisplayed={2}
-                                    pageRangeDisplayed={5}
-                                    onPageChange={this.handlePageClick}
-                                    containerClassName={"pagination"}
-                                    subContainerClassName={"pages pagination"}
-                                    activeClassName={"active"}
-                                />
+                                    <ReactPaginate
+                                        previousLabel={"prev"}
+                                        nextLabel={"next"}
+                                        breakLabel={"..."}
+                                        breakClassName={"break-me"}
+                                        pageCount={this.state.totalPages}
+                                        // pageCount={1}
+                                        marginPagesDisplayed={2}
+                                        pageRangeDisplayed={5}
+                                        onPageChange={this.handlePageClick}
+                                        containerClassName={"pagination"}
+                                        subContainerClassName={"pages pagination"}
+                                        activeClassName={"active"}
+                                    />
                                 </div>
                             </div>
                         </div>
