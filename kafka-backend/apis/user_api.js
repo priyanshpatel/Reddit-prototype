@@ -60,11 +60,14 @@ export async function loginUser(message, callback) {
   const mySQLStoredUser = await getUserFromMySQL(user);
   if (mySQLStoredUser !== null) {
     if (await matchPassword(user.password, mySQLStoredUser.dataValues.password)) {
+      console.log('From MySQL');
       response.status = 200;
       user._id = mySQLStoredUser.dataValues.user_id;
+      user.name = mySQLStoredUser.dataValues.name;
       response.data = user;
       return callback(null, response);
     } else {
+      console.log('From MySQL Password Mismatch');
       err.status = 401;
       err.data = {
         msg: "Password mismatch",
@@ -75,11 +78,14 @@ export async function loginUser(message, callback) {
     const storedUser = await getUserById(user.email);
     if (storedUser !== null) {
       if (await matchPassword(user.password, storedUser.password)) {
+        console.log('From MongoDB');
         response.status = 200;
         user._id = storedUser._id;
+        user.name = storedUser.name;
         response.data = user;
         return callback(null, response);
       } else {
+        console.log('From MongoDB Password Mismatch');
         err.status = 401;
         err.data = {
           msg: "Password mismatch",
@@ -210,6 +216,7 @@ async function storeUserInMySQL(user) {
     {
       user_id: user._id.toString(),
       email: user.email,
+      name: user.name,
       password: user.password,
     },
   );
