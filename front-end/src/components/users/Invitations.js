@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import _ from 'lodash';
-import Navbar from "../Navbar/navbar";
+import Navbar from "../Navbar/Navbar";
 import { Row, Col, CardTitle } from 'reactstrap';
 import AsyncSelect from 'react-select/async'
 import axios from 'axios';

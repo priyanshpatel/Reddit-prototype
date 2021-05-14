@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import Navbar from '../navbar/Navbar'
+import Navbar from '../Navbar/Navbar'
 import cookie from "react-cookies";
 import { Redirect } from 'react-router';
 import { Router } from 'react-router-dom';
@@ -243,7 +243,7 @@ export class Dashboard extends Component {
                                 </InputGroup>
                             </Row>
                         </div>
-                        <div style={{ marginLeft: "3%", height: "100vh" }}>
+                        <div style={{ marginLeft: "3%" }}>
 
                             {this.state.noPostFlag ?
 

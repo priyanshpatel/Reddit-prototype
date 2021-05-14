@@ -1,6 +1,6 @@
 // author : Het Brahmbhatt
 import React, { Component } from 'react'
-import Navbar from '../Navbar/navbar';
+import Navbar from "../Navbar/Navbar";
 import cookie from 'react-cookies';
 import { Redirect } from 'react-router';
 import {

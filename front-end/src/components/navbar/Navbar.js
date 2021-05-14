@@ -275,6 +275,8 @@ class Navbar extends Component {
                     this.setState({
                         signupButton: !this.state.signupButton
                     })
+                    window.location.assign('/dashboard')
+
                 }
             })
         };
