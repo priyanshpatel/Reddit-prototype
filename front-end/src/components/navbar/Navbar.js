@@ -485,10 +485,8 @@ class Navbar extends Component {
                             </div>
                         </div>
                         < div className="col-2 nav-icon-div" style={{ paddingRight: "0px" }}>
-                            <Link > <i class="fas fa-comment-dots nav-icon-button" onClick={this.handleChatApplicationClick} style={{ marginRight: "10px" }} ></i></Link>
-                            <NotificationIcon />
                             <Link to="/chat" > <i class="fas fa-comment-dots nav-icon-button" onClick={this.handleChatApplicationClick} style={{ marginRight: "10px" }} ></i></Link>
-                            <Link to="/"><i class="fas fa-bell nav-icon-button" style={{ marginRight: "10px" }} ></i></Link>
+                            <NotificationIcon />
                         </div>
                         {/* <Dropdown isOpen={dropdownOpen} toggle={toggle}> */}
                         <div className="col-2" style={{ textAlign: "right" }} style={{ paddingLeft: "0px" }}>
@@ -501,6 +499,7 @@ class Navbar extends Component {
                                     <Link to="/profile" className="dropdown-item" type="button" value="profile"><i class="fas fa-id-badge dd-icon" /><span className="dd-item">Profile</span></Link>
                                     <Link to="/my-communities" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-users dd-icon"></i><span className="dd-item">My Communities</span></Link>
                                     <Link to="/my-community-analytics" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-users dd-icon"></i><span className="dd-item">Community Analytics </span></Link>
+                                    <Link to="/my-communities-mod" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-bell"></i><span className="dd-item">Community Moderation </span></Link>
 
 
                                     <Link to="/search-community" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-search"></i><span className="dd-item">Search Communities</span></Link>

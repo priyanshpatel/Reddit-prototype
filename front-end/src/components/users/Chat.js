@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import Navbar from "../Navbar/Navbar";
+import Navbar from "../Navbar/navbar";
 
 export class logout extends Component {
     render() {

@@ -16,7 +16,7 @@ import { connect } from "react-redux";
 import getByIDCommunityAction from '../../actions/community/getCommunityByID';
 import { CarouselProvider, Slider, Slide, ButtonBack, ButtonNext } from 'pure-react-carousel';
 import 'pure-react-carousel/dist/react-carousel.es.css';
-import Navbar from "../navbar/Navbar";
+import Navbar from "../Navbar/navbar";
 import { Link } from 'react-router-dom';
 import cookie from "react-cookies";
 class CreateCommunity extends Component {

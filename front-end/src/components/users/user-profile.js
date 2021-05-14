@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import { Redirect } from 'react-router'
 import { Link } from 'react-router-dom'
-import cookie from "react-cookies";
-import Navbar from "../navbar/Navbar";
+import Navbar from "../Navbar/navbar";
 import userProfileAction from '../../actions/userProfileAction';
 import { connect } from "react-redux";
 import {

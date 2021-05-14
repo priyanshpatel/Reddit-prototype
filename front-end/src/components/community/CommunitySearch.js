@@ -3,7 +3,7 @@
 import React, { Component } from 'react'
 import { Redirect } from 'react-router'
 import { Link } from 'react-router-dom'
-import Navbar from "../navbar/Navbar";
+import Navbar from "../Navbar/navbar";
 import { Row, Col } from 'reactstrap';
 import axios from 'axios';
 import { BACKEND_URL } from '../../config/config';
@@ -277,8 +277,8 @@ export class CommunitySearch extends Component {
                                 <div class="input-group mb-3" style={{ paddingLeft: "5px" }}>
                                     <select class="form-select" style={{ fontWeight: "bold", width: "350px" }} aria-label="user select" onChange={this.handleSelectChange}>
                                         <option hidden disabled selected value> -- select an option -- </option>
-                                        <option value="numberofposts">Most Posts</option>
-                                        <option value="numberofusers">Most Users</option>
+                                        <option value="numberOfPosts">Most Posts</option>
+                                        <option value="numberOfUsers">Most Users</option>
                                     </select>
                                 </div>
                                 <hr />

@@ -1,7 +1,7 @@
 //Created by Priyansh Patel
 
 import React, { Component } from 'react';
-import Navbar from '../navbar/Navbar';
+import Navbar from '../Navbar/navbar';
 import cookie from 'react-cookies';
 import { Redirect } from 'react-router';
 import './myCommunities.css';

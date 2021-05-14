@@ -7,7 +7,7 @@ import { TabContent, TabPane, Nav, NavItem, NavLink, Card, Button, CardTitle, Ca
 import { Form, Label, Input, FormText } from 'reactstrap';
 import cookie from "react-cookies";
 
-import Navbar from '../navbar/Navbar';
+import Navbar from '../Navbar/navbar';
 
 //import Navbar from '../Navbar/Navbar';
 

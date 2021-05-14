@@ -9,7 +9,7 @@ import { connect } from "react-redux";
 //import Navbar from "../Navbar/Navbar";
 
 import cookie from "react-cookies";
-import Navbar from "../navbar/Navbar";
+import Navbar from "../Navbar/navbar";
 import ReactDOM from 'react-dom';
 import { WithContext as ReactTags } from 'react-tag-input';
 import { displayName } from 'react-grid-gallery';
