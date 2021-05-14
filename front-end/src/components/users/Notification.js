@@ -5,7 +5,7 @@ import { BACKEND_URL, BACKEND_PORT } from '../../config/config';
 import cookie from "react-cookies";
 import { Card, Container, Dropdown, Form, ListGroup, Row, Col, Button, NavLink } from 'react-bootstrap';
 import _ from "lodash";
-import Navbar from "../navbar/navbar";
+import Navbar from "../navbar/Navbar";
 import { Link, Redirect } from 'react-router-dom';
 
 class Notification extends React.Component {
