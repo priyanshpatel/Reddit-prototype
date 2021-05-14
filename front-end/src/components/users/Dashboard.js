@@ -1,5 +1,8 @@
 import React, { Component } from 'react'
 import Navbar from '../navbar/Navbar'
+import cookie from "react-cookies";
+import { Redirect } from 'react-router';
+import { Router } from 'react-router-dom';
 import getDashboardDataAction from '../../actions/dashboard/getDashboardData';
 import { connect } from "react-redux";
 import DashboardPost from './DashboardPost';
@@ -11,6 +14,7 @@ import ReactPaginate from 'react-paginate';
 
 import _ from 'lodash';
 import { InputGroup, InputGroupAddon, InputGroupText, Input } from 'reactstrap';
+import { BrowserRouter } from 'react-router-dom';
 
 export class Dashboard extends Component {
 
@@ -173,6 +177,7 @@ export class Dashboard extends Component {
         ))
         return (
             <div>
+                { !cookie.load('token') ? window.location.href = '/' : null}
                 <Navbar />
                 <Row style={{ backgroundColor: "#DAE0E6", marginTop: "2%" }}>
                     <Col xs="2" style={{ paddingTop: "3%", paddingLeft: "2.5%", marginLeft: "1%" }}>

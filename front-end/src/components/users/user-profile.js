@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Redirect } from 'react-router'
 import { Link } from 'react-router-dom'
+import cookie from "react-cookies";
 import Navbar from "../navbar/Navbar";
 import userProfileAction from '../../actions/userProfileAction';
 import { connect } from "react-redux";
@@ -14,7 +15,6 @@ import { Row, Col, CardTitle } from 'reactstrap';
 export class UserProfile extends Component {
     constructor(props) {
         super(props);
-        console.log(this.props.location.state.userData)
         this.state = {
             user: "",
             userCommunities: []
@@ -22,16 +22,18 @@ export class UserProfile extends Component {
         }
     };
     componentDidMount() {
-        this.props.userProfileAction(this.props.location.state.userData._id).then(response => {
-            console.log(this.props.userProfileData.user.user)
-            this.setState(
-                {
-                    user: this.props.userProfileData.user.user,
-                    userCommunities: this.props.userProfileData.user.userCommunities,
+        if (cookie.load('token')) {
+            this.props.userProfileAction(this.props.location.state.userData._id).then(response => {
+                console.log(this.props.userProfileData.user.user)
+                this.setState(
+                    {
+                        user: this.props.userProfileData.user.user,
+                        userCommunities: this.props.userProfileData.user.userCommunities,
 
-                }
-            )
-        })
+                    }
+                )
+            })
+        }
 
     }
     render() {
@@ -41,7 +43,7 @@ export class UserProfile extends Component {
             return (
                 <div>
                     <Card style={{ marginTop: "15px", width: "447px", border: "1px" }}>
-                        <CardBody style={{ border: "1px" ,overflow: "scroll" }}>
+                        <CardBody style={{ border: "1px", overflow: "scroll" }}>
                             {index + 1}.
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -58,6 +60,7 @@ export class UserProfile extends Component {
         })
         return (
             <div>
+                { !cookie.load('token') ? window.location.href = '/' : null}
                 <div>
                     <Navbar />
                 </div>

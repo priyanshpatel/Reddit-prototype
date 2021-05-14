@@ -262,6 +262,7 @@ export class CommunitySearch extends Component {
         ))
         return (
             <div>
+                { !cookie.load('token') ? window.location.href = '/' : null}
                 <div>
                     <Navbar />
                 </div>

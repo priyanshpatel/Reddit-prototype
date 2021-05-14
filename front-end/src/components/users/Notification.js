@@ -62,6 +62,7 @@ class Notification extends React.Component {
     console.log("Invited notifications ", pendingNotifications);
     return (
       <>
+        { !cookie.load('token') ? window.location.href = '/' : null}
         <Navbar />
         <Container fluid={true}>
           {this.state.error &&
@@ -91,10 +92,10 @@ class Notification extends React.Component {
                   );
                 })
               ) : (
-                <ListGroup.Item>
-                  <h5>No Invites.</h5>
-                </ListGroup.Item>
-              )}
+                  <ListGroup.Item>
+                    <h5>No Invites.</h5>
+                  </ListGroup.Item>
+                )}
             </ListGroup>
           </Container>
         </Container>

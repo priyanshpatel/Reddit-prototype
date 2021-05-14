@@ -5,6 +5,7 @@
 import React, { Component } from 'react'
 import { TabContent, TabPane, Nav, NavItem, NavLink, Card, Button, CardTitle, CardText, Row, Col, FormGroup } from 'reactstrap';
 import { Form, Label, Input, FormText } from 'reactstrap';
+import cookie from "react-cookies";
 
 import Navbar from '../navbar/Navbar';
 
@@ -113,6 +114,7 @@ class CreatePost extends Component {
     render() {
         return (
             <div>
+                { !cookie.load('token') ? window.location.href = '/' : null}
                 <div><Navbar /></div>
                 <div style={{ backgroundColor: "rgb(218,224,230)", height: "1000px" }}>
                     <div className="post-tabs-container">
