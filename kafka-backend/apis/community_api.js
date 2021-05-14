@@ -9,6 +9,8 @@ const PostsVotesModel = require("../models/PostsVotesModel");
 const CommentsVotesModel = require("../models/CommentsVotesModel");
 const CommunityVotesModel = require("../models/CommunityVotesModel");
 const ObjectId = require("mongodb").ObjectID;
+const redis = require("redis");
+const client = redis.createClient({ detect_buffers: true });
 
 export async function createCommunity(message, callback) {
   let response = {};
@@ -240,10 +242,8 @@ export async function getCommunityDetails(message, callback) {
   }
 }
 
-// TODO :- MINIMIZE TIME TAKEN BY THIS METHOD EITHER BY CACHING OR BY FINDING A METHOD TO POPULATE USER_IDS
 // Get all posts with nested comements
 export const getAllPosts = async (req, callback) => {
-  console.log("over herer");
   const pageSize = req.query.pageSize || config.defaultPageSizePosts;
   const pageNumber = req.query.pageNumber;
 
@@ -392,11 +392,6 @@ export const getAllCreatedCommunitiesByUserId = async (req, callback) => {
         $count: "totalDocuments",
       },
     ]);
-
-    console.log("==========================================================================");
-    console.log(req.user._id);
-    console.log("==========================================================================");
-    console.log(req.user);
     loggedInUser = await UsersModel.findById(
       req.user._id,
       "createdCommunities"
@@ -430,6 +425,10 @@ export const getAllCreatedCommunitiesByUserId = async (req, callback) => {
           );
         }
       ).length,
+      communityAvatar:
+        loggedInUser.createdCommunities[index].communityAvatar.length > 0
+          ? oggedInUser.createdCommunities[index].communityAvatar[0]
+          : null,
     });
   }
 
@@ -464,7 +463,7 @@ export const requestToJoinCommunity = async (req, callback) => {
   if (
     index !== -1 &&
     community.members[index].communityJoinStatus ===
-    config.ACCEPTED_REQUEST_TO_JOIN_COMMUNITY
+      config.ACCEPTED_REQUEST_TO_JOIN_COMMUNITY
   ) {
     callback(null, {
       errorMessage: ["You are already a member of this community."],
@@ -476,7 +475,7 @@ export const requestToJoinCommunity = async (req, callback) => {
   else if (
     index !== -1 &&
     community.members[index].communityJoinStatus ===
-    config.INVITED_TO_JOIN_COMMUNITY
+      config.INVITED_TO_JOIN_COMMUNITY
   ) {
     callback(null, {
       errorMessage: [
@@ -490,7 +489,7 @@ export const requestToJoinCommunity = async (req, callback) => {
   else if (
     index !== -1 &&
     community.members[index].communityJoinStatus ===
-    config.REQUESTED_TO_JOIN_COMMUNITY
+      config.REQUESTED_TO_JOIN_COMMUNITY
   ) {
     callback(null, {
       errorMessage: ["You have already requested to join this community."],
@@ -512,6 +511,26 @@ export const requestToJoinCommunity = async (req, callback) => {
   }
 };
 
+export const getCommunityStatus = async (req, callback) => {
+  const community = await CommunityModel.findOne({
+    _id: req.params.community_id,
+    members: { $elemMatch: { _id: ObjectId(req.user._id) } },
+  });
+  if (!community) {
+    callback(null, { status: "NONE", success: true });
+    return;
+  } else {
+    const index = community.members.findIndex((member) => {
+      return member._id == req.user._id;
+    });
+    callback(null, {
+      status: community.members[index].communityJoinStatus,
+      success: true,
+    });
+    return;
+  }
+};
+
 // HELPER FUNCTIONS
 
 // Create a new community
@@ -523,11 +542,10 @@ async function insertCommunity(community) {
 
 // Get community details by community_id
 async function getCommunityById(communityId) {
-  const community = await CommunityModel.findOne(
-    { _id: communityId }
-  ).populate('members._id')
-    .populate('creator')
-    .populate('Posts');
+  const community = await CommunityModel.findOne({ _id: communityId })
+    .populate("members._id")
+    .populate("creator")
+    .populate("Posts");
 
   console.log("Community ID ", communityId);
   console.log("Community ", community);
@@ -544,42 +562,49 @@ async function getCommunityById(communityId) {
 }
 
 //For my communities page
-export async function getCommunitiesByUserId(
-  userId,
-  options
-) {
-
+export async function getCommunitiesByUserId(userId, options) {
   console.log("userId ", userId);
-  const newOptions = Object.assign({
-    pageIndex: 1,
-    pageSize: 2,
-    sortBy: 'createdAt',
-    sortOrder: 'desc'
-  }, options);
-  console.log('New options ', JSON.stringify(newOptions));
+  const newOptions = Object.assign(
+    {
+      pageIndex: 1,
+      pageSize: 2,
+      sortBy: "createdAt",
+      sortOrder: "desc",
+    },
+    options
+  );
+  console.log("New options ", JSON.stringify(newOptions));
   const sortBy = newOptions.sortBy;
   const sortOrder = newOptions.sortOrder;
   const sort = {};
-  sort[`${sortBy}`] = sortOrder == 'desc' ? -1 : 1;
+  sort[`${sortBy}`] = sortOrder == "desc" ? -1 : 1;
   const communityInfos = CommunityModel.aggregate([
     {
-      $match:
-        { creator: ObjectId(userId) },
+      $match: { creator: ObjectId(userId) },
     },
     {
       $addFields: {
-        numberOfPosts: { $cond: { if: { $isArray: "$posts" }, then: { $size: "$posts" }, else: 0 } },
+        numberOfPosts: {
+          $cond: {
+            if: { $isArray: "$posts" },
+            then: { $size: "$posts" },
+            else: 0,
+          },
+        },
         numberOfUsers: { $size: "$members" },
       },
-    }
-  ])
+    },
+  ]);
 
   console.log("community Infos ", communityInfos);
-  const paginatedCommunity = await CommunityModel.aggregatePaginate(communityInfos, {
-    page: newOptions.pageIndex,
-    limit: newOptions.pageSize,
-    sort,
-  });
+  const paginatedCommunity = await CommunityModel.aggregatePaginate(
+    communityInfos,
+    {
+      page: newOptions.pageIndex,
+      limit: newOptions.pageSize,
+      sort,
+    }
+  );
   return paginatedCommunity;
 }
 
@@ -594,16 +619,15 @@ export async function deleteCommunity(message, callback) {
     response.status = 200;
     response.data = "Deleted Successfully";
     return callback(null, response);
-  }
-  catch (err) {
+  } catch (err) {
     error.status = 500;
     error.data = {
       code: err.code,
-      msg: "Unable to delete the community ID successfully. Please check the logs for more details."
+      msg:
+        "Unable to delete the community ID successfully. Please check the logs for more details.",
     };
     return callback(error, null);
   }
-
 }
 
 export async function getCommunityListCreatedByUser(message, callback) {
@@ -613,8 +637,8 @@ export async function getCommunityListCreatedByUser(message, callback) {
   if (!userId) {
     error.status = 500;
     error.data = {
-      code: 'INVALID_PARAM',
-      msg: 'Invalid User ID'
+      code: "INVALID_PARAM",
+      msg: "Invalid User ID",
     };
     return callback(error, null);
   }
@@ -629,8 +653,9 @@ export async function getCommunityListCreatedByUser(message, callback) {
     error.status = 500;
     error.data = {
       code: err.code,
-      msg: 'Unable to successfully get the Activities! Please check the application logs for more details.'
-    }
+      msg:
+        "Unable to successfully get the Activities! Please check the application logs for more details.",
+    };
     return callback(error, null);
   }
 }
@@ -767,7 +792,12 @@ const getSortedCommentsArray = (commentsObject, orderByDateIdentifier) => {
 
 // Populates the user data for each and every comment
 const populateUser = async (user_id) => {
-  return await UsersModel.findById(user_id, "name email handle avatar");
+  const user = await client.get(String(user_id));
+  if (user) return JSON.parse(user);
+  else {
+    const user = await UsersModel.findById(user_id, "name email handle avatar");
+    client.set(String(user_id), JSON.stringify(user));
+  }
 };
 
 const UPVOTE = 1;
@@ -849,6 +879,61 @@ export async function communitySearch(message, callback) {
     return callback(error, null);
   }
 }
+
+export const getMyCommunitiesOfAUser = async (req, callback) => {
+  const user_id = req.query.user_id;
+  const pageNumber = req.query.pageNumber;
+  const pageSize =
+    req.query.pageSize || config.defaultPageSizeCommunityModeration;
+  const searchKeyword = req.query.searchKeyword
+    ? req.query.searchKeyword + ".*"
+    : ".*";
+  const customLabels = {
+    totalDocs: "numberOfCommunities",
+    docs: "communities",
+    limit: "pageSize",
+    page: "pageNumber",
+  };
+  const options = {
+    page: pageNumber,
+    limit: pageSize,
+    customLabels,
+  };
+
+  const communitiesAggregateQuery = CommunityModel.aggregate([
+    {
+      $match: {
+        $and: [
+          { creator: ObjectId(req.user._id) },
+          { communityName: { $regex: searchKeyword } },
+          {
+            members: {
+              _id: ObjectId(user_id),
+              communityJoinStatus: config.ACCEPTED_REQUEST_TO_JOIN_COMMUNITY,
+            },
+          },
+        ],
+      },
+    },
+    {
+      $project: {
+        communityName: 1,
+        communityAvatar: 1,
+        description: 1,
+        createdAt: 1,
+        updatedAt: 1,
+      },
+    },
+  ]);
+
+  const communities = await CommunityModel.aggregatePaginate(
+    communitiesAggregateQuery,
+    options
+  );
+
+  callback(null, { communities, success: true });
+  return;
+};
 
 async function getCommunityBySearchQuery(options) {
   const newOptions = Object.assign(
