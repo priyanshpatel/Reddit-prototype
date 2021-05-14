@@ -187,6 +187,14 @@ class CreateCommunity extends Component {
         console.log(this.state);
         let error = null;
         let fileDivision = null;
+        // let avatarDivision = this.state.communityAvatar.map((data, index) => (
+        //     <div style={{ marginBottom: "5px" }}>
+        //         <Slide index={index}>
+        //             <img src={data} height="100%" width="100%" style={{ position: "absolute" }} alt="" />
+
+        //         </Slide>
+        //     </div>
+        // ))
         let avatarImageDivision = this.state.communityAvatar.map((data, index) => (
             <div>
                 <CarouselProvider

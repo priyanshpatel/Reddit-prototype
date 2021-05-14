@@ -484,7 +484,7 @@ const checkStatusOfSelectedUsers = (memberships, users, status) => {
 };
 
 export async function getMyCommunityAnalyticsData(message, callback) {
-  console.log("Users ",message);
+  console.log("Users ", message);
   const userId = message.body._id;
   console.log("UserID", userId);
   let response = {};
@@ -494,7 +494,7 @@ export async function getMyCommunityAnalyticsData(message, callback) {
     console.log("Here ", communityResponseAnlaytics);
     response.data = communityResponseAnlaytics;
     response.status = 200;
-    return callback(null,response);
+    return callback(null, response);
   } catch (error) {
     err.status = 500;
     err.data = {

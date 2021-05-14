@@ -37,6 +37,11 @@ var SignUpAction = (data) => (dispatch) => {
                 httpOnly: false,
                 maxAge: 90000
             })
+            cookie.save("auth", true, {
+                path: '/',
+                httpOnly: false,
+                maxAge: 90000
+            })
             cookie.save("userId", response.data.user._id, {
                 path: '/',
                 httpOnly: false,

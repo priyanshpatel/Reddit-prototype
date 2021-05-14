@@ -184,8 +184,6 @@ class Profile extends Component {
         }
     }
     render() {
-        console.log("STATE------------------", this.state)
-        console.log("RENDER PROPS-------------------", this.props)
         let renderError = null;
         if (this.props.error) {
             // renderError = <div style={{ 'color': 'red' }}>{this.state.errorMessage}</div>
