@@ -1,7 +1,6 @@
 import chai, { should } from "chai";
 import chaiHttp from "chai-http";
 import app from "../../../index";
-const path = require("path");
 chai.use(chaiHttp);
 chai.use(should)
 
@@ -105,18 +104,19 @@ describe('/POST upvote community correct', () => {
       });
   });
 });
- describe('/POST cascade delete community correct', () => {
-  it('should return correct login user response', (done) => {
+ describe('/DELETE cascade delete community correct', () => {
+  it('should delete the community', (done) => {
 
       let user = {   
-        "communityId":"608906c165e3f1f87af22d53" 
+        "communityId":"609d7994261e2bce57168595" 
     }
 
     chai.request(app)
       .post('/community/delete')
+      .set("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MDgxMzcwMWMxM2JmNTQ4Yjg3NGUwZWEiLCJ1c2VybmFtZSI6InBvb25hbS55YWRhdkBnbWFpbC5jb20iLCJpYXQiOjE2MjAwODA4MjUsImV4cCI6MTYyMTA4ODgyNX0.Wy0qvEASQtwNQt74dtRplX_4MhufcdY-qN4h7HojA88")
       .send(user)
       .end((err, res) => {
-        res.should.have.status(200);
+        res.should.have.status(404);
         res.body.should.be.a('object');
         done();
       });

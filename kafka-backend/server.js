@@ -35,6 +35,8 @@ const connectMongoDB = async () => {
 };
 connectMongoDB();
 
+mongoose.set('debug', true);
+
 function handleTopicRequest(topic_name, fname) {
   var consumer = connection.getConsumer(topic_name);
   var producer = connection.getProducer();

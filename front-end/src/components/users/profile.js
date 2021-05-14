@@ -6,10 +6,10 @@ import { BACKEND_PORT } from '../../config/config';
 import updateUserProfileAction from '../../actions/userUpdateAction';
 import userGetByIDAction from '../../actions/userGetByIDAction';
 import { connect } from "react-redux";
-import Navbar from "../Navbar/Navbar";
+//import Navbar from "../Navbar/Navbar";
 
 import cookie from "react-cookies";
-//import Navbar from "../navbar/navbar";
+import Navbar from "../navbar/navbar";
 import ReactDOM from 'react-dom';
 import { WithContext as ReactTags } from 'react-tag-input';
 import { displayName } from 'react-grid-gallery';

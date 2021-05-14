@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Redirect } from 'react-router'
 import { Link } from 'react-router-dom'
-import Navbar from "../Navbar/Navbar";
+import Navbar from "../navbar/navbar";
 import { Row, Col, CardTitle } from 'reactstrap';
 //TODO : Add all the other use Data in the profile
 export class UserProfile extends Component {

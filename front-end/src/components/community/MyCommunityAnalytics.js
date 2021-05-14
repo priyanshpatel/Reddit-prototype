@@ -5,6 +5,7 @@ import { BACKEND_URL, BACKEND_PORT } from '../../config/config';
 import cookie from "react-cookies";
 import { Card, Container, Dropdown, Form, ListGroup, Row, Col } from 'react-bootstrap';
 import Navbar from "../navbar/navbar";
+import _ from "lodash";
 
 const data = [
   ["Year", "Visitations", { role: "style" }],
@@ -69,6 +70,8 @@ class MyCommunityAnalytics extends React.Component {
       numberOfUsers: null,
       numberOfPosts: null,
       numberOfVotes: null,
+      maxPostsUserPerCommunity: null,
+      communityWithMaxPost: null,
     };
   }
   async componentDidMount() {
@@ -87,27 +90,34 @@ class MyCommunityAnalytics extends React.Component {
     let modifiedDataForUsers = [];
     let modifiedDataForPosts = [];
     let modifiedDataForVotes = [];
+    let maxPostsUserPerCommunity = [];
 
     modifiedDataForUsers.push(["Community", "Number Of Users", { role: "style" }]);
     modifiedDataForPosts.push(["Community", "Number Of Posts", { role: "style" }]);
-    modifiedDataForVotes.push(["Community", "Number Of Votes", { role: "style" }]);
+    modifiedDataForVotes.push(["Community", "Most upvoted post", { role: "style" }, { role: 'annotation' }]);
+    maxPostsUserPerCommunity.push(["Community", "User With Highest Post", { role: "style" }, { role: 'annotation' }]);
+
     if (myAnalyticsData) {
+      let communityWithMaxPost = _.maxBy(myAnalyticsData, (c) => c.numberOfPosts);
       for (var i = 0; i < myAnalyticsData.length; i++) {
         let name = myAnalyticsData[i].communityName;
         let numberOfUsers = myAnalyticsData[i].numberOfUsers;
         let numberOfPosts = myAnalyticsData[i].numberOfPosts;
-        let numberOfVotes = myAnalyticsData[i].numberOfVotes;
+        let maxPosts = _.maxBy(Object.values(_.groupBy(myAnalyticsData[i].posts, (p) => p.createdBy._id)), (v) => v.length);
+        let mostUpvotedPost = _.maxBy(myAnalyticsData[i].posts, (v) => v.votes);
         modifiedDataForUsers.push([name, numberOfUsers, `color: ${getRandomColor()}`])
         modifiedDataForPosts.push([name, numberOfPosts, `color: ${getRandomColor()}`])
-        modifiedDataForVotes.push([name, numberOfVotes, `color: ${getRandomColor()}`])
+        modifiedDataForVotes.push([name, mostUpvotedPost?.votes || 0, `color: ${getRandomColor()}`, mostUpvotedPost?.title || ''])
+        maxPostsUserPerCommunity.push([name, maxPosts ? maxPosts.length : 0, `color: ${getRandomColor()}`, maxPosts ? maxPosts[0].createdBy.name : ''])
       }
       console.log("Modified data Users ", modifiedDataForUsers);
       console.log("Modified data Posts ", modifiedDataForPosts);
       this.setState({
         numberOfUsers: modifiedDataForUsers,
         numberOfPosts: modifiedDataForPosts,
-        numberOfVotes: modifiedDataForVotes
-
+        mostUpvotedPost: modifiedDataForVotes,
+        maxPostsUserPerCommunity: maxPostsUserPerCommunity,
+        communityWithMaxPost
       })
     }
 
@@ -119,10 +129,11 @@ class MyCommunityAnalytics extends React.Component {
         <div>
           <Navbar />
         </div>
+        {this.state.communityWithMaxPost ? <div style={{ textAlign: "right", marginRight: "10rem" }}><h5> Community with max posts <b>{`${this.state.communityWithMaxPost.communityName}`}</b> <br></br>Number of posts = <b>{`${this.state.communityWithMaxPost.numberOfPosts}`}</b>  </h5></div> : <h5>No community with max posts yet</h5>}
         <Row>
           <Col lg={6}>
             <div className="App">
-              <Chart chartType="ColumnChart" width="100%" height="400px" data={this.state.numberOfUsers} options={{is3D: true}}/>
+              <Chart chartType="ColumnChart" width="100%" height="400px" data={this.state.numberOfUsers} options={{ is3D: true }} />
             </div>
           </Col>
           <Col lg={6}>
@@ -134,12 +145,12 @@ class MyCommunityAnalytics extends React.Component {
         <Row>
           <Col lg={6}>
             <div className="App">
-              <Chart chartType="ColumnChart" width="100%" height="400px" data={this.state.numberOfVotes} />
+              <Chart chartType="ColumnChart" width="100%" height="400px" data={this.state.mostUpvotedPost} />
             </div>
           </Col>
           <Col lg={6}>
             <div className="App">
-              <Chart chartType="PieChart" width="100%" height="400px" data={this.state.numberOfPosts} options={pieOptions}/>
+              <Chart chartType="ColumnChart" width="100%" height="400px" data={this.state.maxPostsUserPerCommunity} />
             </div>
           </Col>
         </Row>

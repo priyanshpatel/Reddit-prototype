@@ -435,10 +435,10 @@ class Navbar extends Component {
                     <div class="row">
 
                     </div>
-                    <div className="row">
-                        <div className="col-2">
+                    
+                        {/* <div className="col-2">
                             <Link to="/"><img src={reddit_logo} className="logo-image" alt="reddit-logo" /></Link>
-                        </div>
+                        </div> */}
                         <div className="row">
                             <div className="col-1">
                                 <Link to="/"><img src={reddit_logo} className="logo-image" alt="reddit-logo" /></Link>
@@ -454,21 +454,7 @@ class Navbar extends Component {
                                     <Link to="/create-post" className="dropdown-item" type="button" value="home"><i class="fas fa-edit dd-icon"></i><span className="dd-item">Create Post</span></Link>
                                     <Link to="/create-community" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-edit dd-icon"></i><span className="dd-item">Create Community</span></Link>
                                 </div>
-                            </div>
-                            <div className="col-1 nav-icon-div">
-                                <Link to="/"><i class="fas fa-chart-line nav-icon-button" style={{ marginRight: "10px" }} ></i></Link>
-                                <Link to="/"><i class="fas fa-chart-bar nav-icon-button"></i></Link>
-                            </div>
-                            <div className="col-4">
-                                <div className="form-group has-search">
-                                    <span class="form-control-feedback">
-                                        <svg viewBox="-1 0 15 15" fill="none" className="navbar-search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M14.5 14.5l-4-4m-4 2a6 6 0 110-12 6 6 0 010 12z" stroke="#6a6b6a"></path></svg>
-                                    </span>
-                                    <input type="text" style={{ backgroundColor: "#eaeef3", border: "none" }} class="form-control" placeholder="Search">
-                                    </input>
-                                </div>
-                            </div>
-                        </div>
+                            </div>             
                         <div className="col-1 nav-icon-div">
                             <Link to="/"><i class="fas fa-chart-line nav-icon-button" style={{ marginRight: "10px" }} ></i></Link>
                             <Link to="/"><i class="fas fa-chart-bar nav-icon-button"></i></Link>

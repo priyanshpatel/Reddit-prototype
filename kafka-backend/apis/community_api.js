@@ -155,7 +155,24 @@ export async function getCommunityByUserIdV2(userId) {
       },
     },
     {
+      $lookup: {
+        from: "posts",
+        localField: "_id",
+        foreignField: "community",
+        as: "posts",
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "posts.createdBy",
+        foreignField: "_id",
+        as: "creatorOfPosts",
+      },
+    },
+    {
       $addFields: {
+
         numberOfVotes: {
           $cond: {
             if: { $isArray: "$communityvotes" },
@@ -163,6 +180,7 @@ export async function getCommunityByUserIdV2(userId) {
             else: 0,
           },
         },
+
         numberOfPosts: {
           $cond: {
             if: { $isArray: "$posts" },
@@ -171,6 +189,27 @@ export async function getCommunityByUserIdV2(userId) {
           },
         },
         numberOfUsers: { $size: "$members" },
+        posts: {
+          $map: {
+            input: "$posts",
+            as: "p",
+            in: {
+              $mergeObjects: [
+                "$$p",
+                {
+                  "createdBy": {
+                    $first: {
+                      $filter: {
+                        input: "$creatorOfPosts",
+                        cond: { $eq: ["$$this._id", "$$p.createdBy"] }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+          },
+        }
       },
     },
   ]);
