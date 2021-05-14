@@ -216,11 +216,6 @@ class MyCommunities extends Component {
     }
 
     render() {
-        let redirectVar = null;
-        if (!cookie.load('token')) {
-            // redirectVar = <Redirect to="/" />
-        };
-
         let myCommunities = <div>No communities to show</div>
 
         if (this.state.communityList) {
@@ -238,7 +233,7 @@ class MyCommunities extends Component {
 
         return (
             <div>
-                {redirectVar}
+                { !cookie.load('token') ? window.location.href = '/' : null}
                 <div><Navbar /></div>
                 <div class="com-header">
                     My Communities

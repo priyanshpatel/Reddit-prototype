@@ -9,7 +9,7 @@ import chat_icon from '../../images/chat-icon.png'
 import axios from 'axios';
 import { BACKEND_URL, BACKEND_PORT } from '../../config/config';
 import cookie from "react-cookies";
-import Modal from 'react-bootstrap/modal';
+import Modal from 'react-bootstrap/Modal';
 import loginAction from '../../actions/loginAction'
 import signUpAction from '../../actions/signupAction'
 import chatSubmitAction from '../../actions/chat/chatSubmitAction'

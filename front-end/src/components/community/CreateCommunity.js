@@ -348,6 +348,7 @@ class CreateCommunity extends Component {
         }
         return (
             <div>
+                { !cookie.load('token') ? window.location.href = '/' : null}
                 <div>
                     <Navbar />
                 </div>

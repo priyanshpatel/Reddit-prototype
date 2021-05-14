@@ -110,11 +110,6 @@ class CommunityModeration extends Component {
   };
 
   render() {
-    let redirectVar = null;
-    if (!cookie.load("token")) {
-      // redirectVar = <Redirect to="/" />
-    }
-
     let myCommunities = <div>No communities to show</div>;
     console.log("Community Dataaaaa>>>>>>>>>>>>", this.state.myCommunitiesData);
     console.log(this.props);
@@ -141,7 +136,7 @@ class CommunityModeration extends Component {
 
     return (
       <div>
-        {redirectVar}
+        { !cookie.load('token') ? window.location.href = '/' : null}
         <div>
           <Navbar />
         </div>

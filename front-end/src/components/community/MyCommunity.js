@@ -32,6 +32,10 @@ import moment from 'moment'
 class MyCommunity extends Component {
     constructor(props) {
         super(props)
+        let communityID = "";
+        if(cookie.load('token')) {
+            communityID = this.props.location.state.communityData._id;
+        }
         this.state = {
             communityList: [
                 {
@@ -48,7 +52,7 @@ class MyCommunity extends Component {
             postFlag: false,
             communityCover: "",
             communityAvatar: "",
-            communityID: this.props.location.state.communityData._id,
+            communityID,
             description: "",
             communityName: "",
             errorMsg: false,
@@ -246,72 +250,74 @@ class MyCommunity extends Component {
         })
     }
     componentDidMount() {
-        this.setState(
-            {
-                communityID: this.props.location.state.communityData._id,
-                communityCover: this.props.location.state.communityData.communityCover,
-                communityAvatar: this.props.location.state.communityData.communityAvatar,
-                communityName: this.props.location.state.communityData.communityName,
-                createdAt: this.props.location.state.communityData.createdAt,
-                members: this.props.location.state.communityData.members.length,
-                description: this.props.location.state.communityData.description,
-                totalPosts: this.props.location.state.communityData.numberOfPosts,
-                rules: this.props.location.state.communityData.rules,
+        if (cookie.load('token')) {
+            this.setState(
+                {
+                    communityID: this.props.location.state.communityData._id,
+                    communityCover: this.props.location.state.communityData.communityCover,
+                    communityAvatar: this.props.location.state.communityData.communityAvatar,
+                    communityName: this.props.location.state.communityData.communityName,
+                    createdAt: this.props.location.state.communityData.createdAt,
+                    members: this.props.location.state.communityData.members.length,
+                    description: this.props.location.state.communityData.description,
+                    totalPosts: this.props.location.state.communityData.numberOfPosts,
+                    rules: this.props.location.state.communityData.rules,
 
 
-            }
-        )
-
-        axios.defaults.headers.common["authorization"] = cookie.load('token')
-        axios.defaults.withCredentials = true;
-        axios
-            .get(BACKEND_URL + ":" + BACKEND_PORT + '/community/get?communityId=' + this.props.location.state.communityData._id
+                }
             )
-            .then((response) => {
-                if (response.status === 200) {
-                    console.log(response.data.members)
 
-                    for (let i = 0; i < response.data.members.length; i++) {
-                        console.log(response.data.members[i]._id._id)
-                        if (response.data.members[i]._id._id == cookie.load('userId')) {
-                            console.log(response.data.members[i].communityJoinStatus)
-                            this.setState(
-                                {
-                                    buttonStatus: response.data.members[i].communityJoinStatus
-                                }
-                            )
+            axios.defaults.headers.common["authorization"] = cookie.load('token')
+            axios.defaults.withCredentials = true;
+            axios
+                .get(BACKEND_URL + ":" + BACKEND_PORT + '/community/get?communityId=' + this.props.location.state.communityData._id
+                )
+                .then((response) => {
+                    if (response.status === 200) {
+                        console.log(response.data.members)
+
+                        for (let i = 0; i < response.data.members.length; i++) {
+                            console.log(response.data.members[i]._id._id)
+                            if (response.data.members[i]._id._id == cookie.load('userId')) {
+                                console.log(response.data.members[i].communityJoinStatus)
+                                this.setState(
+                                    {
+                                        buttonStatus: response.data.members[i].communityJoinStatus
+                                    }
+                                )
+                            }
+
                         }
 
                     }
-
-                }
-            })
-            .catch((err) => {
-            });
-        document.title = this.props.location.state.communityData.communityName
-        var str = this.props.location.state.communityData.communityName;
-        str = str.replace(/\s+/g, '').toLowerCase();
-        this.setState(
-            {
-                communityNameWithoutSpaces: str
-            }
-        )
-        this.props.getPostsByIDAction(this.state).then(response => {
+                })
+                .catch((err) => {
+                });
+            document.title = this.props.location.state.communityData.communityName
+            var str = this.props.location.state.communityData.communityName;
+            str = str.replace(/\s+/g, '').toLowerCase();
             this.setState(
                 {
-                    posts: this.props.postData.posts,
-                    hasNextPage: this.props.postData.hasNextPage,
-                    hasPrevPage: this.props.postData.hasPrevPage,
-                    nextPage: this.props.postData.nextPage,
-                    pageNumber: this.props.postData.pageNumber,
-                    pageSize: this.props.postData.pageSize,
-                    prevPage: this.props.postData.prevPage,
-                    totalPages: this.props.postData.totalPages,
-                    totalPosts: this.props.postData.totalPosts
-
+                    communityNameWithoutSpaces: str
                 }
             )
-        })
+            this.props.getPostsByIDAction(this.state).then(response => {
+                this.setState(
+                    {
+                        posts: this.props.postData.posts,
+                        hasNextPage: this.props.postData.hasNextPage,
+                        hasPrevPage: this.props.postData.hasPrevPage,
+                        nextPage: this.props.postData.nextPage,
+                        pageNumber: this.props.postData.pageNumber,
+                        pageSize: this.props.postData.pageSize,
+                        prevPage: this.props.postData.prevPage,
+                        totalPages: this.props.postData.totalPages,
+                        totalPosts: this.props.postData.totalPosts
+
+                    }
+                )
+            })
+        }
     }
     render() {
         let renderPost = null;
@@ -393,6 +399,7 @@ class MyCommunity extends Component {
         }
         return (
             <div>
+                { !cookie.load('token') ? window.location.href = '/' : null}
                 {renderPost}
                 <div>
                     <Navbar />
