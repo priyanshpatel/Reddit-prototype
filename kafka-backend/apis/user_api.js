@@ -3,6 +3,7 @@ import Post from "../models/PostsModel";
 const bcrypt = require("bcrypt");
 const configuration = require("../config/config");
 const UserModel = require("../models/UsersModel");
+const MySQLUserModel = require('../mySQLModel/UsersModel')();
 const CommunityModel = require("../models/CommunityModel");
 const { uniqueNamesGenerator, names } = require("unique-names-generator");
 const aleaRNGFactory = require("number-generator/lib/aleaRNGFactory");
@@ -31,8 +32,11 @@ export async function registerUser(message, callback) {
       return callback(err, null);
     } else {
       user = await insertUser(user);
+      const mySQLUser = await storeUserInMySQL(user);
+      console.log(mySQLUser);
     }
   } catch (error) {
+    console.log(error);
     err.status = 500;
     err.data = {
       code: error.code,
@@ -172,6 +176,18 @@ async function insertUser(user) {
   user.handle = uniqueNamesGenerator(config) + uInt32().toString().slice(0, 3);
   var user = new UserModel(user);
   return await user.save();
+}
+
+async function storeUserInMySQL(user) {
+  console.log("Inside store User in MySQL");
+  const mySQLUser = await MySQLUserModel.create(
+    {
+      user_id: user._id.toString(),
+      email: user.email,
+      password: user.password,
+    },
+  );
+  return mySQLUser;
 }
 
 async function hashPassword(password) {
