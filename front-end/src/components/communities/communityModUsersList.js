@@ -27,6 +27,7 @@ import CommunityModCommunityList from './communityModCommunityList';
 import Modal from "react-modal";
 
 let checkedUserList = [];
+let toggledMember = null;
 
 const customStyles = {
   content: {
@@ -65,6 +66,7 @@ class CommunityModUsersList extends Component {
       memberSearchKeyword: "",
       userReqSearchKeyword: "",
       removeUsersPopUp: false,
+      toggledUserId: null,
     };
   }
   componentDidMount() {
@@ -101,8 +103,13 @@ class CommunityModUsersList extends Component {
     });
   }
 
-  toggleCommunityList = () => {
-    console.log("toggle@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+  toggleCommunityList = (member) => {
+    console.log("toggle@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", member)
+    if (member) {
+      this.setState({
+        toggledUserId: member._id,
+      })
+    }
     this.setState({
       removeUsersPopUp: !this.state.removeUsersPopUp,
     });
@@ -417,7 +424,7 @@ class CommunityModUsersList extends Component {
           <Row>
             <Col sm="6">
               <Card>
-                <CardBody onClick={this.toggleCommunityList}>
+                <CardBody onClick={() => this.toggleCommunityList(member)}>
                   {member.avatar ? (
                     <img src={member.avatar} alt="Avatar" class="com-avatar" />
                   ) : (
@@ -646,7 +653,7 @@ class CommunityModUsersList extends Component {
         >
           <CommunityModCommunityList
             data={this.state}
-            closePopUp={this.toggleCommunityList}
+            closePopUp={() => this.toggleCommunityList(null)}
           />
         </Modal>
       </div>

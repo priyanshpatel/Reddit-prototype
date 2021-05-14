@@ -34,33 +34,49 @@ let getMyCommunityModCommunity = (data) => (dispatch) => {
     BACKEND_URL +
     ":" +
     BACKEND_PORT +
-    "/community/mycommunities/user/communities?pageNumber=1" +
-    // data.pageNumber +
-    "&pageSize=2" +
-    // data.pageSize +
+    "/community/mycommunities/user/communities?pageNumber=" +
+    data.communityModPageNumber +
+    "&pageSize=" +
+    data.communityModPageSize +
     "&user_id=" + cookie.load("userId")
-    // data.user_id;
+  
 
   console.log("API____URL", API_URL)
 
+  if (data.communityModSearchKeyword != null || data.communityModSearchKeyword != undefined) {
+    if (data.communityModSearchKeyword.trim().length > 0) {
+    API_URL =
+    BACKEND_URL +
+    ":" +
+    BACKEND_PORT +
+    "/community/mycommunities/user/communities?pageNumber=" +
+    data.communityModPageNumber +
+    "&pageSize=" +
+    data.communityModPageSize +
+    "&user_id=" + cookie.load("userId") +
+    "&searchKeyword=" + data.communityModSearchKeyword
+    }
+  }
+
   // if (
-  //   data.searchKeyword != null ||
-  //   data.searchKeyword != undefined ||
-  //   data.searchKeyword != ""
+  //   data.communityModSearchKeyword != null ||
+  //   data.communityModSearchKeyword != undefined ||
+  //   data.communityModSearchKeyword != ""
   // ) {
   //   API_URL =
   //   BACKEND_URL +
   //   ":" +
   //   BACKEND_PORT +
   //   "/community/mycommunities?pageNumber=" +
-  //   data.pageNumber +
+  //   data.communityModPageNumber +
   //   "&pageSize=" +
-  //   data.pageSize +
+  //   data.communityModPageSize +
   //   "&user_id=" +
-  //   data.user_id +
+  //   cookie.load("userId") +
   //   "&searchKeyword=" +
-  //   data.searchKeyword;
-  // } else {
+  //   data.communityModSearchKeyword;
+  // } 
+  // else {
   //   API_URL =
   //     BACKEND_URL +
   //     ":" +

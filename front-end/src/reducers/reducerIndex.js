@@ -25,6 +25,7 @@ import communityJoinReducer from './communityReducers/communityJoinReducer';
 import getDashboardReducer from './userReducers/getDashboardReducer';
 import userProfileGetReducer from './userReducers/getUserProfileByIDReducer';
 import getCommunityModCommunityListReducer from './communityReducers/getCommunityModCommunityListReducer';
+import bulkCommunityUserRemoveReducer from './communityReducers/bulkCommunityUserRemoveReducer';
 
 
 var rootReducer = combineReducers({
@@ -54,6 +55,7 @@ var rootReducer = combineReducers({
     getDashboardReducer: getDashboardReducer,
     userProfileGetReducer: userProfileGetReducer,
     getCommunityModCommunityListReducer: getCommunityModCommunityListReducer,
+    bulkCommunityUserRemoveReducer: bulkCommunityUserRemoveReducer,
 
 })
 
