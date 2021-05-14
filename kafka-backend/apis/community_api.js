@@ -982,34 +982,7 @@ async function getCommunityBySearchQuery(options) {
       },
     },
     {
-      $lookup: {
-        from: "users",
-        localField: "members._id",
-        foreignField: "_id",
-        as: "membersDetail",
-      },
-    },
-    {
       $addFields: {
-        members: {
-          $map: {
-            input: "$membersDetail",
-            as: "m",
-            in: {
-              $mergeObjects: [
-                "$$m",
-                {
-                  $first: {
-                    $filter: {
-                      input: "$members",
-                      cond: { $eq: ["$$this._id", "$$m._id"] }
-                    }
-                  }
-                }
-              ]
-            },
-          },
-        },
         numberOfVotes: {
           $cond: {
             if: { $isArray: "$communityvotes" },

@@ -277,6 +277,8 @@ class MyCommunity extends Component {
 
             axios.defaults.headers.common["authorization"] = cookie.load('token')
             axios.defaults.withCredentials = true;
+            console.log("HJABHJABSHJBAHJSBHJS", this.props.location.state.communityData._id)
+            console.log(BACKEND_URL + ":" + BACKEND_PORT + '/community/get?communityId=' + this.props.location.state.communityData._id)
             axios
                 .get(BACKEND_URL + ":" + BACKEND_PORT + '/community/get?communityId=' + this.props.location.state.communityData._id
                 )
@@ -352,7 +354,7 @@ class MyCommunity extends Component {
         }
     }
     render() {
-        console.log(this.state)
+        console.log(this.state.rules)
         let renderPost = null;
         let renderButton = null;
         let renderJoinError = null;
@@ -425,6 +427,7 @@ class MyCommunity extends Component {
         let rulesAccordion = this.state.rules.map((rule, index) => {
             return (
                 <div>
+                
                     <Accordion style={{ width: "323px" }}>
                         <Card style={{ marginTop: "15px", border: "1px" }}>
                             < Accordion.Toggle as={Card.Header} style={{ backgroundColor: "white", border: "none" }} eventKey={index + 1}>
@@ -597,19 +600,6 @@ class MyCommunity extends Component {
                                     <br></br>
                                     <CardText style={{ fontSize: "14px", fontFamily: "sans-serif", color: "#1C1C1C" }}></CardText>
                                     {rulesAccordion}
-                                </CardBody>
-                            </Card>
-                        </Row>
-                        <Row style={{ paddingTop: "10%" }}>
-                            <Card >
-                                <CardBody>
-                                    <div className="row" style={{ marginLeft: "-3%", backgroundColor: "#0079d3", height: "40px" }}>
-                                        <div style={{ fontSize: "16px", padding: "10px", fontFamily: "arial", color: "#1A1A1B", fontWeight: "700", color: "white" }}>r/{this.state.communityNameWithoutSpaces} Rules</div>
-                                    </div>
-                                    <br></br>
-                                    <br></br>
-                                    <CardText style={{ fontSize: "14px", fontFamily: "sans-serif", color: "#1C1C1C" }}></CardText>
-                                    {/* {listOfUsers} */}
                                 </CardBody>
                             </Card>
                         </Row>
