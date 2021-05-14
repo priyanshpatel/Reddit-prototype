@@ -45,6 +45,11 @@ var loginAction = (data) => (dispatch) => {
                     httpOnly: false,
                     maxAge: 90000
                 })
+                cookie.save("userName", response.data.user.name, {
+                    path: '/',
+                    httpOnly: false,
+                    maxAge: 90000
+                })
                 cookie.save("handle", decoded.handle, {
                     path: '/',
                     httpOnly: false,
