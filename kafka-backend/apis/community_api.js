@@ -11,6 +11,8 @@ const CommunityVotesModel = require("../models/CommunityVotesModel");
 const ObjectId = require("mongodb").ObjectID;
 const redis = require("redis");
 const client = redis.createClient({ detect_buffers: true });
+const util = require("util");
+client.get = util.promisify(client.get);
 
 export async function createCommunity(message, callback) {
   let response = {};
@@ -174,7 +176,6 @@ export async function getCommunityByUserIdV2(userId) {
     },
     {
       $addFields: {
-
         numberOfVotes: {
           $cond: {
             if: { $isArray: "$communityvotes" },
@@ -199,19 +200,19 @@ export async function getCommunityByUserIdV2(userId) {
               $mergeObjects: [
                 "$$p",
                 {
-                  "createdBy": {
+                  createdBy: {
                     $first: {
                       $filter: {
                         input: "$creatorOfPosts",
-                        cond: { $eq: ["$$this._id", "$$p.createdBy"] }
-                      }
-                    }
-                  }
-                }
-              ]
+                        cond: { $eq: ["$$this._id", "$$p.createdBy"] },
+                      },
+                    },
+                  },
+                },
+              ],
             },
           },
-        }
+        },
       },
     },
   ]);
