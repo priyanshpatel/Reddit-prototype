@@ -1,6 +1,6 @@
 // TO-DO: Change the hard coded values as we develop APIs - Priyansh Patel
 
-import React, { Component } from 'react'
+import React, { Component, useEffect, useRef, useState } from 'react'
 import { Redirect, withRouter } from "react-router"
 import './navbar.css'
 import { Row, Col, Container } from 'reactstrap';
@@ -447,26 +447,26 @@ class Navbar extends Component {
                         {this.state.logout ? <Link to="/"></Link> : ""}
 
                     </div>
-                    
-                        {/* <div className="col-2">
+
+                    {/* <div className="col-2">
                             <Link to="/"><img src={reddit_logo} className="logo-image" alt="reddit-logo" /></Link>
                         </div> */}
-                        <div className="row">
-                            {/* <div className="col-1">
+                    <div className="row">
+                        {/* <div className="col-1">
                                 <Link to="/"><img src={reddit_logo} className="logo-image" alt="reddit-logo" /></Link>
                             </div> */}
-                            <div className="col-1">
-                                <Link to="/my-community-analytics">My Community Analytics</Link>
+                        <div className="col-1">
+                            <Link to="/my-community-analytics">My Community Analytics</Link>
+                        </div>
+                        <div className="col-1 dropdown" style={{ paddingRight: "0px" }}>
+                            <button className="btn dropdown-toggle navbar-dropdown-button" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-edit"></i> <span class="nav-username">Create</span>
+                            </button>
+                            <div className="dropdown-menu" aria-labelledby="dropdownMenu2">
+                                <Link to="/create-post" className="dropdown-item" type="button" value="home"><i class="fas fa-edit dd-icon"></i><span className="dd-item">Create Post</span></Link>
+                                <Link to="/create-community" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-edit dd-icon"></i><span className="dd-item">Create Community</span></Link>
                             </div>
-                            <div className="col-1 dropdown" style={{ paddingRight: "0px" }}>
-                                <button className="btn dropdown-toggle navbar-dropdown-button" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i class="fas fa-edit"></i> <span class="nav-username">Create</span>
-                                </button>
-                                <div className="dropdown-menu" aria-labelledby="dropdownMenu2">
-                                    <Link to="/create-post" className="dropdown-item" type="button" value="home"><i class="fas fa-edit dd-icon"></i><span className="dd-item">Create Post</span></Link>
-                                    <Link to="/create-community" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-edit dd-icon"></i><span className="dd-item">Create Community</span></Link>
-                                </div>
-                            </div>             
+                        </div>
                         <div className="col-1 nav-icon-div">
                             <Link to="/"><i class="fas fa-chart-line nav-icon-button" style={{ marginRight: "10px" }} ></i></Link>
                             <Link to="/"><i class="fas fa-chart-bar nav-icon-button"></i></Link>
@@ -482,7 +482,7 @@ class Navbar extends Component {
                         </div>
                         < div className="col-2 nav-icon-div" style={{ paddingRight: "0px" }}>
                             <Link > <i class="fas fa-comment-dots nav-icon-button" onClick={this.handleChatApplicationClick} style={{ marginRight: "10px" }} ></i></Link>
-                            <Link to="/"><i class="fas fa-bell nav-icon-button" style={{ marginRight: "10px" }} ></i></Link>
+                            <NotificationIcon />
                         </div>
                         {/* <Dropdown isOpen={dropdownOpen} toggle={toggle}> */}
                         <div className="col-2" style={{ textAlign: "right" }} style={{ paddingLeft: "0px" }}>
@@ -835,6 +835,45 @@ class Navbar extends Component {
         }
     }
 }
+
+const NotificationIcon = (props) => {
+    const [notifCount, setNotifCount] = useState(null);
+
+    useInterval(() => fetchData(), 15000);
+
+    async function fetchData() {
+        axios.defaults.headers.common["authorization"] = cookie.load('token')
+        axios.defaults.withCredentials = true;
+        let queryUrl = `${BACKEND_URL}:${BACKEND_PORT}/user/notifications`;
+        const response = await axios.get(queryUrl);
+        console.log("ResponseN ", JSON.stringify(response.data.notifications));
+        setNotifCount(response.data.notifications.length);
+    }
+
+    function useInterval(callback, delay) {
+        const savedCallback = useRef();
+
+        // Remember the latest callback.
+        useEffect(() => {
+            savedCallback.current = callback;
+        }, [callback]);
+
+        // Set up the interval.
+        useEffect(() => {
+            function tick() {
+                savedCallback.current();
+            }
+            if (delay !== null) {
+                let id = setInterval(tick, delay);
+                return () => clearInterval(id);
+            }
+        }, [delay]);
+    }
+
+    return <Link to="/my-notifications"><i class="fas fa-bell nav-icon-button" style={{ marginRight: "10px" }} ><span style={{ paddingBottom: "2px", fontSize: "1rem", verticalAlign: "super" }}>{notifCount}</span></i></Link>;
+}
+
+
 const matchStateToProps = (state) => {
     console.log("inside matchStatetoProps", state)
     return {
@@ -852,7 +891,6 @@ const matchDispatchToProps = (dispatch) => {
         loginAction: (data) => dispatch(loginAction(data)),
         signUpAction: (data) => dispatch(signUpAction(data)),
         chatSubmitAction: (data) => dispatch(chatSubmitAction(data)),
-
     }
 }
 

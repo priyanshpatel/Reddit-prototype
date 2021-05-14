@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Route } from "react-router-dom"
-import Navbar from './Navbar/Navbar'
+import Navbar from './navbar/navbar'
 
 import CreatePost from './posts/createPost';
 import CreateCommunity from './community/CreateCommunity'
@@ -12,6 +12,8 @@ import { Profiler } from 'react';
 import CommunityModeration from './communities/communityModeration';
 
 import MyCommunityAnalytics from './community/MyCommunityAnalytics';
+import Notification from './users/Notification';
+
 
 import UserProfilePage from './users/user-profile';
 import CommunitySearch from './community/CommunitySearch';
@@ -36,6 +38,7 @@ class Routes extends Component {
                 <Route path="/my-communities-mod" component={CommunityModeration} />
 
                 <Route path="/my-community-analytics" component={MyCommunityAnalytics} />
+                <Route path="/my-notifications" component={Notification} />
 
             </div>
         )

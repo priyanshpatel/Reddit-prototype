@@ -5,7 +5,7 @@ import { BACKEND_URL, BACKEND_PORT } from '../../config/config';
 import cookie from "react-cookies";
 import { Card, Container, Dropdown, Form, ListGroup, Row, Col } from 'react-bootstrap';
 import _ from "lodash";
-import Navbar from "../Navbar/Navbar";
+import Navbar from "../navbar/navbar";
 
 const data = [
   ["Year", "Visitations", { role: "style" }],
@@ -110,8 +110,6 @@ class MyCommunityAnalytics extends React.Component {
         modifiedDataForVotes.push([name, mostUpvotedPost?.votes || 0, `color: ${getRandomColor()}`, mostUpvotedPost?.title || ''])
         maxPostsUserPerCommunity.push([name, maxPosts ? maxPosts.length : 0, `color: ${getRandomColor()}`, maxPosts ? maxPosts[0].createdBy.name : ''])
       }
-      console.log("Modified data Users ", modifiedDataForUsers);
-      console.log("Modified data Posts ", modifiedDataForPosts);
       this.setState({
         numberOfUsers: modifiedDataForUsers,
         numberOfPosts: modifiedDataForPosts,
@@ -132,26 +130,40 @@ class MyCommunityAnalytics extends React.Component {
         {this.state.communityWithMaxPost ? <div style={{ textAlign: "right", marginRight: "10rem" }}><h5> Community with max posts <b>{`${this.state.communityWithMaxPost.communityName}`}</b> <br></br>Number of posts = <b>{`${this.state.communityWithMaxPost.numberOfPosts}`}</b>  </h5></div> : <h5>No community with max posts yet</h5>}
         <Row>
           <Col lg={6}>
-            <div className="App">
-              <Chart chartType="ColumnChart" width="100%" height="400px" data={this.state.numberOfUsers} options={{ is3D: true }} />
-            </div>
+            {this.state.numberOfUsers && this.state.numberOfUsers.length > 1 ? (
+              <div className="App">
+                <Chart chartType="ColumnChart" width="100%" height="400px" data={this.state.numberOfUsers} options={{ is3D: true }} />
+              </div>)
+              : this.state.mostUpvotedPost ? (
+                <h4>No Number of users per community yet.</h4>
+              ) : null}
           </Col>
           <Col lg={6}>
-            <div className="App">
-              <Chart chartType="ColumnChart" width="100%" height="400px" data={this.state.numberOfPosts} />
-            </div>
+            {this.state.mostUpvotedPost && this.state.mostUpvotedPost.length > 1 ? (
+              <div className="App">
+                <Chart chartType="ColumnChart" width="100%" height="400px" data={this.state.numberOfPosts} />
+              </div>)
+              : this.state.mostUpvotedPost ? (
+                <h4>No Number of post per community yet.</h4>
+              ) : null}
           </Col>
         </Row>
         <Row>
           <Col lg={6}>
-            <div className="App">
-              <Chart chartType="ColumnChart" width="100%" height="400px" data={this.state.mostUpvotedPost} />
-            </div>
+            {this.state.mostUpvotedPost && this.state.mostUpvotedPost.length > 1 ? (
+              <div className="App">
+                <Chart chartType="ColumnChart" width="100%" height="400px" data={this.state.mostUpvotedPost} />
+              </div>) : this.state.mostUpvotedPost ? (
+                <h4>No Most Upvoted posts yet.</h4>
+              ) : null}
           </Col>
           <Col lg={6}>
-            <div className="App">
-              <Chart chartType="ColumnChart" width="100%" height="400px" data={this.state.maxPostsUserPerCommunity} />
-            </div>
+            {this.state.maxPostsUserPerCommunity && this.state.maxPostsUserPerCommunity.length > 1 ? (
+              <div className="App">
+                <Chart chartType="ColumnChart" width="100%" height="400px" data={this.state.maxPostsUserPerCommunity} />
+              </div>) : this.state.maxPostsUserPerCommunity ? (
+                <h4>No Maximum Posts per user yet.</h4>
+              ) : null}
           </Col>
         </Row>
       </>
