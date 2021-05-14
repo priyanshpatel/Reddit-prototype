@@ -3,7 +3,7 @@
 import React, { Component } from 'react'
 import { Redirect } from 'react-router'
 import { Link } from 'react-router-dom'
-import Navbar from "../navbar/navbar";
+import Navbar from "../Navbar/Navbar";
 import { Row, Col } from 'reactstrap';
 import axios from 'axios';
 import { BACKEND_URL } from '../../config/config';
@@ -35,7 +35,6 @@ export class CommunitySearch extends Component {
             totalPages: "",
             sorting: "desc",
             select: "",
-            searchInput: "",
             votes: 0
         }
     }

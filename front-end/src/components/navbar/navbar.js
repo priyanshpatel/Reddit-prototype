@@ -452,10 +452,11 @@ class Navbar extends Component {
 
                     </div>
 
-                    {/* <div className="col-2">
-                            <Link to="/"><img src={reddit_logo} className="logo-image" alt="reddit-logo" /></Link>
-                        </div> */}
+
                     <div className="row">
+                        <div className="col-2">
+                            <Link to="/"><img src={reddit_logo} className="logo-image" alt="reddit-logo" /></Link>
+                        </div>
                         <div className="col-1 dropdown" style={{ paddingRight: "0px" }}>
                             <button className="btn dropdown-toggle navbar-dropdown-button" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-edit"></i> <span class="nav-username">Create</span>
