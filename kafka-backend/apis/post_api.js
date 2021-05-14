@@ -1,4 +1,5 @@
 const Posts = require("../models/PostsModel");
+const Communities = require("../models/CommunityModel");
 const ObjectId = require("mongoose").Types.ObjectId;
 
 const createPost = async (req, callback) => {
@@ -96,6 +97,7 @@ const createComment = async (req, callback) => {
     rawComment.createdBy = req.user._id;
     console.log("raw comments ", rawComment);
     rawPost.comments.push(rawComment);
+    rawPost.numberOfComments += 1;
     const post = await rawPost.save();
 
     // Accessing last added comment
@@ -124,7 +126,54 @@ const createComment = async (req, callback) => {
   }
 };
 
+// TODO:- Delete all the child comments if a parent comment is
+// deleted & Delete all the upvotes and downvotes of the deleted
+// user which should also reflect on the post and comments. Also
+// the number of comments variable should be updated
+const deletePostsAndCommentsOfAUserForMultipleCommunities = async (
+  req,
+  callback
+) => {
+  // Check whether the user is a creator for all the communities
+  const communities = await Communities.find({
+    _id: { $in: req.body.communities },
+    creator: req.user._id,
+  });
+
+  console.log(req.body);
+  console.log(communities);
+
+  if (communities.length != req.body.communities.length) {
+    callback(null, {
+      errorMessage: ["Select a valid community."],
+      success: false,
+    });
+    return;
+  }
+
+  // Perform operation for each community
+  await req.body.communities.forEach(async (community_id) => {
+    // Delete Posts
+    await Posts.deleteMany({
+      community: community_id,
+      createdBy: req.body.user_id,
+    });
+    // Delete Comments
+    await Posts.updateMany(
+      { community: community_id },
+      { $pull: { comments: { createdBy: req.body.user_id } } },
+      { multi: true }
+    );
+  });
+
+  callback(null, {
+    message: "Deletion operation performed successfully",
+    success: true,
+  });
+};
+
 module.exports = {
   createPost,
   createComment,
+  deletePostsAndCommentsOfAUserForMultipleCommunities,
 };
