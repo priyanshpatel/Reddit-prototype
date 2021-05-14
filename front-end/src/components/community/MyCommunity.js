@@ -166,6 +166,7 @@ class MyCommunity extends Component {
         })
     }
     handleRequestAcceptClick = (e) => {
+
         this.props.communityJoinRequestAction(this.state.communityID).then(response => {
 
             if (this.props.error) {
@@ -255,6 +256,7 @@ class MyCommunity extends Component {
         })
     }
     componentDidMount() {
+        console.log(this.props.location.state.communityData)
         if (cookie.load('token')) {
             this.setState(
                 {
@@ -267,6 +269,7 @@ class MyCommunity extends Component {
                     description: this.props.location.state.communityData.description,
                     totalPosts: this.props.location.state.communityData.numberOfPosts,
                     rules: this.props.location.state.communityData.rules,
+                    listOfUsers : this.props.location.state.communityData.members
 
 
                 }
@@ -349,10 +352,23 @@ class MyCommunity extends Component {
         }
     }
     render() {
+        console.log(this.state)
         let renderPost = null;
         let renderButton = null;
         let renderJoinError = null;
-
+        // let listOfUsers = this.state.listOfUsers.map((user, index) => {
+        //     return (
+        //         <div>
+        //                 <Card style={{ marginTop: "15px", border: "1px" }}>
+        //                     <CardBody>
+        //                         {user.name}
+        //                     </CardBody>
+        //                 </Card>
+                        
+        //         </div>
+        //     );
+        // }
+        // )
         if (this.state.errorMsg) {
 
             renderJoinError = toast(this.props.errorMessage, {
@@ -581,6 +597,19 @@ class MyCommunity extends Component {
                                     <br></br>
                                     <CardText style={{ fontSize: "14px", fontFamily: "sans-serif", color: "#1C1C1C" }}></CardText>
                                     {rulesAccordion}
+                                </CardBody>
+                            </Card>
+                        </Row>
+                        <Row style={{ paddingTop: "10%" }}>
+                            <Card >
+                                <CardBody>
+                                    <div className="row" style={{ marginLeft: "-3%", backgroundColor: "#0079d3", height: "40px" }}>
+                                        <div style={{ fontSize: "16px", padding: "10px", fontFamily: "arial", color: "#1A1A1B", fontWeight: "700", color: "white" }}>r/{this.state.communityNameWithoutSpaces} Rules</div>
+                                    </div>
+                                    <br></br>
+                                    <br></br>
+                                    <CardText style={{ fontSize: "14px", fontFamily: "sans-serif", color: "#1C1C1C" }}></CardText>
+                                    {/* {listOfUsers} */}
                                 </CardBody>
                             </Card>
                         </Row>

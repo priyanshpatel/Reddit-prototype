@@ -268,6 +268,7 @@ class Navbar extends Component {
             this.props.signUpAction(signUpObject).then(response => {
                 console.log("signup response >>>>>>>>>>>>>", this.props)
                 if (this.props.signUpError) {
+                    alert(this.props.signUpMessage)
                     this.setState({
                         signUpBackendError: true
                     })
@@ -452,7 +453,7 @@ class Navbar extends Component {
             invalidLoginError = <div style={{ 'color': 'red' }}>{this.props.loginMessage}</div>
         }
         if (this.state.signUpBackendError) {
-            invalidSignUpError = <div style={{ 'color': 'red' }}>{this.props.signUpMessage}</div>
+            invalidSignUpError = <div style={{ 'color': 'red' }}>Email already exists</div>
         }
         if (this.state.error) {
             renderError = <div style={{ 'color': 'red' }}>{this.state.errorMessage}</div>
@@ -827,6 +828,7 @@ class Navbar extends Component {
                                         <Row>
                                             <input type="text" style={{ width: "100%" }} name="signupname" onChange={this.handleInputChange} placeholder="USERNAME" autoFocus required />
                                             <input type="email" style={{ width: "100%", marginTop: "10%" }} name="signupemail" onChange={this.handleEmailChange} placeholder="EMAIL" autoFocus required />
+                                            {invalidSignUpError}
 
                                             <input type="password" style={{ width: "100%", marginTop: "10%" }} name="signuppassword" placeholder="PASSWORD" onChange={this.handleOtherChange} required />
                                             <button type="button" id="login-button" style={{ backgroundColor: "#0079d3", color: "white", borderRadius: "60px", width: "100%", marginTop: "10%" }} class="btn btn-outline-primary" onClick={this.handleSignUpSubmit}><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Continue</strong></span></button>
@@ -834,7 +836,6 @@ class Navbar extends Component {
                                             <div style={{ marginTop: "3%", fontSize: "12px" }}>
                                                 Already a redditor? <strong><span ><button style={{ color: "#0079d3", textTransform: "uppercase", border: "none", fontWeight: "700", backgroundColor: "white" }} onClick={this.mutualButtonCLick}><bold>Log In</bold></button ></span></strong>
                                             </div>
-                                            {invalidSignUpError}
 
                                         </Row>
                                     </div>
@@ -895,7 +896,7 @@ const matchStateToProps = (state) => {
         loginError: state.loginReducer.loginError,
         loginMessage: state.loginReducer.loginMessage,
         signUpError: state.SignUpReducer.signUpError,
-        signUpMessage: state.SignUpReducer.signUpMessage,
+        signUpMessage: state.SignUpReducer.signUpmessage,
         chatData: state.chatReducer.chatData
     }
 
