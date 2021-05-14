@@ -1,6 +1,6 @@
 // author : Het Brahmbhatt
 import React, { Component } from 'react'
-import Navbar from '../navbar/navbar';
+import Navbar from '../Navbar/Navbar';
 import cookie from 'react-cookies';
 import { Redirect } from 'react-router';
 import {
@@ -151,7 +151,7 @@ class Post extends Component {
                         <Row>
                             <Col xs="1" style={{ backgroundColor: "#F5F5F5" }}>
                                 <ArrowUpwardIcon style={{ cursor: "pointer" }} onClick={this.upVote} />
-                                <span style={{paddingLeft : "6px"}}> {this.state.votes}</span>
+                                <span style={{ paddingLeft: "6px" }}> {this.state.votes}</span>
                                 <ArrowDownwardIcon style={{ cursor: "pointer" }} onClick={this.downVote} />
 
                             </Col>
@@ -197,8 +197,8 @@ class Post extends Component {
                     <Card >
                         <Row>
                             <Col xs="1" style={{ backgroundColor: "#F5F5F5" }}>
-                            <ArrowUpwardIcon style={{ cursor: "pointer" }} onClick={this.upVote} />
-                            <span style={{paddingLeft : "6px"}}> {this.state.votes}</span>
+                                <ArrowUpwardIcon style={{ cursor: "pointer" }} onClick={this.upVote} />
+                                <span style={{ paddingLeft: "6px" }}> {this.state.votes}</span>
                                 <ArrowDownwardIcon style={{ cursor: "pointer" }} onClick={this.downVote} />
                                 {/* <div class="arrow-up"></div> */}
                             </Col>
@@ -229,9 +229,9 @@ class Post extends Component {
             postDivision = <Card >
                 <Row>
                     <Col xs="1" style={{ backgroundColor: "#F5F5F5" }}>
-                    <ArrowUpwardIcon style={{ cursor: "pointer" }} onClick={this.upVote} />
-                               <span style={{paddingLeft : "6px"}}> {this.state.votes}</span>
-                                <ArrowDownwardIcon style={{ cursor: "pointer" }} onClick={this.downVote} />
+                        <ArrowUpwardIcon style={{ cursor: "pointer" }} onClick={this.upVote} />
+                        <span style={{ paddingLeft: "6px" }}> {this.state.votes}</span>
+                        <ArrowDownwardIcon style={{ cursor: "pointer" }} onClick={this.downVote} />
                     </Col>
 
                     <Col>
