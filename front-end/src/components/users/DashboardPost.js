@@ -6,17 +6,17 @@ import { Redirect } from 'react-router';
 import {
     Card, CardText, CardBody,
 } from 'reactstrap';
-import { connect } from "react-redux";
-import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
-import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
+import ReactPaginate from 'react-paginate';
 
-import avatar from '../../images/avatar.png';
-import './Post.css'
+import { connect } from "react-redux";
+import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
+import '../community/Post.css'
 import { Row, Col, CardTitle } from 'reactstrap';
 import { CarouselProvider, Slider, Slide, ButtonBack, ButtonNext } from 'pure-react-carousel';
 import 'pure-react-carousel/dist/react-carousel.es.css';
 import moment from 'moment'
-import Comment from './Comment'
+import Comment from '../community/Comment'
 import { Button } from '@material-ui/core';
 import createCommentAction from '../../actions/comment/createCommentAction';
 import getPostAction from '../../actions/posts/getPostAction';
@@ -24,14 +24,15 @@ import upvotePostAction from '../../actions/posts/upVoteAction';
 import downVotePostAction from '../../actions/posts/downVoteAction';
 import ModeCommentTwoToneIcon from '@material-ui/icons/ModeCommentTwoTone';
 const newLocal = "103%";
-class Post extends Component {
+class DashboardPost extends Component {
     constructor(props) {
         super(props);
         console.log(this.props.data);
         console.log(this.props)
         this.state = {
             post_id: this.props.data._id,
-            community_id: this.props.data.community,
+            community_id: this.props.data.community._id,
+            communityName: this.props.data.community.communityName,
             createdAt: this.props.data.createdAt,
             images: this.props.data.images,
             numberOfComments: this.props.data.numberOfComments,
@@ -42,11 +43,13 @@ class Post extends Component {
             type: this.props.data.type,
             score: 0,
             vote: 0,
+            
             description: this.props.data.description,
             comments: this.props.data.comments,
             firstCommentDescription: "",
             commentFlag: false,
-            createdBy: this.props.data.user.name
+            createdBy: this.props.data.createdBy.name,
+            link: this.props.data.link
         }
     };
     handleDescriptionChange = (e) => {
@@ -101,7 +104,7 @@ class Post extends Component {
             "community_id": this.state.community_id
         }
         this.props.createCommentAction(obj).then(response => {
-            this.props.refreshComments();
+            // this.props.refreshComments();
         })
     }
     commentsClicked = inp => {
@@ -156,7 +159,7 @@ class Post extends Component {
 
                             </Col>
                             <Col style={{ paddingLeft: "0px" }}>
-                                <span style={{ color: "#787C7E", fontSize: "12px", marginLeft: "7%" }}>Posted by u/{this.state.createdBy} {moment.utc(this.state.createdAt).local().startOf('seconds').fromNow()}
+                                <span style={{ color: "#787C7E", fontSize: "12px", marginLeft: "7%" }}><span style={{ color: "black", fontWeight: "1000" }}>r/ {this.state.communityName} &bull; </span >Posted by u/{this.state.createdBy}  {moment.utc(this.state.createdAt).local().startOf('seconds').fromNow()}
 
                                 </span>
 
@@ -200,13 +203,13 @@ class Post extends Component {
                                 <ArrowUpwardIcon style={{ cursor: "pointer" }} onClick={this.upVote} />
                                 <span style={{ paddingLeft: "6px" }}> {this.state.votes}</span>
                                 <ArrowDownwardIcon style={{ cursor: "pointer" }} onClick={this.downVote} />
-                                {/* <div class="arrow-up"></div> */}
                             </Col>
 
                             <Col>
 
-                                <span style={{ color: "#787C7E", fontSize: "12px", marginLeft: "3%" }}>Posted by u/ {this.state.createdBy} {moment.utc(this.state.createdAt).local().startOf('seconds').fromNow()}</span>
-                                <CardBody>
+                                <span style={{ color: "#787C7E", fontSize: "12px", marginLeft: "4%" }}><span style={{ color: "black", fontWeight: "1000" }}>r/ {this.state.communityName} &bull; </span >Posted by u/{this.state.createdBy}  {moment.utc(this.state.createdAt).local().startOf('seconds').fromNow()}
+
+                                </span>                                <CardBody>
                                     <CardTitle tag="h5">{this.state.title}</CardTitle>
                                     <CardText>{this.state.description}</CardText>
                                 </CardBody>     </Col>
@@ -232,10 +235,11 @@ class Post extends Component {
                         <ArrowUpwardIcon style={{ cursor: "pointer" }} onClick={this.upVote} />
                         <span style={{ paddingLeft: "6px" }}> {this.state.votes}</span>
                         <ArrowDownwardIcon style={{ cursor: "pointer" }} onClick={this.downVote} />
+
                     </Col>
 
                     <Col>
-                        <span style={{ color: "#787C7E", fontSize: "12px", marginLeft: "4%" }}>Posted by u/{this.state.createdBy}  {moment.utc(this.state.createdAt).local().startOf('seconds').fromNow()}
+                        <span style={{ color: "#787C7E", fontSize: "12px", marginLeft: "4%" }}><span style={{ color: "black", fontWeight: "1000" }}>r/ {this.state.communityName} &bull; </span >Posted by u/{this.state.createdBy}  {moment.utc(this.state.createdAt).local().startOf('seconds').fromNow()}
 
                         </span>
                         <CardBody>
@@ -258,47 +262,10 @@ class Post extends Component {
                     </Button></Row>
             </Card >
         }
-        // else if (this.state.type == "link") {
-        //     postDivision = <Card >
-        //         <Row>
-        //             <button
-        //                 onClick={this.upVote}>
-        //             </button>
-        //             {this.state.votes}
-        //             <button
-        //                 onClick={this.downVote}>
-        //             </button>
-        //             <Col>
-        //                 <span style={{ color: "#787C7E", fontSize: "12px", marginLeft: "3%" }}>Posted by u/{this.state.createdBy} {moment.utc(this.state.createdAt).local().startOf('seconds').fromNow()}</span>
-        //                 <CardBody>
-        //                     <CardTitle tag="h5">{this.state.title}</CardTitle>
-        //                     <CardText>
-        //                         <a href={this.state.link}></a>
-        //                     </CardText>
-        //                 </CardBody>
-        //             </Col>
-        //         </Row>
-        //         <Row style={{ backgroundColor: "#F5F5F5", height: "30px", padding: "10px", width: "103%", paddingLeft: "10%" }}>
-        //             <ModeCommentTwoToneIcon style={{ fontSize: "18px" }} />
-        //             <span style={{ fontSize: "14px", fontWeight: "300px", marginBottom: "14px", paddingLeft: "8px" }}>
-        //                 {this.state.numberOfComments} Comments
-        //                     </span>
-        //         </Row >
-        //         <Row style={{ backgroundColor: "#F5F5F5", height: "30px", width: newLocal, paddingLeft: "10%" }}>
-        //             <Button
-        //                 size="small"
-        //                 onClick={this.commentsClicked}
-        //             >
-        //                 <ModeCommentTwoToneIcon style={{ fontSize: "18px" }} />
-        //                 <span style={{ fontSize: "12px", fontWeight: "300px", textTransform: "capitalize" }}>
-        //                     {this.state.numberOfComments} Comments
-        //                     </span>
-        //             </Button></Row>
-        //     </Card >
-        // }
         return (
             <div style={{ marginTop: "10%" }}>
                 {postDivision}
+
                 {
                     this.state.commentFlag ?
                         <div className="comment" style={{ backgroundColor: "white" }}>
@@ -340,4 +307,4 @@ const matchDispatchToProps = (dispatch) => {
     }
 }
 
-export default connect(matchStateToProps, matchDispatchToProps)(Post)
+export default connect(matchStateToProps, matchDispatchToProps)(DashboardPost)

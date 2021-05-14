@@ -9,7 +9,7 @@ import { connect } from "react-redux";
 //import Navbar from "../Navbar/Navbar";
 
 import cookie from "react-cookies";
-import Navbar from "../navbar/navbar";
+import Navbar from "../Navbar/Navbar";
 import ReactDOM from 'react-dom';
 import { WithContext as ReactTags } from 'react-tag-input';
 import { displayName } from 'react-grid-gallery';
@@ -184,8 +184,6 @@ class Profile extends Component {
         }
     }
     render() {
-        console.log("STATE------------------", this.state)
-        console.log("RENDER PROPS-------------------", this.props)
         let renderError = null;
         if (this.props.error) {
             // renderError = <div style={{ 'color': 'red' }}>{this.state.errorMessage}</div>

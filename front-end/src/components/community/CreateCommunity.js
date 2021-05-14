@@ -6,6 +6,11 @@ import IconButton from '@material-ui/core/IconButton';
 import RemoveIcon from '@material-ui/icons/Remove';
 import AddIcon from '@material-ui/icons/Add';
 import { v4 as uuidv4 } from 'uuid';
+import axios from 'axios';
+import { Row, Col, CardTitle } from 'reactstrap';
+
+import { BACKEND_URL } from '../../config/config';
+import { BACKEND_PORT } from '../../config/config';
 import createCommunityAction from '../../actions/community/createCommunityAction';
 import { connect } from "react-redux";
 import getByIDCommunityAction from '../../actions/community/getCommunityByID';
@@ -20,6 +25,10 @@ class CreateCommunity extends Component {
         this.state = {
             communityAvatar: [],
             communityCover: "",
+            updateCommunityAvatar: [],
+            updateCommunityCover: "",
+            updateCommunityAvatarFlag: false,
+            updateCommunityCoverFlag: false,
             communityName: "",
             description: "",
             rules: [
@@ -140,26 +149,75 @@ class CreateCommunity extends Component {
 
     handleSubmit = (e) => {
         e.preventDefault();
-        if (this.state.communityName == "" || this.state.description == "") {
-            this.setState({
-                error: true
-            })
+        if (this.props.match.params.id == undefined) {
+            if (this.state.communityName == "" || this.state.description == "") {
+                this.setState({
+                    error: true
+                })
+            }
+            else {
+
+                console.log(this.state)
+                const formData = new FormData();
+                const files = this.state.commmunityAvatar;
+                for (let i = 0; i < files.length; i++) {
+                    formData.append(`communityAvatar`, files[i])
+                }
+                formData.append(`communityCover`, this.state.communityCover)
+
+                let obj = {
+                    communityName: this.state.communityName,
+                    description: this.state.description,
+                    creator: cookie.load('userId'),
+                    rules: this.state.rules,
+                    members: [
+                        {
+                            _id: cookie.load('userId'),
+                            communityJoinStatus: 'JOINED'
+                        }
+                    ]
+                }
+                formData.append("community", JSON.stringify(obj));
+                this.props.createCommunityAction(formData).then(response => {
+
+                })
+            }
+
         }
         else {
-
             console.log(this.state)
             const formData = new FormData();
-            const files = this.state.commmunityAvatar;
-            for (let i = 0; i < files.length; i++) {
-                formData.append(`communityAvatar`, files[i])
+
+            if (this.state.updateCommunityCoverFlag && this.state.updateCommunityAvatarFlag) {
+                alert("in both")
+                const files = this.state.updateCommunityAvatar;
+                for (let i = 0; i < files.length; i++) {
+                    formData.append(`communityAvatar`, files[i])
+                }
+                formData.append(`communityCover`, this.state.updateCommunityCover)
             }
-            formData.append(`communityCover`, this.state.communityCover)
+            else if (this.state.updateCommunityCoverFlag) {
+                alert("in cover")
+
+                formData.append(`communityCover`, this.state.updateCommunityCover)
+
+
+            }
+            else if (this.state.updateCommunityAvatarFlag) {
+                alert("in avatar")
+
+                const files = this.state.updateCommunityAvatar;
+                for (let i = 0; i < files.length; i++) {
+                    formData.append(`communityAvatar`, files[i])
+                }
+            }
 
             let obj = {
                 communityName: this.state.communityName,
                 description: this.state.description,
                 creator: cookie.load('userId'),
                 rules: this.state.rules,
+                _id: this.props.match.params.id,
                 members: [
                     {
                         _id: cookie.load('userId'),
@@ -168,9 +226,23 @@ class CreateCommunity extends Component {
                 ]
             }
             formData.append("community", JSON.stringify(obj));
-            this.props.createCommunityAction(formData).then(response => {
+            axios.defaults.headers.common["authorization"] = cookie.load('token')
+            axios.defaults.withCredentials = true;
+            return axios
+                .post(BACKEND_URL + ":" + BACKEND_PORT + "/community/update", formData, {
+                    headers: Object.assign(
+                        { "content-type": "multipart/form-data" }
+                    )
+                }).then(response => {
+                    if (response.status === 200) {
+                        console.log(response.data)
+                        // dispatch(success(response, data));
 
-            })
+                    }
+                }).catch((err) => {
+                    // dispatch(error(err, data))
+                });
+
         }
 
     };
@@ -179,6 +251,12 @@ class CreateCommunity extends Component {
     }
     fileAvatarHandler = (e) => {
         this.setState({ communityCover: e.target.files[0] })
+    }
+    updateFileSelectedHandler = (e) => {
+        this.setState({ updateCommunityAvatar: [...this.state.updateCommunityAvatar, ...e.target.files], updateCommunityAvatarFlag: true })
+    }
+    updateFileAvatarHandler = (e) => {
+        this.setState({ updateCommunityCover: e.target.files[0], updateCommunityCoverFlag: true })
     }
     handleAddFields = () => {
         this.setState({ rules: [...this.state.rules, { id: uuidv4(), title: '', description: '' }] })
@@ -189,20 +267,11 @@ class CreateCommunity extends Component {
         let fileDivision = null;
         let avatarImageDivision = this.state.communityAvatar.map((data, index) => (
             <div>
-                <CarouselProvider
-                    naturalSlideWidth={10}
-                    naturalSlideHeight={10}
-                    totalSlides={this.state.communityAvatarLength}
-                >
-                    <ButtonBack style={{ border: "none", backgroundColor: "white", fontSize: "20px", marginTop: "10%", float: "left" }}>&#60;</ButtonBack>
-                    <ButtonNext style={{ border: "none", backgroundColor: "white", float: "right", marginTop: "10%", fontSize: "20px", }}>&#62;</ButtonNext>
-                    <Slider>
-                        <Slide index={index}>
-                            <img src={data} style={{ position: "absolute" }} alt="" />
 
-                        </Slide>
-                    </Slider>
-                </CarouselProvider>
+                <Slide index={index}>
+                    <img src={data} style={{ position: "absolute" }} alt="" />
+
+                </Slide>
             </div>
         ))
         if (this.props.match.params.id == null) {
@@ -230,6 +299,12 @@ class CreateCommunity extends Component {
                 <div>
                     <div className="row" style={{ marginLeft: "2%", marginTop: "5%" }}>
                         <div className="col-3">
+                            <span><strong><div>Present Images </div></strong></span>
+                        </div>
+
+                    </div>
+                    <div className="row" style={{ marginLeft: "2%", marginTop: "5%" }}>
+                        <div className="col-3">
                             <span><strong><div>Community Cover </div></strong></span>
                         </div>
                         <div className="col-3">
@@ -241,7 +316,28 @@ class CreateCommunity extends Component {
                             <img src={this.state.communityCover} style={{ position: "absolute" }} width="100%" height="100%" alt="" />
                         </div>
                         <div className="col-3" >
-                            {avatarImageDivision}
+                            <div style={{ marginBottom: "5px" }}>
+                                <CarouselProvider
+                                    naturalSlideWidth={200}
+                                    naturalSlideHeight={200}
+                                    totalSlides={this.state.communityAvatar.length}
+                                >
+                                    <ButtonBack style={{ border: "none", backgroundColor: "white", fontSize: "40px", float: "left", marginTop: "30%" }}>&#60;</ButtonBack>
+                                    <ButtonNext style={{ border: "none", backgroundColor: "white", float: "right", marginTop: "30%", fontSize: "40px", }}>&#62;</ButtonNext>
+                                    <Slider>
+
+                                        {avatarImageDivision}
+                                    </Slider>
+
+                                </CarouselProvider>
+                            </div>
+                        </div>
+                        <div className="row" style={{ marginLeft: "2%" }}>
+
+                            <input style={{ background: "none", border: "none" }} type="file" id="file" name="file" data-show-upload="true" data-show-caption="true" onChange={this.updateFileAvatarHandler} />
+                            <input style={{ background: "none", border: "none" }} type="file" id="file" multiple name="file" data-show-upload="true" data-show-caption="true" onChange={this.updateFileSelectedHandler} />
+
+
                         </div>
                     </div>
                 </div>

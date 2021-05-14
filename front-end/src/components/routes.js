@@ -18,6 +18,7 @@ import Notification from './users/Notification';
 import UserProfilePage from './users/user-profile';
 import CommunitySearch from './community/CommunitySearch';
 import logout from './users/logout';
+import Dashboard from './users/Dashboard';
 
 
 class Routes extends Component {
@@ -25,6 +26,8 @@ class Routes extends Component {
         return (
             <div>
                 <Route exact path="/" component={Navbar} />
+                <Route path="/dashboard" component={Dashboard} />
+
                 <Route path="/submit/:id" component={CreatePost} />
                 <Route exact path="/create-community" component={CreateCommunity} />
                 <Route path="/community-home-page" component={MyCommunity} />

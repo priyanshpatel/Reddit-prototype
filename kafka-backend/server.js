@@ -1,4 +1,5 @@
 var connection = new require("./kafka/connection");
+var MySQLConnection = require('./config/mysqldbconnection');
 
 //topics files
 const userService = require("./services/user");
@@ -35,6 +36,9 @@ const connectMongoDB = async () => {
   }
 };
 connectMongoDB();
+MySQLConnection.authenticate()
+  .then(() => console.log("MySQL Connected"))
+  .catch((err) => console.log(error));
 
 mongoose.set('debug', true);
 

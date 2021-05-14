@@ -1,4 +1,3 @@
-// TO-DO: Change the hard coded values as we develop APIs - Priyansh Patel
 
 import React, { Component, useEffect, useRef, useState } from 'react'
 import { Redirect, withRouter } from "react-router"
@@ -132,7 +131,7 @@ class Navbar extends Component {
             });
     }
     handleEmailChange = inp => {
-        if (true) {
+        if (/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(inp.target.value)) {
             this.setState({
                 error: false,
                 [inp.target.name]: inp.target.value,
@@ -297,7 +296,8 @@ class Navbar extends Component {
                     this.setState({
                         loginBackendError: true
                     })
-                } else {
+                }
+                else {
                     this.setState({
                         loginButton: !this.state.loginButton
                     })
@@ -430,6 +430,7 @@ class Navbar extends Component {
 
         })
 
+        let renderError = null
 
         let invalidLoginError = null
         let invalidSignUpError = null
@@ -440,6 +441,9 @@ class Navbar extends Component {
         if (this.state.signUpBackendError) {
             invalidSignUpError = <div style={{ 'color': 'red' }}>{this.props.signUpMessage}</div>
         }
+        if (this.state.error) {
+            renderError = <div style={{ 'color': 'red' }}>{this.state.errorMessage}</div>
+        }
         if (cookie.load('token')) {
             return (
                 <div className="manual-container">
@@ -448,15 +452,10 @@ class Navbar extends Component {
 
                     </div>
 
-                    {/* <div className="col-2">
-                            <Link to="/"><img src={reddit_logo} className="logo-image" alt="reddit-logo" /></Link>
-                        </div> */}
+
                     <div className="row">
-                        {/* <div className="col-1">
-                                <Link to="/"><img src={reddit_logo} className="logo-image" alt="reddit-logo" /></Link>
-                            </div> */}
-                        <div className="col-1">
-                            <Link to="/my-community-analytics">My Community Analytics</Link>
+                        <div className="col-2">
+                            <Link to="/"><img src={reddit_logo} className="logo-image" alt="reddit-logo" /></Link>
                         </div>
                         <div className="col-1 dropdown" style={{ paddingRight: "0px" }}>
                             <button className="btn dropdown-toggle navbar-dropdown-button" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -494,6 +493,9 @@ class Navbar extends Component {
                                     <Link to="/" className="dropdown-item" type="button" value="home"><i class="fas fa-home dd-icon"></i><span className="dd-item">Home</span></Link>
                                     <Link to="/profile" className="dropdown-item" type="button" value="profile"><i class="fas fa-id-badge dd-icon" /><span className="dd-item">Profile</span></Link>
                                     <Link to="/my-communities" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-users dd-icon"></i><span className="dd-item">My Communities</span></Link>
+                                    <Link to="/my-community-analytics" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-users dd-icon"></i><span className="dd-item">Community Analytics </span></Link>
+
+
                                     <Link to="/search-community" className="dropdown-item" type="button" value="mycommunities"><i class="fas fa-search"></i><span className="dd-item">Search Communities</span></Link>
                                     <Link className="dropdown-item" type="button" value="logout" onClick={this.handleLogout}><i class="fas fa-sign-out-alt dd-icon"></i><span className="dd-item">Logout</span></Link>
                                 </div>
@@ -722,6 +724,7 @@ class Navbar extends Component {
                                         </div>
                                         <Row>
                                             <input type="email" style={{ width: "100%" }} name="loginemail" onChange={this.handleEmailChange} placeholder="EMAIL" autoFocus required />
+                                            {renderError}
 
                                             <input type="password" style={{ width: "100%", marginTop: "10%" }} name="loginpassword" placeholder="PASSWORD" onChange={this.handleOtherChange} required />
                                             <button type="button" id="login-button" style={{ backgroundColor: "#0079d3", color: "white", borderRadius: "60px", width: "100%", marginTop: "10%" }} class="btn btn-outline-primary" onClick={this.handleLoginSubmit}><span style={{ fontSize: "16px", fontWeight: "300px" }}><strong>Log In</strong></span></button>
