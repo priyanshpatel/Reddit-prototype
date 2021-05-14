@@ -39,6 +39,7 @@ class CommunityModeration extends Component {
       totalPages: this.props.myCommunitiesData.totalPages,
       pageNumber: "1",
       pageSize: "2",
+      searchKeyword: "",
     };
   }
 
@@ -92,11 +93,41 @@ class CommunityModeration extends Component {
     });
   };
 
+  handleChangeSearchKeyword = (e) => {
+    e.preventDefault()
+    this.setState({
+      searchKeyword: e.target.value
+    })
+
+    let reqObj = {
+      pageNumber: "1",
+      pageSize: this.state.pageSize,
+      searchKeyword: e.target.value
+    }
+
+    this.props.getMyCommunityModAction(reqObj).then((response) => {
+      if (this.props.errorGetMyCommunityMod) {
+        this.setState({
+          error: true,
+        });
+      } else {
+        this.setState({
+          myCommunitiesData: this.props.myCommunitiesData,
+        });
+      }
+    });
+  }
+
   handlePageClick = (e) => {
     this.setState({
       pageNumber: Number(e.selected) + 1,
     });
-    this.props.getMyCommunityModAction(this.state).then((response) => {
+
+    let reqObj = {
+      pageNumber: Number(e.selected) + 1,
+      pageSize: this.state.pageSize,
+    }
+    this.props.getMyCommunityModAction(reqObj).then((response) => {
       if (this.props.errorGetMyCommunityMod) {
         this.setState({
           error: true,
@@ -201,6 +232,7 @@ class CommunityModeration extends Component {
                 <Input
                   Style={{ backgroundColor: "white", color: "Black" }}
                   placeholder="Search"
+                  onChange = {this.handleChangeSearchKeyword}
                 ></Input>
               </InputGroup>
               <br />

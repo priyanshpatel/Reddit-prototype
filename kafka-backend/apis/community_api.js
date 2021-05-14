@@ -427,7 +427,7 @@ export const getAllCreatedCommunitiesByUserId = async (req, callback) => {
       ).length,
       communityAvatar:
         loggedInUser.createdCommunities[index].communityAvatar.length > 0
-          ? oggedInUser.createdCommunities[index].communityAvatar[0]
+          ? loggedInUser.createdCommunities[index].communityAvatar[0]
           : null,
     });
   }
